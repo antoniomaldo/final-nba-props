@@ -1,0 +1,101 @@
+body {
+
+/*
+    background-color: lightgrey
+*/
+    background-color: lightgrey;
+}
+
+/*body{height:100%;
+   width:100%;
+   background-image:url(nba.jpg);*//*your background image*//*
+   background-repeat:no-repeat;*//*we want to have one single image not a repeated one*//*
+   background-size:cover;*//*this sets the image to fullscreen covering the whole screen*//*
+   *//*css hack for ie*//*
+   filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='nba.jpg',sizingMethod='scale');
+   -
+}*/
+
+.clock-table {
+    width: 585px;
+    float: left;
+}
+
+
+#
+.pre-match-inputs {
+    clear: both;
+}
+
+.home-table {
+    float: left;
+    clear: none;
+}
+
+.away-table {
+    float: left;
+    clear: none;
+    margin-left: 10px;
+}
+
+.buttons {
+    clear: both;
+}
+
+.openbet-id {
+    min-width: 50px;
+    width: 1500px;
+}
+
+.derive-panel {
+    clear: left;
+}
+
+.divider {
+    width: 200px;
+    height: auto;
+    display: inline-block;
+}
+
+.small-divider {
+    width: 20px;
+    height: auto;
+    display: inline-block;
+}
+
+.vertical-divider {
+    width: auto;
+    height: 25px;
+    display: inline-block;
+}
+
+.valid-input {
+}
+
+.invalid-input {
+    color: red;
+}
+
+.blank_row {
+    height: 10px !important; /* Overwrite any previous rules */
+    background-color: lightgrey;
+}
+
+.minWidth {
+    min-width: 150px;
+}
+
+#sliderProb {
+    direction: rtl;
+}
+
+input[type="number"] {
+    width: 60px;
+}
+
+td {
+    border: 60px;
+}
+.expectedLegs {
+    border-left: 3px solid rgb(221, 221, 221);;
+}

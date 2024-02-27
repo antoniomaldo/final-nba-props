@@ -1,0 +1,77 @@
+<!doctype html>
+
+<div class="container" xmlns:>
+    <!--<div class="container" xmlns:  style="background-image: url(images/dallas.jpg)">-->
+    <div>
+        <a class="btn btn-sm btn-link"
+           href="{{pmModelUrl}}" target="_self">
+            Go to Pm Model
+        </a>
+        <a class="btn btn-sm btn-link"
+           href="{{fdModelUrl}}" target="_self">
+            Go to Fd Model
+        </a>
+    </div>
+
+    <div class="col-sm-6">
+        <strong>Projections Data last updated on {{latestTimeStamp}}</strong>
+        <br>
+        <br>
+        <strong>Match Lines last updated on {{linesLastUpdated}}</strong>
+        <br>
+        <br>
+        <button id="updateFdPreds" ng-click="updateFdPreds()"
+                ng-class="'btn btn-primary'">
+            Update Projections Data
+        </button>
+        <button id="resetPlayers" ng-click="updateData()"
+                ng-class="'btn btn-primary'">
+            Reset Data to Csv values
+        </button>
+
+        <table class="table table-bordered">
+            <strong>
+                {{selectedEvent.homeTeamName}}
+            </strong>
+            <br>
+            <br>
+            <thead>
+            <tr>
+                <th>Time</th>
+                <th>Event</th>
+                <th>Match Spread</th>
+                <th>Total Points</th>
+
+            </tr>
+            </thead>
+            <tbody ng-repeat="(key, value) in dayEvents">
+            <tr>
+                <td>
+                    {{value.eventTime}}
+                </td>
+                <td>
+                    {{key}}
+                </td>
+                <td>
+                    <input type="number" ng-model="value.matchSpread" step="0.25">
+                </td>
+                <td>
+                    <input type="number" ng-model="value.totalPoints" step="0.25">
+                </td>
+            </tr>
+
+            </tbody>
+
+        </table>
+
+
+        <button id="scrapeGames" ng-click="updateLines()"
+                ng-class="'btn btn-primary'">
+            Update Lines
+        </button>
+        <button id="submitLines" ng-click="submitLines()"
+                ng-class="'btn btn-primary'">
+            Submit Lines
+        </button>
+    </div>
+</div>
