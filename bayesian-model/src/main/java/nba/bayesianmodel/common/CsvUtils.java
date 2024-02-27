@@ -16,7 +16,7 @@ public class CsvUtils {
     public static PlayersData loadData(boolean shouldRemoveLastSeason) {
         List<PlayerGameData> playerData = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\amaldonado\\Documents\\NBA\\bayesian_player_props-main\\allPlayers.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("C:\\czrs-ds-models\\nba-player-props\\data\\allPlayers.csv"))) {
             String line;
             String[] colNames = br.readLine().split(",");
             Map<String, Integer> colNamesIndex = createColNamesMap(colNames);
@@ -34,19 +34,19 @@ public class CsvUtils {
                             PlayerPosition.mapToPlayerPosition(values[colNamesIndex.get("Position")].replace("\"", "")),
                             getAsInteger(values, colNamesIndex, "Starter") == 1,
                             minPlayed,
-                            getAsInteger(values, colNamesIndex, "Fg.Made"),
-                            getAsInteger(values, colNamesIndex, "Fg.Attempted"),
-                            getAsInteger(values, colNamesIndex, "Three.Made"),
-                            getAsInteger(values, colNamesIndex, "Three.Attempted"),
-                            getAsInteger(values, colNamesIndex, "FT.Made"),
-                            getAsInteger(values, colNamesIndex, "FT.Attempted"),
-                            getAsInteger(values, colNamesIndex, "Offensive.Rebound"),
-                            getAsInteger(values, colNamesIndex, "Defensive.Rebound"),
+                            getAsInteger(values, colNamesIndex, "Fg_Made"),
+                            getAsInteger(values, colNamesIndex, "Fg_Attempted"),
+                            getAsInteger(values, colNamesIndex, "Three_Made"),
+                            getAsInteger(values, colNamesIndex, "Three_Attempted"),
+                            getAsInteger(values, colNamesIndex, "FT_Made"),
+                            getAsInteger(values, colNamesIndex, "FT_Attempted"),
+                            getAsInteger(values, colNamesIndex, "Offensive_Rebound"),
+                            getAsInteger(values, colNamesIndex, "Defensive_Rebound"),
                             getAsInteger(values, colNamesIndex, "Assists"),
                             getAsInteger(values, colNamesIndex, "Steals"),
                             getAsInteger(values, colNamesIndex, "Blocks"),
                             getAsInteger(values, colNamesIndex, "Turnovers"),
-                            getAsInteger(values, colNamesIndex, "Personal.Fouls"),
+                            getAsInteger(values, colNamesIndex, "Personal_Fouls"),
                             getAsInteger(values, colNamesIndex, "seasonYear")));
                 }
             }
