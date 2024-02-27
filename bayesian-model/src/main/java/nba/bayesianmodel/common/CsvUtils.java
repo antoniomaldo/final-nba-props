@@ -137,7 +137,7 @@ public class CsvUtils {
             csvData.add(playerPredictions.toRow());
         }
 
-        try (CSVWriter writer = new CSVWriter(new FileWriter("C:\\Users\\amaldonado\\Documents\\NBA\\bayesian_player_props-main\\bayesian predictions\\java_preds\\" + csvName + ".csv"))) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter("C:\\czrs-ds-models\\nba-player-props\\testing\\" + csvName + ".csv"))) {
             writer.writeAll(csvData);
         } catch (IOException e) {
             throw new RuntimeException(e);
