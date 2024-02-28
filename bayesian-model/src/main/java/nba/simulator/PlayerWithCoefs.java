@@ -3,6 +3,8 @@ package nba.simulator;
 public class PlayerWithCoefs {
 
     private final int gameId;
+    private final int seasonYear;
+
     private final String team;
     private final String playerName;
     private final int playerId;
@@ -45,8 +47,9 @@ public class PlayerWithCoefs {
     private final double foulsPrior;
 
 
-    public PlayerWithCoefs(int gameId, String team, String playerName, int playerId, int minPlayed, double fgAttemptedPlayerCoef, double fgAttemptedPrior, double threePropCoef, double threePropPrior, double threePercCoef, double threePercPrior, double twoPercCoef, double twoPercPrior, double ftsAttemptedCoef, double ftsAttemptedPrior, double ftPercCoef, double ftPercPrior, double reboundsCoef, double reboundsPrior, double offReboundsPropCoef, double offReboundsPropPrior, double blocksCoef, double blocksPrior, double stealsCoef, double stealsPrior, double turnoversCoef, double turnoversPrior, double foulsCoef, double foulsPrior) {
+    public PlayerWithCoefs(int gameId, int seasonYear, String team, String playerName, int playerId, int minPlayed, double fgAttemptedPlayerCoef, double fgAttemptedPrior, double threePropCoef, double threePropPrior, double threePercCoef, double threePercPrior, double twoPercCoef, double twoPercPrior, double ftsAttemptedCoef, double ftsAttemptedPrior, double ftPercCoef, double ftPercPrior, double reboundsCoef, double reboundsPrior, double offReboundsPropCoef, double offReboundsPropPrior, double blocksCoef, double blocksPrior, double stealsCoef, double stealsPrior, double turnoversCoef, double turnoversPrior, double foulsCoef, double foulsPrior) {
         this.gameId = gameId;
+        this.seasonYear = seasonYear;
         this.team = team;
         this.playerName = playerName;
         this.playerId = playerId;
@@ -79,6 +82,10 @@ public class PlayerWithCoefs {
 
     public int getGameId() {
         return gameId;
+    }
+
+    public int getSeasonYear() {
+        return seasonYear;
     }
 
     public String getTeam() {

@@ -64,7 +64,7 @@ public class CsvUtils {
     public static List<PlayerWithCoefs> loadPredictionsData() {
         List<PlayerWithCoefs> playerData = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\amaldonado\\Documents\\NBA\\bayesian_player_props-main\\bayesian predictions\\java_preds\\allPreds.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("C:\\czrs-ds-models\\nba-player-props\\testing\\allPreds.csv"))) {
             String line;
             String[] colNames = br.readLine().split(",");
             Map<String, Integer> colNamesIndex = createColNamesMap(colNames);
@@ -75,6 +75,7 @@ public class CsvUtils {
 
                     playerData.add(new PlayerWithCoefs(
                             getAsInteger(values, colNamesIndex, "GameId"),
+                            getAsInteger(values, colNamesIndex, "seasonYear"),
                             values[colNamesIndex.get("Team")].replace("\"", ""),
                             values[colNamesIndex.get("Name")].replace("\"", ""),
                             getAsInteger(values, colNamesIndex, "PlayerId"),
@@ -151,7 +152,7 @@ public class CsvUtils {
             csvData.add(playerPredictions.toRow());
         }
 
-        try (CSVWriter writer = new CSVWriter(new FileWriter("C:\\Users\\amaldonado\\Documents\\NBA\\bayesian_player_props-main\\bayesian predictions\\backtest.csv"))) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter("C:\\czrs-ds-models\\nba-player-props\\backtest analysis\\backtest.csv"))) {
             writer.writeAll(csvData);
         } catch (IOException e) {
             throw new RuntimeException(e);

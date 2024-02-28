@@ -57,6 +57,7 @@ public class ApplicationController {
 
     private PlayerWithCoefs toPlayer(PlayerRequest playerRequest, String team) {
         return new PlayerWithCoefs(1,
+                2024,
                 team,
                 playerRequest.getName(),
                 1,
