@@ -65,3 +65,78 @@ pickWantedBookamer <- function(sbrData){
 }
 
 
+#Map rotowire predictions to espn data
+
+mapToPlayerId <- function(df, baseDir){
+  mappingsFile = paste0(baseDir, "mappings/rotowire-mappings.csv")
+  playerMappins <- unique(read.csv(mappingsFile)[c(1,3)])
+  
+  charPos <- which(playerMappins$PlayerId == 3988)
+  specialChar <- substr(playerMappins$rotoName[charPos], start = 6, stop = 8)
+  playerMappins$rotoName <- str_replace_all(playerMappins$rotoName, specialChar, " ")
+  playerMappins <- unique(playerMappins)
+  
+  colnames(playerMappins) <- c("PlayerId", "playerName")
+  
+  merged <- merge(df, playerMappins, by = "PlayerId", all.x = T)
+  
+  return(merged)
+}
+
+removeDupPredictions <- function(df){
+  #If for a gameID, there are more than 1 players, keep the one with the predictions, or keep 1 row without a prediction
+  
+  dupPreds <- aggregate(Min ~ PlayerId, df, length)
+  dupPreds <- subset(dupPreds, dupPreds$Min > 1)
+  
+  uniquePred <- subset(df, !df$PlayerId %in% dupPreds$PlayerId)
+  multiplePred <- subset(df, df$PlayerId %in% dupPreds$PlayerId)
+  
+  cleanedDf <- data.frame()
+  for(id in unique(multiplePred$PlayerId)){
+    dupPlayer <- subset(multiplePred, multiplePred$PlayerId == id)
+    dupPlayer$hasPred <- !is.na(dupPlayer$pmin)
+    
+    if(sum(dupPlayer$hasPred) > 0){
+      cleanedDf <- rbind(cleanedDf,(subset(dupPlayer, dupPlayer$hasPred == 1)[1,]))
+    }else{
+      cleanedDf <- rbind(cleanedDf,dupPlayer[1,])
+    }
+  }
+  
+  return(rbind(uniquePred, cleanedDf[-which(colnames(cleanedDf) == "hasPred")]))
+}
+
+
+mapMinutesForSeason <- function(boxscores,
+                                rotoPreds,
+                                baseDir){
+  
+  boxscores <- mapToPlayerId(boxscores, baseDir)
+  
+  allData <- data.frame()
+  for(d in unique(rotoPreds$date)){
+    csvData <- subset(rotoPreds, rotoPreds$date == d)
+    
+    csvData$playerName = str_trim(as.character(csvData$NAME))
+    
+    dayBoxscore = subset(boxscores, boxscores$Date == str_remove_all(csvData$date[1], "-"))
+    
+    if(nrow(dayBoxscore) > 0){
+      dayBoxscore = merge(dayBoxscore, csvData, by = "playerName", all.x = T)
+      
+      if(!("pmin" %in% colnames(dayBoxscore))){
+        dayBoxscore$pmin = dayBoxscore$MIN
+      }
+      
+      cleanData <- removeDupPredictions(dayBoxscore)
+      
+      allData <- rbind(allData, cleanData)
+      #write.csv(cleanData, file = paste0("C:\\Users\\Antonio\\Documents\\NBA\\data\\RotoGrinders\\mapped slate\\",SEASON,"\\", formatData$date[1], ".csv"))
+    }
+  }
+  return(allData)
+}
+
+
+
