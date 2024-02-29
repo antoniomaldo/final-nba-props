@@ -41,3 +41,4 @@ build/
 
 /data/allPlayers.csv
 /testing/*.csv
+/backtest_analysis/*.csv
