@@ -4,10 +4,10 @@ BASE_DIR <- "C:\\czrs-ds-models\\nba-player-props\\"
 
 allPlayers <- read.csv(paste0(BASE_DIR, "data\\allPlayers.csv"))
 
-javaPreds <- read.csv(paste0(BASE_DIR, "backtest analysis\\backtest.csv"))
+javaPreds <- read.csv(paste0(BASE_DIR, "backtest_analysis\\backtest.csv"))
 javaPreds$pointsAvg <- 3 * javaPreds$threesAvg + 2 * javaPreds$twosAvg + javaPreds$ftsAvg
 
-merged <- merge(javaPreds, allPlayers[c("GameId", "PlayerId", "Team", "Points", "Fg_Attempted", "Three_Made", "Total_Rebounds", "Blocks", "Steals", "HomeTeam", "AwayTeam",  "matchSpread", "totalPoints")], by = c("GameId", "PlayerId"))
+merged <- merge(javaPreds, allPlayers[c("GameId", "Min", "PlayerId", "Team", "Points", "Fg_Attempted", "Three_Made", "Total_Rebounds", "Blocks", "Steals", "HomeTeam", "AwayTeam",  "matchSpread", "totalPoints")], by = c("GameId", "PlayerId"))
 
 merged$homeExp <- (merged$totalPoints - merged$matchSpread) / 2
 merged$awayExp <- merged$totalPoints - merged$homeExp
@@ -22,6 +22,7 @@ merged$residFg <- merged$Fg_Attempted - merged$fgAttemptedPred
 merged$residThree <- merged$Three_Made - merged$threesAvg
 merged$residRebounds <- merged$rebounds - merged$Total_Rebounds
 merged$residSteals <- merged$steals - merged$Steals
+merged$residBlocks <- merged$blocks - merged$Blocks
 
 binnedplot(merged$pointsAvg, merged$resid)
 binnedplot(merged$pointsAvg[merged$ownExp > 120], merged$resid[merged$ownExp > 120])
@@ -31,9 +32,18 @@ binnedplot(merged$fgAttemptedPred, merged$residFg)
 binnedplot(merged$threesAvg, merged$residThree)
 binnedplot(merged$ownExp, merged$residThree)
 binnedplot(merged$ownExp, merged$residRebounds)
+binnedplot(merged$Fg_Attempted, merged$residRebounds)
+binnedplot(merged$Min, merged$residRebounds)
+binnedplot(merged$pointsAvg, merged$residRebounds)
+
+binnedplot(merged$Fg_Attempted, merged$residSteals)
+binnedplot(merged$Min, merged$residSteals)
 
 binnedplot(merged$rebounds, merged$residRebounds)
 binnedplot(merged$steals, merged$residSteals)
+binnedplot(merged$blocks, merged$residBlocks)
+binnedplot(merged$Min, merged$residBlocks)
+binnedplot(merged$Fg_Attempted, merged$residBlocks)
 
 agg <- aggregate(Points ~ GameId + Team, merged, sum)
 
@@ -42,6 +52,9 @@ agg <- merge(agg, aggregate(Points ~ GameId + Team, merged, sum), by = c("GameId
 agg <- merge(agg, aggregate(Fg_Attempted ~ GameId + Team, merged, sum), by = c("GameId", "Team"))
 agg <- merge(agg, aggregate(Total_Rebounds ~ GameId + Team, merged, sum), by = c("GameId", "Team"))
 agg <- merge(agg, aggregate(rebounds ~ GameId + Team, merged, sum), by = c("GameId", "Team"))
+agg <- merge(agg, aggregate(blocks ~ GameId + Team, merged, sum), by = c("GameId", "Team"))
+agg <- merge(agg, aggregate(Blocks ~ GameId + Team, merged, sum), by = c("GameId", "Team"))
+
 agg <- merge(agg, aggregate(fgAttemptedPred ~ GameId + Team, merged, sum), by = c("GameId", "Team"))
 agg <- merge(agg, aggregate(ownExp ~ GameId + Team, merged, mean), by = c("GameId", "Team"))
 agg <- merge(agg, aggregate(oppExp ~ GameId + Team, merged, mean), by = c("GameId", "Team"))
@@ -49,6 +62,7 @@ agg <- merge(agg, aggregate(oppExp ~ GameId + Team, merged, mean), by = c("GameI
 agg$resid <- agg$pointsAvg - agg$Points
 agg$residFg <- agg$fgAttemptedPred - agg$Fg_Attempted
 agg$reboundsResid <- agg$Total_Rebounds - agg$rebounds
+agg$blocksResid <- agg$Blocks - agg$blocks
 
 binnedplot(agg$pointsAvg, agg$resid)
 binnedplot(agg$fgAttemptedPred, agg$residFg)
@@ -56,6 +70,9 @@ binnedplot(agg$ownExp, agg$residFg)
 binnedplot(agg$ownExp, agg$resid)
 binnedplot(agg$oppExp, agg$resid)
 binnedplot(agg$ownExp, agg$reboundsResid)
+binnedplot(agg$rebounds, agg$reboundsResid)
+binnedplot(agg$blocks, agg$blocksResid)
+binnedplot(agg$oppExp, agg$reboundsResid)
 
 agg$teamResid <- agg$resid
 
