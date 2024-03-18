@@ -1,0 +1,115 @@
+package nba.minutedistribution;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+public class MinutesGivenPlayedModelTest {
+
+    public static final double DELTA = 0.0001d;
+
+    @Test
+    public void name() {
+        Assert.assertEquals(12.2594198802346d, MinutesGivenPlayedModel.getAverageGivenPlayed(12,12,116.25,118.75,2024,0,0,256.046153846154) , DELTA);
+        Assert.assertEquals(21.3462432177108d, MinutesGivenPlayedModel.getAverageGivenPlayed(26,13.3559322033898,117.25,116.25,2022,0,0,255.794069091628) , DELTA);
+        Assert.assertEquals(17.7170497417505d, MinutesGivenPlayedModel.getAverageGivenPlayed(19,16.8405797101449,130,114,2023,0,1,255.734736480234) , DELTA);
+        Assert.assertEquals(31.7096188590953d, MinutesGivenPlayedModel.getAverageGivenPlayed(34,33.0833333333333,117.75,108.25,2024,1,0,253.893181818182) , DELTA);
+        Assert.assertEquals(12.9490302051397d, MinutesGivenPlayedModel.getAverageGivenPlayed(9,20.5744680851064,117.5,113.5,2024,0,0,272.743856031622) , DELTA);
+        Assert.assertEquals(17.8023470358528d, MinutesGivenPlayedModel.getAverageGivenPlayed(19,17.2,123.5,115,2024,0,0,237.4) , DELTA);
+        Assert.assertEquals(32.5300130214346d, MinutesGivenPlayedModel.getAverageGivenPlayed(34,33.078431372549,114,122.5,2023,1,0,244.87432557722) , DELTA);
+        Assert.assertEquals(32.857769904982d, MinutesGivenPlayedModel.getAverageGivenPlayed(33,30.2978723404255,109.25,108.25,2023,1,0,214.573811603574) , DELTA);
+        Assert.assertEquals(31.5729397856099d, MinutesGivenPlayedModel.getAverageGivenPlayed(35,26.5818181818182,112.75,104.25,2022,1,0,232.912518432654) , DELTA);
+        Assert.assertEquals(29.0093873244092d, MinutesGivenPlayedModel.getAverageGivenPlayed(30,29.1071428571429,122.75,119.75,2023,1,0,241.487095215516) , DELTA);
+        Assert.assertEquals(40.2262672157635d, MinutesGivenPlayedModel.getAverageGivenPlayed(40,34.6,106.75,111.75,2023,1,0,172.014192707877) , DELTA);
+        Assert.assertEquals(13.7776087621894d, MinutesGivenPlayedModel.getAverageGivenPlayed(12,16.625,107.75,114.25,2023,0,0,255.052380952381) , DELTA);
+        Assert.assertEquals(15.8753347215568d, MinutesGivenPlayedModel.getAverageGivenPlayed(17,13.75,116.75,114.25,2023,0,0,228.010846685669) , DELTA);
+        Assert.assertEquals(36.479518140403d, MinutesGivenPlayedModel.getAverageGivenPlayed(37,35.9655172413793,119.25,117.25,2024,1,0,226.121284842993) , DELTA);
+        Assert.assertEquals(24.8312544302495d, MinutesGivenPlayedModel.getAverageGivenPlayed(23,21.3333333333333,115,122,2024,1,0,237.210317460317) , DELTA);
+        Assert.assertEquals(35.3908585214739d, MinutesGivenPlayedModel.getAverageGivenPlayed(36,35.6190476190476,116.75,118.25,2023,1,0,245.048223596517) , DELTA);
+        Assert.assertEquals(35.7658250106614d, MinutesGivenPlayedModel.getAverageGivenPlayed(36,35.609756097561,114.25,115.25,2024,1,0,235.913316003833) , DELTA);
+        Assert.assertEquals(12.7799798914929d, MinutesGivenPlayedModel.getAverageGivenPlayed(11,15.2666666666667,111.25,110.25,2023,0,0,229.072831667599) , DELTA);
+        Assert.assertEquals(24.9063811148074d, MinutesGivenPlayedModel.getAverageGivenPlayed(25,30.6603773584906,120.75,104.75,2023,0,0,249.439080968441) , DELTA);
+        Assert.assertEquals(32.6124475444294d, MinutesGivenPlayedModel.getAverageGivenPlayed(35,35.377358490566,120.5,113,2023,1,0,277.95739109713) , DELTA);
+        Assert.assertEquals(20.4859227772183d, MinutesGivenPlayedModel.getAverageGivenPlayed(22,22.5,117,107.5,2023,0,0,243.937573099415) , DELTA);
+        Assert.assertEquals(13.2445262091842d, MinutesGivenPlayedModel.getAverageGivenPlayed(13,9.33333333333333,105.25,113.25,2022,0,0,237.484761407949) , DELTA);
+        Assert.assertEquals(17.8949239232622d, MinutesGivenPlayedModel.getAverageGivenPlayed(14,28.9558823529412,112.25,107.75,2023,0,0,278.39779177775) , DELTA);
+        Assert.assertEquals(37.3111664946393d, MinutesGivenPlayedModel.getAverageGivenPlayed(33,30.6666666666667,108.25,114.25,2023,1,1,226.19965481142) , DELTA);
+        Assert.assertEquals(22.1226252135036d, MinutesGivenPlayedModel.getAverageGivenPlayed(24,26.4390243902439,111.75,106.25,2023,0,0,282.059572570961) , DELTA);
+        Assert.assertEquals(14.117443809945d, MinutesGivenPlayedModel.getAverageGivenPlayed(14,14.5384615384615,109,113,2024,0,0,237.156579211721) , DELTA);
+        Assert.assertEquals(33.9147785538141d, MinutesGivenPlayedModel.getAverageGivenPlayed(37,33.6666666666667,107.5,118.5,2024,1,0,240.527087646653) , DELTA);
+        Assert.assertEquals(31.3400338062222d, MinutesGivenPlayedModel.getAverageGivenPlayed(33,30.6666666666667,106.25,119.75,2023,1,0,226.391666666667) , DELTA);
+        Assert.assertEquals(29.7167747273244d, MinutesGivenPlayedModel.getAverageGivenPlayed(31,28.1428571428571,109.5,106.5,2024,1,0,239.809523809524) , DELTA);
+        Assert.assertEquals(23.6589823905621d, MinutesGivenPlayedModel.getAverageGivenPlayed(26,25.2,118.75,110.25,2022,0,0,224.311686720143) , DELTA);
+        Assert.assertEquals(32.2381545949978d, MinutesGivenPlayedModel.getAverageGivenPlayed(35,34.5833333333333,120.5,107.5,2022,1,0,245.119145962733) , DELTA);
+        Assert.assertEquals(23.3755032221575d, MinutesGivenPlayedModel.getAverageGivenPlayed(24,28.8974358974359,114.25,107.25,2024,0,0,272.848429161937) , DELTA);
+        Assert.assertEquals(9.65722870191296d, MinutesGivenPlayedModel.getAverageGivenPlayed(1,21.05,115,109,2023,0,0,327.292768821217) , DELTA);
+        Assert.assertEquals(8.51369198031217d, MinutesGivenPlayedModel.getAverageGivenPlayed(2,10.5,110.25,106.25,2024,0,1,256.931371184427) , DELTA);
+        Assert.assertEquals(30.0252302441429d, MinutesGivenPlayedModel.getAverageGivenPlayed(31,26.6,113.5,122,2024,1,0,206.95) , DELTA);
+        Assert.assertEquals(14.5736275776726d, MinutesGivenPlayedModel.getAverageGivenPlayed(15,15,113.25,116.75,2023,0,0,244.333333333333) , DELTA);
+        Assert.assertEquals(24.4365106374433d, MinutesGivenPlayedModel.getAverageGivenPlayed(28,26.8518518518519,108.25,116.75,2024,0,0,269.711353296575) , DELTA);
+        Assert.assertEquals(30.0832005181799d, MinutesGivenPlayedModel.getAverageGivenPlayed(28,31.875,106.5,111.5,2024,1,0,250.017857142857) , DELTA);
+        Assert.assertEquals(28.500878909159d, MinutesGivenPlayedModel.getAverageGivenPlayed(28,26.1578947368421,107.25,114.25,2024,1,0,210.612002763319) , DELTA);
+        Assert.assertEquals(33.9884952655788d, MinutesGivenPlayedModel.getAverageGivenPlayed(35,35.7142857142857,117.5,121,2024,1,0,269.969907283011) , DELTA);
+        Assert.assertEquals(33.6933079333068d, MinutesGivenPlayedModel.getAverageGivenPlayed(35,28.375,113.5,118.5,2023,1,0,205.053437504524) , DELTA);
+        Assert.assertEquals(27.6421800923947d, MinutesGivenPlayedModel.getAverageGivenPlayed(26,32.7,113.25,114.75,2024,0,0,214.631466192256) , DELTA);
+        Assert.assertEquals(19.0711911143733d, MinutesGivenPlayedModel.getAverageGivenPlayed(12,15.6086956521739,106,107.5,2022,1,0,226.485954484561) , DELTA);
+        Assert.assertEquals(12.5794095536405d, MinutesGivenPlayedModel.getAverageGivenPlayed(9,15.6578947368421,125.25,114.75,2024,0,0,247.648508955501) , DELTA);
+        Assert.assertEquals(34.3638510740924d, MinutesGivenPlayedModel.getAverageGivenPlayed(36,32.3921568627451,124.25,117.25,2024,1,0,212.551043572337) , DELTA);
+        Assert.assertEquals(35.3142362634881d, MinutesGivenPlayedModel.getAverageGivenPlayed(35,35.5,116.5,114,2023,1,0,223.801038830451) , DELTA);
+        Assert.assertEquals(30.8786255406463d, MinutesGivenPlayedModel.getAverageGivenPlayed(33,24.9318181818182,126.5,122.5,2024,1,0,225.208897201832) , DELTA);
+        Assert.assertEquals(28.7375978772472d, MinutesGivenPlayedModel.getAverageGivenPlayed(30,26.7878787878788,109.75,113.75,2023,1,0,236.291610231706) , DELTA);
+        Assert.assertEquals(28.302853103207d, MinutesGivenPlayedModel.getAverageGivenPlayed(32,27.1904761904762,119.5,122.5,2024,0,0,213.809922533607) , DELTA);
+        Assert.assertEquals(31.7219718486347d, MinutesGivenPlayedModel.getAverageGivenPlayed(34,33.7307692307692,114.25,107.25,2024,1,0,272.848429161937) , DELTA);
+        Assert.assertEquals(25.5261742902255d, MinutesGivenPlayedModel.getAverageGivenPlayed(28,29,119.25,116.25,2024,0,0,252.557078962228) , DELTA);
+        Assert.assertEquals(21.9991619803628d, MinutesGivenPlayedModel.getAverageGivenPlayed(23,24.625,117.25,120.75,2024,0,0,234.952701465201) , DELTA);
+        Assert.assertEquals(33.7963369252758d, MinutesGivenPlayedModel.getAverageGivenPlayed(36,29.2558139534884,124.25,120.25,2023,1,0,226.39619261608) , DELTA);
+        Assert.assertEquals(34.1470811806191d, MinutesGivenPlayedModel.getAverageGivenPlayed(36,34.6388888888889,127.75,121.75,2024,1,0,244.053480179951) , DELTA);
+        Assert.assertEquals(28.3126366360886d, MinutesGivenPlayedModel.getAverageGivenPlayed(27,30.0384615384615,114.5,110.5,2024,1,0,269.759988137128) , DELTA);
+        Assert.assertEquals(21.722819217004d, MinutesGivenPlayedModel.getAverageGivenPlayed(24,24.4528301886792,118.75,116.25,2024,0,0,261.366124258887) , DELTA);
+        Assert.assertEquals(18.4293769293534d, MinutesGivenPlayedModel.getAverageGivenPlayed(8,14,118.25,110.75,2023,1,0,208.540222202656) , DELTA);
+        Assert.assertEquals(17.539007966581d, MinutesGivenPlayedModel.getAverageGivenPlayed(19,16.76,115.25,117.25,2023,0,0,239.808574780339) , DELTA);
+        Assert.assertEquals(26.7622096936355d, MinutesGivenPlayedModel.getAverageGivenPlayed(26,26.3235294117647,112.75,114.25,2024,1,0,254.687101801887) , DELTA);
+        Assert.assertEquals(20.9903127159718d, MinutesGivenPlayedModel.getAverageGivenPlayed(23,17.2045454545455,118.25,124.25,2024,0,0,210.417751086871) , DELTA);
+        Assert.assertEquals(34.3255499725833d, MinutesGivenPlayedModel.getAverageGivenPlayed(36,36.2926829268293,126.5,121,2024,1,0,258.666991227225) , DELTA);
+        Assert.assertEquals(26.598046734897d, MinutesGivenPlayedModel.getAverageGivenPlayed(26,26.7692307692308,126.75,114.25,2023,1,0,251.711914026819) , DELTA);
+        Assert.assertEquals(15.843582258727d, MinutesGivenPlayedModel.getAverageGivenPlayed(17,13.1923076923077,118,121.5,2023,0,0,234.541553611819) , DELTA);
+        Assert.assertEquals(25.0568909563848d, MinutesGivenPlayedModel.getAverageGivenPlayed(28,25.6842105263158,121.75,127.75,2024,0,0,235.254737039671) , DELTA);
+        Assert.assertEquals(21.6027393762247d, MinutesGivenPlayedModel.getAverageGivenPlayed(24,18.7272727272727,119,107.5,2023,0,0,211.731613649574) , DELTA);
+        Assert.assertEquals(13.7821585934814d, MinutesGivenPlayedModel.getAverageGivenPlayed(13,15.5185185185185,120.75,118.25,2023,0,0,234.597271077937) , DELTA);
+        Assert.assertEquals(19.0857437758775d, MinutesGivenPlayedModel.getAverageGivenPlayed(20,22.2272727272727,122.25,108.75,2024,0,0,282.145259851345) , DELTA);
+        Assert.assertEquals(29.1400231441644d, MinutesGivenPlayedModel.getAverageGivenPlayed(33,28.08,118.75,119.75,2024,0,0,214.867471509972) , DELTA);
+        Assert.assertEquals(24.2034896446464d, MinutesGivenPlayedModel.getAverageGivenPlayed(27,22.0714285714286,117.75,118.75,2023,0,0,219.523316556211) , DELTA);
+        Assert.assertEquals(28.8459937990146d, MinutesGivenPlayedModel.getAverageGivenPlayed(30,28.5,106.25,119.75,2023,1,0,226.391666666667) , DELTA);
+        Assert.assertEquals(36.1417722916862d, MinutesGivenPlayedModel.getAverageGivenPlayed(34,38.875,115.75,108.25,2023,1,0,231.902772227772) , DELTA);
+        Assert.assertEquals(36.8523601648668d, MinutesGivenPlayedModel.getAverageGivenPlayed(38,33.7777777777778,107.25,114.75,2021,1,0,182.958333333333) , DELTA);
+        Assert.assertEquals(28.2830036615838d, MinutesGivenPlayedModel.getAverageGivenPlayed(30,30.5185185185185,120,108.5,2023,1,0,256.825935652039) , DELTA);
+        Assert.assertEquals(31.6458782263038d, MinutesGivenPlayedModel.getAverageGivenPlayed(32,32,116.25,111.25,2023,1,0,221.855555676208) , DELTA);
+        Assert.assertEquals(26.4661236021d, MinutesGivenPlayedModel.getAverageGivenPlayed(26,27.2972972972973,110.25,106.25,2024,0,1,256.931371184427) , DELTA);
+        Assert.assertEquals(17.8964786173812d, MinutesGivenPlayedModel.getAverageGivenPlayed(18,17.8,106.25,119.75,2023,0,0,226.391666666667) , DELTA);
+        Assert.assertEquals(36.6374675992398d, MinutesGivenPlayedModel.getAverageGivenPlayed(37,34.5208333333333,118.25,116.75,2023,1,0,213.562788868582) , DELTA);
+        Assert.assertEquals(25.1720875782281d, MinutesGivenPlayedModel.getAverageGivenPlayed(24,20.8823529411765,109.5,118,2024,1,0,240.347600619195) , DELTA);
+        Assert.assertEquals(13.203665039751d, MinutesGivenPlayedModel.getAverageGivenPlayed(12,15,116.75,119.25,2024,0,1,238) , DELTA);
+        Assert.assertEquals(26.2643242919919d, MinutesGivenPlayedModel.getAverageGivenPlayed(30,28.4444444444444,120.5,108,2024,0,0,222.120868329276) , DELTA);
+        Assert.assertEquals(29.0308040428034d, MinutesGivenPlayedModel.getAverageGivenPlayed(30,28.8,117.5,114,2023,1,0,236.433333333333) , DELTA);
+        Assert.assertEquals(13.5010026489688d, MinutesGivenPlayedModel.getAverageGivenPlayed(14,15.2352941176471,111.5,108,2023,0,0,292.586992927517) , DELTA);
+        Assert.assertEquals(29.148384987612d, MinutesGivenPlayedModel.getAverageGivenPlayed(25,32.4782608695652,120,115,2024,1,0,278.411258454816) , DELTA);
+        Assert.assertEquals(34.8088666151947d, MinutesGivenPlayedModel.getAverageGivenPlayed(36,33.9285714285714,113.25,107.75,2024,1,0,220.611355311355) , DELTA);
+        Assert.assertEquals(19.1345329197115d, MinutesGivenPlayedModel.getAverageGivenPlayed(17,25.9,129.5,116,2024,0,0,271.809716801078) , DELTA);
+        Assert.assertEquals(22.6078660224929d, MinutesGivenPlayedModel.getAverageGivenPlayed(25,24.0181818181818,118.5,104.5,2024,0,0,230.066388463289) , DELTA);
+        Assert.assertEquals(14.446163009648d, MinutesGivenPlayedModel.getAverageGivenPlayed(15,14.953488372093,119.5,118.5,2023,0,0,237.593169553736) , DELTA);
+        Assert.assertEquals(34.7356291201662d, MinutesGivenPlayedModel.getAverageGivenPlayed(36,35.5777777777778,120.5,121.5,2023,1,0,267.941680755563) , DELTA);
+        Assert.assertEquals(30.1536076328967d, MinutesGivenPlayedModel.getAverageGivenPlayed(31,30.1034482758621,132.5,129.5,2024,1,0,239.192705022436) , DELTA);
+        Assert.assertEquals(11.6549386465764d, MinutesGivenPlayedModel.getAverageGivenPlayed(5,17.5833333333333,127.5,116,2024,0,0,245.736639167009) , DELTA);
+        Assert.assertEquals(25.9700120263647d, MinutesGivenPlayedModel.getAverageGivenPlayed(23,25.35,115.25,122.25,2023,1,0,250.923402255639) , DELTA);
+        Assert.assertEquals(28.2489153576684d, MinutesGivenPlayedModel.getAverageGivenPlayed(28,27.8461538461538,102,111.5,2023,1,0,231.302152014652) , DELTA);
+        Assert.assertEquals(28.8669350217179d, MinutesGivenPlayedModel.getAverageGivenPlayed(30,29.4761904761905,121.75,116.25,2024,1,0,240.790629278723) , DELTA);
+        Assert.assertEquals(17.9628433858054d, MinutesGivenPlayedModel.getAverageGivenPlayed(20,14.0384615384615,120.25,117.25,2023,0,0,237.793392052423) , DELTA);
+        Assert.assertEquals(32.2817997680551d, MinutesGivenPlayedModel.getAverageGivenPlayed(32,32.3720930232558,114.75,120.75,2024,1,0,212.69118842796) , DELTA);
+        Assert.assertEquals(11.7163767327038d, MinutesGivenPlayedModel.getAverageGivenPlayed(9,10.5357142857143,122.5,108.5,2023,0,0,242.694024192401) , DELTA);
+        Assert.assertEquals(22.9730177522218d, MinutesGivenPlayedModel.getAverageGivenPlayed(25,26.6086956521739,114,111,2024,0,0,265.543644014175) , DELTA);
+        Assert.assertEquals(33.5631728308056d, MinutesGivenPlayedModel.getAverageGivenPlayed(36,35.6666666666667,117.25,108.75,2023,1,0,254.355328005328) , DELTA);
+        Assert.assertEquals(26.1863890574281d, MinutesGivenPlayedModel.getAverageGivenPlayed(26,22.4390243902439,109.25,117.75,2023,1,0,244.062588858234) , DELTA);
+        Assert.assertEquals(32.1189209293594d, MinutesGivenPlayedModel.getAverageGivenPlayed(33,32.8666666666667,121.25,116.25,2024,1,0,239.262715134297) , DELTA);
+    }
+}

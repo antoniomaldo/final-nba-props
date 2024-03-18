@@ -104,7 +104,9 @@ public class CsvUtils {
                             getAsDouble(values, colNamesIndex, "turnoversPrior"),
 
                             getAsDouble(values, colNamesIndex, "personalFoulsPlayerCoef"),
-                            getAsDouble(values, colNamesIndex, "personalFoulsPrior")));
+                            getAsDouble(values, colNamesIndex, "personalFoulsPrior"),
+                            105.5, //getAsDouble(values, colNamesIndex, "ownExp"),
+                            105.5));//getAsDouble(values, colNamesIndex, "oppExp")));
                 }
             }
         } catch (IOException e) {
@@ -152,7 +154,7 @@ public class CsvUtils {
             csvData.add(playerPredictions.toRow());
         }
 
-        try (CSVWriter writer = new CSVWriter(new FileWriter("C:\\czrs-ds-models\\nba-player-props\\backtest analysis\\backtest.csv"))) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter("C:\\czrs-ds-models\\nba-player-props\\backtest_analysis\\backtest.csv"))) {
             writer.writeAll(csvData);
         } catch (IOException e) {
             throw new RuntimeException(e);

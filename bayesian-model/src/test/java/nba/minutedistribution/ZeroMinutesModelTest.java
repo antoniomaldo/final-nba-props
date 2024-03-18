@@ -1,0 +1,115 @@
+package nba.minutedistribution;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+public class ZeroMinutesModelTest {
+
+    public static final double DELTA = 0.00001;
+
+    @Test
+    public void name() {
+        Assert.assertEquals(0.155550818223447d, ZeroMinutesModel.zeroMinutesProb(10,0,0) , DELTA);
+        Assert.assertEquals(3.38836369469525e-10d, ZeroMinutesModel.zeroMinutesProb(29,1,0) , DELTA);
+        Assert.assertEquals(8.57067454229771e-11d, ZeroMinutesModel.zeroMinutesProb(35,1,0) , DELTA);
+        Assert.assertEquals(0.535208868795647d, ZeroMinutesModel.zeroMinutesProb(2,0,0) , DELTA);
+        Assert.assertEquals(0.127771300987466d, ZeroMinutesModel.zeroMinutesProb(11,0,0) , DELTA);
+        Assert.assertEquals(6.73717033433952e-10d, ZeroMinutesModel.zeroMinutesProb(26,1,0) , DELTA);
+        Assert.assertEquals(6.36106549863844e-10d, ZeroMinutesModel.zeroMinutesProb(34,1,1) , DELTA);
+        Assert.assertEquals(3.4279277496626e-11d, ZeroMinutesModel.zeroMinutesProb(39,1,0) , DELTA);
+        Assert.assertEquals(5.42030009291085e-11d, ZeroMinutesModel.zeroMinutesProb(37,1,0) , DELTA);
+        Assert.assertEquals(3.4279277496626e-11d, ZeroMinutesModel.zeroMinutesProb(39,1,0) , DELTA);
+        Assert.assertEquals(8.57067454229771e-11d, ZeroMinutesModel.zeroMinutesProb(35,1,0) , DELTA);
+        Assert.assertEquals(0.084787747586982d, ZeroMinutesModel.zeroMinutesProb(13,0,0) , DELTA);
+        Assert.assertEquals(0.0553467379354049d, ZeroMinutesModel.zeroMinutesProb(15,0,0) , DELTA);
+        Assert.assertEquals(0.00589243255457894d, ZeroMinutesModel.zeroMinutesProb(25,0,0) , DELTA);
+        Assert.assertEquals(1.35521024388886e-10d, ZeroMinutesModel.zeroMinutesProb(33,1,0) , DELTA);
+        Assert.assertEquals(1.07773215303364e-10d, ZeroMinutesModel.zeroMinutesProb(34,1,0) , DELTA);
+        Assert.assertEquals(1.35521024388886e-10d, ZeroMinutesModel.zeroMinutesProb(33,1,0) , DELTA);
+        Assert.assertEquals(1.35521024388886e-10d, ZeroMinutesModel.zeroMinutesProb(33,1,0) , DELTA);
+        Assert.assertEquals(1.35521024388886e-10d, ZeroMinutesModel.zeroMinutesProb(33,1,0) , DELTA);
+        Assert.assertEquals(8.47175453092903e-10d, ZeroMinutesModel.zeroMinutesProb(25,1,0) , DELTA);
+        Assert.assertEquals(0.00739830259080683d, ZeroMinutesModel.zeroMinutesProb(24,0,0) , DELTA);
+        Assert.assertEquals(1.35521024388886e-10d, ZeroMinutesModel.zeroMinutesProb(33,1,0) , DELTA);
+        Assert.assertEquals(0.044519041087555d, ZeroMinutesModel.zeroMinutesProb(16,0,0) , DELTA);
+        Assert.assertEquals(6.81583656040048e-11d, ZeroMinutesModel.zeroMinutesProb(36,1,0) , DELTA);
+        Assert.assertEquals(5.29590333955521e-09d, ZeroMinutesModel.zeroMinutesProb(17,1,0) , DELTA);
+        Assert.assertEquals(0.535208868795647d, ZeroMinutesModel.zeroMinutesProb(2,0,0) , DELTA);
+        Assert.assertEquals(8.57067454229771e-11d, ZeroMinutesModel.zeroMinutesProb(35,1,0) , DELTA);
+        Assert.assertEquals(1.35521024388886e-10d, ZeroMinutesModel.zeroMinutesProb(33,1,0) , DELTA);
+        Assert.assertEquals(0.104339882813138d, ZeroMinutesModel.zeroMinutesProb(12,0,0) , DELTA);
+        Assert.assertEquals(0.127771300987466d, ZeroMinutesModel.zeroMinutesProb(11,0,0) , DELTA);
+        Assert.assertEquals(0.00119089338170886d, ZeroMinutesModel.zeroMinutesProb(32,0,0) , DELTA);
+        Assert.assertEquals(0.000947290003914389d, ZeroMinutesModel.zeroMinutesProb(33,0,0) , DELTA);
+        Assert.assertEquals(0.0357294897209008d, ZeroMinutesModel.zeroMinutesProb(17,0,0) , DELTA);
+        Assert.assertEquals(0.0228968979543797d, ZeroMinutesModel.zeroMinutesProb(19,0,0) , DELTA);
+        Assert.assertEquals(0.155550818223447d, ZeroMinutesModel.zeroMinutesProb(10,0,0) , DELTA);
+        Assert.assertEquals(2.14288244877836e-10d, ZeroMinutesModel.zeroMinutesProb(31,1,0) , DELTA);
+        Assert.assertEquals(1.35521024388886e-10d, ZeroMinutesModel.zeroMinutesProb(33,1,0) , DELTA);
+        Assert.assertEquals(0.132724457577663d, ZeroMinutesModel.zeroMinutesProb(14,0,1) , DELTA);
+        Assert.assertEquals(0.26807344378977d, ZeroMinutesModel.zeroMinutesProb(7,0,0) , DELTA);
+        Assert.assertEquals(8.57067454229771e-11d, ZeroMinutesModel.zeroMinutesProb(35,1,0) , DELTA);
+        Assert.assertEquals(0.0286233046201602d, ZeroMinutesModel.zeroMinutesProb(18,0,0) , DELTA);
+        Assert.assertEquals(0.0182945454984173d, ZeroMinutesModel.zeroMinutesProb(20,0,0) , DELTA);
+        Assert.assertEquals(5.42030009291085e-11d, ZeroMinutesModel.zeroMinutesProb(37,1,0) , DELTA);
+        Assert.assertEquals(6.81583656040048e-11d, ZeroMinutesModel.zeroMinutesProb(36,1,0) , DELTA);
+        Assert.assertEquals(1.07773215303364e-10d, ZeroMinutesModel.zeroMinutesProb(34,1,0) , DELTA);
+        Assert.assertEquals(1.35521024388886e-10d, ZeroMinutesModel.zeroMinutesProb(33,1,0) , DELTA);
+        Assert.assertEquals(0.26807344378977d, ZeroMinutesModel.zeroMinutesProb(7,0,0) , DELTA);
+        Assert.assertEquals(0.0553467379354049d, ZeroMinutesModel.zeroMinutesProb(15,0,0) , DELTA);
+        Assert.assertEquals(0.00373460448241637d, ZeroMinutesModel.zeroMinutesProb(27,0,0) , DELTA);
+        Assert.assertEquals(0.084787747586982d, ZeroMinutesModel.zeroMinutesProb(13,0,0) , DELTA);
+        Assert.assertEquals(8.57067454229771e-11d, ZeroMinutesModel.zeroMinutesProb(35,1,0) , DELTA);
+        Assert.assertEquals(8.57067454229771e-11d, ZeroMinutesModel.zeroMinutesProb(35,1,0) , DELTA);
+        Assert.assertEquals(6.81583656040048e-11d, ZeroMinutesModel.zeroMinutesProb(36,1,0) , DELTA);
+        Assert.assertEquals(6.81583656040048e-11d, ZeroMinutesModel.zeroMinutesProb(36,1,0) , DELTA);
+        Assert.assertEquals(0.00236510011870081d, ZeroMinutesModel.zeroMinutesProb(29,0,0) , DELTA);
+        Assert.assertEquals(3.38836369469525e-10d, ZeroMinutesModel.zeroMinutesProb(29,1,0) , DELTA);
+        Assert.assertEquals(0.0357294897209008d, ZeroMinutesModel.zeroMinutesProb(17,0,0) , DELTA);
+        Assert.assertEquals(4.26074806794372e-10d, ZeroMinutesModel.zeroMinutesProb(28,1,0) , DELTA);
+        Assert.assertEquals(3.38836369469525e-10d, ZeroMinutesModel.zeroMinutesProb(29,1,0) , DELTA);
+        Assert.assertEquals(6.81583656040048e-11d, ZeroMinutesModel.zeroMinutesProb(36,1,0) , DELTA);
+        Assert.assertEquals(2.11814997575213e-09d, ZeroMinutesModel.zeroMinutesProb(21,1,0) , DELTA);
+        Assert.assertEquals(3.38836369469525e-10d, ZeroMinutesModel.zeroMinutesProb(29,1,0) , DELTA);
+        Assert.assertEquals(0.0357294897209008d, ZeroMinutesModel.zeroMinutesProb(17,0,0) , DELTA);
+        Assert.assertEquals(0.0553467379354049d, ZeroMinutesModel.zeroMinutesProb(15,0,0) , DELTA);
+        Assert.assertEquals(0.225566493167621d, ZeroMinutesModel.zeroMinutesProb(8,0,0) , DELTA);
+        Assert.assertEquals(4.26074806794372e-10d, ZeroMinutesModel.zeroMinutesProb(28,1,0) , DELTA);
+        Assert.assertEquals(6.73717033433952e-10d, ZeroMinutesModel.zeroMinutesProb(26,1,0) , DELTA);
+        Assert.assertEquals(5.42030009291085e-11d, ZeroMinutesModel.zeroMinutesProb(37,1,0) , DELTA);
+        Assert.assertEquals(1.35521024388886e-10d, ZeroMinutesModel.zeroMinutesProb(33,1,0) , DELTA);
+        Assert.assertEquals(1.70412917528577e-10d, ZeroMinutesModel.zeroMinutesProb(32,1,0) , DELTA);
+        Assert.assertEquals(0.044519041087555d, ZeroMinutesModel.zeroMinutesProb(16,0,0) , DELTA);
+        Assert.assertEquals(0.315329071807032d, ZeroMinutesModel.zeroMinutesProb(6,0,0) , DELTA);
+        Assert.assertEquals(0.044519041087555d, ZeroMinutesModel.zeroMinutesProb(16,0,0) , DELTA);
+        Assert.assertEquals(4.31049847465813e-11d, ZeroMinutesModel.zeroMinutesProb(38,1,0) , DELTA);
+        Assert.assertEquals(0.127771300987466d, ZeroMinutesModel.zeroMinutesProb(11,0,0) , DELTA);
+        Assert.assertEquals(0.155550818223447d, ZeroMinutesModel.zeroMinutesProb(10,0,0) , DELTA);
+        Assert.assertEquals(8.57067454229771e-11d, ZeroMinutesModel.zeroMinutesProb(35,1,0) , DELTA);
+        Assert.assertEquals(0.044519041087555d, ZeroMinutesModel.zeroMinutesProb(16,0,0) , DELTA);
+        Assert.assertEquals(0.0029722202684444d, ZeroMinutesModel.zeroMinutesProb(28,0,0) , DELTA);
+        Assert.assertEquals(4.31049847465813e-11d, ZeroMinutesModel.zeroMinutesProb(38,1,0) , DELTA);
+        Assert.assertEquals(4.26074806794372e-10d, ZeroMinutesModel.zeroMinutesProb(28,1,0) , DELTA);
+        Assert.assertEquals(1.07773215303364e-10d, ZeroMinutesModel.zeroMinutesProb(34,1,0) , DELTA);
+        Assert.assertEquals(0.00236510011870081d, ZeroMinutesModel.zeroMinutesProb(29,0,0) , DELTA);
+        Assert.assertEquals(0.0357294897209008d, ZeroMinutesModel.zeroMinutesProb(17,0,0) , DELTA);
+        Assert.assertEquals(6.81583656040048e-11d, ZeroMinutesModel.zeroMinutesProb(36,1,0) , DELTA);
+        Assert.assertEquals(3.38836369469525e-10d, ZeroMinutesModel.zeroMinutesProb(29,1,0) , DELTA);
+        Assert.assertEquals(0.00188175922099503d, ZeroMinutesModel.zeroMinutesProb(30,0,0) , DELTA);
+        Assert.assertEquals(1.07773215303364e-10d, ZeroMinutesModel.zeroMinutesProb(34,1,0) , DELTA);
+        Assert.assertEquals(8.47175453092903e-10d, ZeroMinutesModel.zeroMinutesProb(25,1,0) , DELTA);
+        Assert.assertEquals(0.00928541818402207d, ZeroMinutesModel.zeroMinutesProb(23,0,0) , DELTA);
+        Assert.assertEquals(6.73717033433952e-10d, ZeroMinutesModel.zeroMinutesProb(26,1,0) , DELTA);
+        Assert.assertEquals(5.42030009291085e-11d, ZeroMinutesModel.zeroMinutesProb(37,1,0) , DELTA);
+        Assert.assertEquals(0.00469162253843682d, ZeroMinutesModel.zeroMinutesProb(26,0,0) , DELTA);
+        Assert.assertEquals(4.26074806794372e-10d, ZeroMinutesModel.zeroMinutesProb(28,1,0) , DELTA);
+        Assert.assertEquals(6.81583656040048e-11d, ZeroMinutesModel.zeroMinutesProb(36,1,0) , DELTA);
+        Assert.assertEquals(0.0029722202684444d, ZeroMinutesModel.zeroMinutesProb(28,0,0) , DELTA);
+        Assert.assertEquals(5.42030009291085e-11d, ZeroMinutesModel.zeroMinutesProb(37,1,0) , DELTA);
+        Assert.assertEquals(1.07773215303364e-10d, ZeroMinutesModel.zeroMinutesProb(34,1,0) , DELTA);
+        Assert.assertEquals(6.73717033433952e-10d, ZeroMinutesModel.zeroMinutesProb(26,1,0) , DELTA);
+        Assert.assertEquals(1.07773215303364e-10d, ZeroMinutesModel.zeroMinutesProb(34,1,0) , DELTA);
+                 }
+}
