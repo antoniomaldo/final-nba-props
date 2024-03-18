@@ -13,7 +13,7 @@ mapSbrDataToEspn <- function(eventsData, sbrData, baseDir){
   sbrData <- pickWantedBookamer(sbrData)
   eventsData$date <- as.Date(as.character(eventsData$Date), format = "%Y%m%d")
   
-  sbrData$date <- as.Date(sbrData$date)
+  sbrData$date <- as.Date(sbrData$date, format = "%d/%m/%Y")
   sbrData$prevDate <- sbrData$date - 1
   
   eventsData = eventsData[,-which(colnames(eventsData) == "Date")]
