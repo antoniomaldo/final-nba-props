@@ -4,9 +4,16 @@ BASE_DIR <- "C:\\czrs-ds-models\\nba-player-props\\"
 COEFS_DIR <- paste0(BASE_DIR, "testing\\")
 
 players <- read.csv(paste0(BASE_DIR, "data\\allPlayers.csv"))
-players <- unique(players[c("GameId", "Name", "PlayerId", "Team", "seasonYear")])
+players <- unique(players[c("GameId", "Name", "PlayerId", "Team", "HomeTeam", "totalPoints", "matchSpread")])
+players <- subset(players, !is.na(players$matchSpread) & !is.na(players$totalPoints))
 
-fgPred <- read.csv(paste0(COEFS_DIR, "fgAttemptedPerMin.csv"))[c("seasonYear", "GameId", "PlayerId", "minPlayed", "priorForPlayer", "playerCoef")]
+players$homeExp <- (players$totalPoints - players$matchSpread) / 2
+players$awayExp <- players$totalPoints - players$homeExp
+players$ownExp <- ifelse(players$HomeTeam == players$Team, players$homeExp, players$awayExp)
+players$oppExp <- ifelse(players$HomeTeam == players$Team, players$awayExp, players$homeExp)
+
+
+fgPred <- read.csv(paste0(COEFS_DIR, "fgAttemptedPerMin.csv"))[c("seasonYear", "GameId", "PlayerId", "minPlayed", "priorForPlayer", "playerCoef", "averageMinutesInSeason")]
 threeProp <- read.csv(paste0(COEFS_DIR, "threeProp.csv"))[c("GameId", "PlayerId", "priorForPlayer", "playerCoef")]
 twoPerc <- read.csv(paste0(COEFS_DIR, "twoPerc.csv"))[c("GameId", "PlayerId", "priorForPlayer", "playerCoef")]
 threePerc <- read.csv(paste0(COEFS_DIR, "threePerc.csv"))[c("GameId", "PlayerId", "priorForPlayer", "playerCoef")]
@@ -49,4 +56,32 @@ allPreds <- merge(allPreds, ftPerc, by = c("GameId", "PlayerId"))
 
 allPreds <- merge(allPreds, players, by = c("GameId", "PlayerId"), all.x = T)
 
+allPreds <- subset(allPreds, !is.na(allPreds$matchSpread))
 write.csv(allPreds, paste0(COEFS_DIR, "allPreds.csv"))
+
+#Get latest predictions
+
+BASE_DATA_DIR = "C:/Users/amaldonado/Documents/NBA/data/"
+
+loadDataInDirectory <- function(dir){
+  folders <- list.files(dir, full.names = T)  
+  df <- data.frame()
+  for(folder in folders){
+    season <- str_remove(folder, dir)
+    seasonData <- do.call(rbind, lapply(list.files(folder, full.names = T), read.csv))
+    seasonData$seasonYear = season
+    df <- rbind(df, seasonData)
+  }
+  return(df)
+}
+
+events <- loadDataInDirectory(paste0(BASE_DATA_DIR, "espn/Boxscores/"))
+
+allPreds <- merge(allPreds, events[c("GameId", "Date")], all.x = T)
+
+lastUpdate <- aggregate(Date ~ PlayerId, allPreds, max)
+lastUpdate$isLastUpdate <- 1
+
+lastUpdates <- merge(allPreds, lastUpdate)
+
+write.csv(allPreds, paste0(COEFS_DIR, "lastUpdate.csv"))
