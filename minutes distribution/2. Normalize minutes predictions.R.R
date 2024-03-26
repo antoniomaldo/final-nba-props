@@ -1,4 +1,7 @@
+library(arm)
+
 fullGames <- read.csv(file = "C:\\czrs-ds-models\\nba-player-props\\minutes distribution\\mappedDataWithPreds.csv" )
+fullGames <- subset(fullGames, fullGames$pmin > 0)
 
 noOt <- subset(fullGames, fullGames$hasOt == 0)
 
@@ -96,7 +99,7 @@ allData <- read.csv( file = "C:\\czrs-ds-models\\nba-player-props\\minutes distr
 
 discretizeGamma <- function(sc, sh){
   probs <- c()
-  for(i in 1:60){
+  for(i in 1:48){
     probs <- c(probs, pgamma(i-1, shape = sh, scale = sc) - pgamma(i, shape = sh, scale = sc))
   }
   probs[1:5] <- 0
@@ -110,8 +113,8 @@ optimizeForMedianVarianceGamma <- function(par, wantedMean, wantedVar){
   
   probs = discretizeGamma(sc = sc, sh = sh)
   
-  meanProbs <- sum(1:60 * probs)
-  varProbs <- sum((1:60 - meanProbs) ^ 2 * probs)
+  meanProbs <- sum((1:length(probs)) * probs)
+  varProbs <- sum(((1:length(probs)) - meanProbs) ^ 2 * probs)
   
   meanDistance = (wantedMean - meanProbs) ^ 2
   varDistance = (wantedVar - varProbs) ^ 2
@@ -141,6 +144,8 @@ for(i in 8:39){
   coefDf <- rbind(coefDf, data.frame(meanMin = i, scaleMinBench = exp(optimPar$par[2]), shapeMinBench = exp(optimPar$par[1])))
 }
 
+coefDf$derivedMean <- coefDf$meanMin + coefDf$scaleMinBench * coefDf$shapeMinBench
+
 plot.ts(coefDf$shapeMinBench)
 plot.ts(coefDf$scaleMinBench)
 
@@ -148,16 +153,43 @@ numbRows <- aggregate(Min ~ averageMin, allData, length)
 colnames(numbRows) <-c("meanMin", "numberObs")
 
 coefDf <- merge(coefDf, numbRows)
-coefDf <- subset(coefDf, coefDf$numberObs>20)
+
+plot.ts(coefDf$shapeMinBench)
+plot.ts(coefDf$scaleMinBench)
+
+coefDf$derivedVar <- coefDf$scaleMinBench * coefDf$shapeMinBench * coefDf$scaleMinBench
+
+varModel <- lm(derivedVar ~ I(pmax(12 - meanMin, 0)^2) + meanMin + I(meanMin ^3) + pmax(35 - meanMin, 0), data = subset(coefDf, coefDf$numberObs>50))
+summary(varModel)
+
+coefDf$varPred <- predict(varModel, coefDf)
+
+plot.ts(coefDf$derivedVar)
+
+lines(coefDf$varPred)
+
+
+coefDf$scale <- coefDf$varPred / (48 - coefDf$meanMin)
+coefDf$shape <- (48 - coefDf$meanMin) / coefDf$scale
+
+#extend coefDf
+
+extendedCoefs <- data.frame(meanMin=1:48)
+extendedCoefs$varPred <- predict(varModel, extendedCoefs)
+extendedCoefs$varPred[extendedCoefs$meanMin >= 39] <- 19.80982 - 0.4127046 * extendedCoefs$meanMin[extendedCoefs$meanMin >= 39]
+extendedCoefs$scale <- extendedCoefs$varPred / (48 - extendedCoefs$meanMin)
+extendedCoefs$shape <- (48 - extendedCoefs$meanMin) / extendedCoefs$scale
 
 
 #Testing
-n = 36
+n = 37
 subsetTest <- subset(allData, round(allData$predGivenPlayed) == n)
-sampleGammaProbs <- discretizeGamma(sc = coefDf$scaleMinBench[coefDf$meanMin==n], sh = coefDf$shapeMinBench[coefDf$meanMin==n])
+sampleGammaProbs <- discretizeGamma(sc = coefDf$scale[coefDf$meanMin==n], sh = coefDf$shape[coefDf$meanMin==n])
 sampleGamma <- sample(1:length(sampleGammaProbs), size = 10000, prob = sampleGammaProbs, replace = T)
 summary(sampleGamma)
 summary(subsetTest$minsInBench)
 
 plot(density(48 - subsetTest$Min))
 lines(density(sampleGamma), col = "red")
+
+#save outputs to java
