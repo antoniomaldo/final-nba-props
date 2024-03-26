@@ -24,8 +24,9 @@ public class PlayerPredictions {
     private final int ftAttempted;
     private final double prior;
 
+    private final double averageMinutesInSeason;
 
-    public PlayerPredictions(int seasonYear, int gameId, int playerId, int numbOfGames, int numbOfGamesInSeason, int minPlayed, double playerCoef, double targetPerMinPredicted, double real, int threeAttempted, int fgAttempted, int threeMade, int fgMade, int offRebounds, int defRebounds, int ftMade, int ftAttempted, double prior) {
+    public PlayerPredictions(int seasonYear, int gameId, int playerId, int numbOfGames, int numbOfGamesInSeason, int minPlayed, double playerCoef, double targetPerMinPredicted, double real, int threeAttempted, int fgAttempted, int threeMade, int fgMade, int offRebounds, int defRebounds, int ftMade, int ftAttempted, double prior, double averageMinutesInSeason) {
         this.seasonYear = seasonYear;
         this.gameId = gameId;
         this.playerId = playerId;
@@ -44,6 +45,7 @@ public class PlayerPredictions {
         this.ftMade = ftMade;
         this.ftAttempted = ftAttempted;
         this.prior = prior;
+        this.averageMinutesInSeason = averageMinutesInSeason;
     }
 
     public int getSeasonYear() {
@@ -108,6 +110,10 @@ public class PlayerPredictions {
         return ftAttempted;
     }
 
+    public double getAverageMinutesInSeason() {
+        return averageMinutesInSeason;
+    }
+
     public String[] toRow(){
         String[] row = {
                 Integer.toString(this.seasonYear),
@@ -123,8 +129,8 @@ public class PlayerPredictions {
                 Integer.toString(this.fgAttempted),
                 Integer.toString(this.threeMade),
                 Integer.toString(this.fgMade),
-                Double.toString(this.prior)
-
+                Double.toString(this.prior),
+                Double.toString(this.averageMinutesInSeason)
         };
         return row;
     }

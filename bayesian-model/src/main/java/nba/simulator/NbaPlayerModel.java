@@ -1,13 +1,16 @@
 package nba.simulator;
 
 import nba.bayesianmodel.optimizers.targets.TargetPredicted;
+import nba.minutedistribution.SimulateMinutesForPlayer;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class NbaPlayerModel {
     private static final PlayerSimulator PLAYER_SIMULATOR = new PlayerSimulator();
+    private static final Random RANDOM = new Random();
 
     public static ModelOutput runModel(List<PlayerWithCoefs> players){
 
@@ -16,11 +19,15 @@ public class NbaPlayerModel {
 
         for (PlayerWithCoefs player : players) {
             double fgAttemptedPerMin = TargetPredicted.forFgAttempted(player.getFgAttemptedPlayerCoef(), player.getFgAttemptedPrior());
-            double fgAttemptedPrediction = FgAttemptedModel.getFgAttemptedPrediction(fgAttemptedPerMin, player.getMinPlayed());
 
+
+            double[] minutesDistributionForPrediction = SimulateMinutesForPlayer.getMinutesDistributionForPrediction(player.getMinPlayed());
 
             for (int i = 0; i < 40000; i++) {
-                SimulatedPlayerScoring simulatedPlayerScoring = PLAYER_SIMULATOR.simulatePoints(player, player.getMinPlayed(), fgAttemptedPrediction);
+                int simulateMinutesPlayed = simulateMinutesPlayed(minutesDistributionForPrediction);
+
+                double fgAttemptedPrediction = FgAttemptedModel.getFgAttemptedPrediction(fgAttemptedPerMin, simulateMinutesPlayed);
+                SimulatedPlayerScoring simulatedPlayerScoring = PLAYER_SIMULATOR.simulatePoints(player, simulateMinutesPlayed, fgAttemptedPrediction);
 
                 int twoPoints = simulatedPlayerScoring.getTwoPointers();
                 int threePoints = simulatedPlayerScoring.getThreePoints();
@@ -41,6 +48,16 @@ public class NbaPlayerModel {
             }
         }
         return new ModelOutput(playerPointsMap, playerThreePointsMap);
+    }
+
+    private static int simulateMinutesPlayed(double[] minutesDistributionForPrediction) {
+        double random = RANDOM.nextDouble();
+        for (int i = 0; i <= 48; i++) {
+            if((random-=minutesDistributionForPrediction[i]) < 0){
+                return i;
+            }
+        }
+        return 0;
     }
 
     private static Map<String, Map<Integer, Double>> initializePlayerMap(List<PlayerWithCoefs> players) {

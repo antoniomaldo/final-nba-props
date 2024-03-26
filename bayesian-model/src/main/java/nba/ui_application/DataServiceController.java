@@ -27,7 +27,7 @@ public class DataServiceController {
     public ResponseEntity<?> getDayEvents() {
 
         dataLastUpdated = "11/11/23 10:30:05";
-        NbaGameEventDto nbaGameEventDto = DataServiceController.loadDataForGameId(401585417);
+        NbaGameEventDto nbaGameEventDto = DataServiceController.loadDataForGameId(401585636);
 
         Map<String, NbaGameEventDto> map = new HashMap<>();
 
@@ -109,6 +109,7 @@ public class DataServiceController {
 
                     .foulsCoef(round(player.getFoulsCoef()))
                     .foulsPrior(player.getFoulsPrior())
+                    .averageMinutesInSeason(player.getAverageMinutesInSeason())
                     .build();
 
             list.add(playerRequest);

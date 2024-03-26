@@ -32,7 +32,9 @@ public class PlayerGameData {
     private final int twoAttempted;
     private final int twoMade;
 
-    public PlayerGameData(int date, int gameId, int playerId, String team, PlayerPosition position, boolean starter, int minPlayed, int fgMade, int fgAttempted, int threeMade, int threeAttempted, int ftMade, int ftAttempted, int offRebounds, int defRbounds, int assists, int steals, int blocks, int turnovers, int personalFouls, int seasonYear) {
+    private final double averageMinutesInSeason;
+
+    public PlayerGameData(int date, int gameId, int playerId, String team, PlayerPosition position, boolean starter, int minPlayed, int fgMade, int fgAttempted, int threeMade, int threeAttempted, int ftMade, int ftAttempted, int offRebounds, int defRbounds, int assists, int steals, int blocks, int turnovers, int personalFouls, int seasonYear, double averageMinutesInSeason) {
         this.date = date;
         this.gameId = gameId;
         this.playerId = playerId;
@@ -56,6 +58,7 @@ public class PlayerGameData {
         this.seasonYear = seasonYear;
         this.twoAttempted = this.fgAttempted - this.threeAttempted;
         this.twoMade = this.fgMade - this.threeMade;
+        this.averageMinutesInSeason = averageMinutesInSeason;
     }
 
     public int getDate() {
@@ -153,5 +156,9 @@ public class PlayerGameData {
 
     public int getPersonalFouls() {
         return personalFouls;
+    }
+
+    public double getAverageMinutesInSeason() {
+        return averageMinutesInSeason;
     }
 }

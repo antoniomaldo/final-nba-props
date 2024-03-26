@@ -46,8 +46,10 @@ public class PlayerWithCoefs {
     private final double foulsCoef;
     private final double foulsPrior;
 
+    private final double averageMinutesInSeason;
 
-    public PlayerWithCoefs(int gameId, int seasonYear, String team, String playerName, int playerId, int minPlayed, double fgAttemptedPlayerCoef, double fgAttemptedPrior, double threePropCoef, double threePropPrior, double threePercCoef, double threePercPrior, double twoPercCoef, double twoPercPrior, double ftsAttemptedCoef, double ftsAttemptedPrior, double ftPercCoef, double ftPercPrior, double reboundsCoef, double reboundsPrior, double offReboundsPropCoef, double offReboundsPropPrior, double blocksCoef, double blocksPrior, double stealsCoef, double stealsPrior, double turnoversCoef, double turnoversPrior, double foulsCoef, double foulsPrior) {
+
+    public PlayerWithCoefs(int gameId, int seasonYear, String team, String playerName, int playerId, int minPlayed, double fgAttemptedPlayerCoef, double fgAttemptedPrior, double threePropCoef, double threePropPrior, double threePercCoef, double threePercPrior, double twoPercCoef, double twoPercPrior, double ftsAttemptedCoef, double ftsAttemptedPrior, double ftPercCoef, double ftPercPrior, double reboundsCoef, double reboundsPrior, double offReboundsPropCoef, double offReboundsPropPrior, double blocksCoef, double blocksPrior, double stealsCoef, double stealsPrior, double turnoversCoef, double turnoversPrior, double foulsCoef, double foulsPrior, double averageMinutesInSeason) {
         this.gameId = gameId;
         this.seasonYear = seasonYear;
         this.team = team;
@@ -78,6 +80,7 @@ public class PlayerWithCoefs {
         this.turnoversPrior = turnoversPrior;
         this.foulsCoef = foulsCoef;
         this.foulsPrior = foulsPrior;
+        this.averageMinutesInSeason = averageMinutesInSeason;
     }
 
     public int getGameId() {
@@ -198,5 +201,9 @@ public class PlayerWithCoefs {
 
     public double getFoulsPrior() {
         return foulsPrior;
+    }
+
+    public double getAverageMinutesInSeason(){
+        return averageMinutesInSeason;
     }
 }

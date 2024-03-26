@@ -19,6 +19,7 @@ public abstract class PlayerRequest {
     public abstract String getName();
 
     public abstract double getPmin();
+    public abstract int getStarter();
 
     public abstract String getPosition();
 
@@ -86,9 +87,22 @@ public abstract class PlayerRequest {
 
     public abstract Double getFoulsPrior();
 
+    public abstract Double getAverageMinutesInSeason();
+
+    public abstract double getZeroPred();
+    public abstract double getGivenPlayedPred();
+    public abstract double getTeamAdjustedMinAvg();
+
     @AutoValue.Builder
     @JsonPOJOBuilder(withPrefix = "")
     public static abstract class Builder {
+
+        Builder() {
+            starter(0);
+            zeroPred(0d);
+            givenPlayedPred(0d);
+            teamAdjustedMinAvg(0d);
+        }
 
         public abstract Builder team(final String team);
 
@@ -150,6 +164,12 @@ public abstract class PlayerRequest {
         public abstract Builder foulsCoef(Double foulsCoef);
 
         public abstract Builder foulsPrior(Double foulsPrior);
+
+        public abstract Builder averageMinutesInSeason(Double averageMinutesInSeason);
+        public abstract Builder zeroPred(double zeroPred);
+        public abstract Builder givenPlayedPred(double givenPlayedPred);
+        public abstract Builder teamAdjustedMinAvg(double teamAdjustedMinAvg);
+        public abstract Builder starter(int starter);
 
         public abstract PlayerRequest build();
     }

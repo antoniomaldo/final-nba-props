@@ -41,6 +41,8 @@ public class CoefUpdaterApplication {
 
         PlayersData playersForSeason = allPlayers.getPlayersDataForSeason(2024);
 
+        addDummyGameForAllPlayers(playersForSeason);
+
         List<PlayerPredictions> fgAttemptedPredictions = getPlayersPredictions(new CoefficientUpdatingFgAttemptedFunction(), new FgAttemptedPrior(), playersForSeason, FG_ATTEMPTED_MODEL_COEFS);
         List<PlayerPredictions> threePropPredictions = getPlayersPredictions(new CoefficientUpdatingThreePropFunction(), new ThreePropPrior2(), playersForSeason, THREE_PROP_MODEL_COEFS);
         List<PlayerPredictions> twoPredictions = getPlayersPredictions(new CoefficientUpdatingTwoPercFunction(), new TwoPercPrior(), playersForSeason, TWO_PERC_MODEL_COEFS);
@@ -76,6 +78,20 @@ public class CoefUpdaterApplication {
         List<PlayerPredictions> playersPredictions = coefficientUpdatingFunction.getPlayersPredictions(playersData, priors, coeff);
         return playersPredictions;
     }
+
+    private static void addDummyGameForAllPlayers(PlayersData playersData) {
+        for(Integer playerId : playersData){
+            List<PlayerGameData> playerGameDataForPlayer = playersData.getPlayerGameDataForPlayer(playerId);
+            int latestSeason = playerGameDataForPlayer.stream().mapToInt(i -> i.getSeasonYear()).max().getAsInt();
+            playerGameDataForPlayer.add(addDummyGame(playerId, latestSeason));
+            int x = 1;
+        }
+    }
+
+    private static PlayerGameData addDummyGame(Integer playerId, int latestSeason) {
+        return new PlayerGameData(20990101, -1, playerId, "", null, false,1,1,1,1,1,1,1,1,1,1,1,1,1,1,latestSeason, 1);
+    }
+
 
     private static List<PlayerPredictions> getPlayersPredictions(BaseCoefficientUpdatingFunction coefficientUpdatingFunction, BaseNewPlayersAveragePrior priorsFunction, PlayersData playersData, double[] coeff) {
         Map<Integer, Double> priors = priorsFunction.getPlayersPriors(playersData);

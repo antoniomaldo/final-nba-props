@@ -85,7 +85,9 @@ public class ApplicationController {
                 playerRequest.getTurnoversCoef(),
                 playerRequest.getTurnoversPrior(),
                 playerRequest.getFoulsCoef(),
-                playerRequest.getFoulsPrior());
+                playerRequest.getFoulsPrior(),
+                playerRequest.getAverageMinutesInSeason()
+                );
     }
 
 }

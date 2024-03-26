@@ -34,20 +34,23 @@ public class CsvUtils {
                             PlayerPosition.mapToPlayerPosition(values[colNamesIndex.get("Position")].replace("\"", "")),
                             getAsInteger(values, colNamesIndex, "Starter") == 1,
                             minPlayed,
-                            getAsInteger(values, colNamesIndex, "Fg_Made"),
-                            getAsInteger(values, colNamesIndex, "Fg_Attempted"),
-                            getAsInteger(values, colNamesIndex, "Three_Made"),
-                            getAsInteger(values, colNamesIndex, "Three_Attempted"),
-                            getAsInteger(values, colNamesIndex, "FT_Made"),
-                            getAsInteger(values, colNamesIndex, "FT_Attempted"),
-                            getAsInteger(values, colNamesIndex, "Offensive_Rebound"),
-                            getAsInteger(values, colNamesIndex, "Defensive_Rebound"),
+                            getAsInteger(values, colNamesIndex, "Fg.Made"),
+                            getAsInteger(values, colNamesIndex, "Fg.Attempted"),
+                            getAsInteger(values, colNamesIndex, "Three.Made"),
+                            getAsInteger(values, colNamesIndex, "Three.Attempted"),
+                            getAsInteger(values, colNamesIndex, "FT.Made"),
+                            getAsInteger(values, colNamesIndex, "FT.Attempted"),
+                            getAsInteger(values, colNamesIndex, "Offensive.Rebound"),
+                            getAsInteger(values, colNamesIndex, "Defensive.Rebound"),
                             getAsInteger(values, colNamesIndex, "Assists"),
                             getAsInteger(values, colNamesIndex, "Steals"),
                             getAsInteger(values, colNamesIndex, "Blocks"),
                             getAsInteger(values, colNamesIndex, "Turnovers"),
-                            getAsInteger(values, colNamesIndex, "Personal_Fouls"),
-                            getAsInteger(values, colNamesIndex, "seasonYear")));
+                            getAsInteger(values, colNamesIndex, "Personal.Fouls"),
+                            getAsInteger(values, colNamesIndex, "seasonYear"),
+                            getAsDouble(values, colNamesIndex, "averageMinutesInSeason")
+
+                            ));
                 }
             }
         } catch (IOException e) {
@@ -105,8 +108,7 @@ public class CsvUtils {
 
                             getAsDouble(values, colNamesIndex, "personalFoulsPlayerCoef"),
                             getAsDouble(values, colNamesIndex, "personalFoulsPrior"),
-                            105.5, //getAsDouble(values, colNamesIndex, "ownExp"),
-                            105.5));//getAsDouble(values, colNamesIndex, "oppExp")));
+                            getAsDouble(values, colNamesIndex, "averageMinutesInSeason")));//getAsDouble(values, colNamesIndex, "oppExp")));
                 }
             }
         } catch (IOException e) {
@@ -135,7 +137,7 @@ public class CsvUtils {
 
     public static void savePredictions(List<PlayerPredictions> playersPredictions, String csvName) {
         List<String[]> csvData = new ArrayList<>();
-        csvData.add(new String[]{"seasonYear", "GameId", "PlayerId", "numbOfGames", "gamesPlayedInSeason", "minPlayed", "playerCoef", "targetPredicted", "target", "threeAttempted", "fgAttempted", "threeMade", "fgMade", "priorForPlayer"});
+        csvData.add(new String[]{"seasonYear", "GameId", "PlayerId", "numbOfGames", "gamesPlayedInSeason", "minPlayed", "playerCoef", "targetPredicted", "target", "threeAttempted", "fgAttempted", "threeMade", "fgMade", "priorForPlayer", "averageMinutesInSeason"});
         for (PlayerPredictions playerPredictions : playersPredictions) {
             csvData.add(playerPredictions.toRow());
         }
