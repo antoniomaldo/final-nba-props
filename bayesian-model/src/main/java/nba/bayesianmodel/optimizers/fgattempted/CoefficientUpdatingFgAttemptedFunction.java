@@ -38,6 +38,7 @@ public class CoefficientUpdatingFgAttemptedFunction extends BaseCoefficientUpdat
 
             double lastResid = 0;
             double lastTwoResid = 0;
+            double lastThreeResid = 0;
 
             for (int i = 0; i < playerData.size(); i++) {
                 PlayerGameData playerGameData = playerData.get(i);
@@ -55,17 +56,22 @@ public class CoefficientUpdatingFgAttemptedFunction extends BaseCoefficientUpdat
                     real = (double) playerGameData.getFgAttempted() / playerGameData.getMinPlayed();
                     resid = real - targetPerMinPredicted;
 
-                    if (i > 1) {
+                    if(i > 3){
+                        resid = (4 * resid + 3 * lastResid + 2 * lastTwoResid + lastThreeResid) / 10d;
+                    }else if(i > 2){
+                        resid = (3 * resid + 2 * lastResid + lastTwoResid) / 6d;
+                    }else if (i > 1) {
                         resid = (2 * resid + lastResid) / 3d;
                     }
-                    if (i > 2) {
-                        resid = (3 * resid + 2 * lastResid + lastTwoResid) / 6d;
-                    }
+
+                    lastThreeResid = lastTwoResid;
                     lastTwoResid = lastResid;
                     lastResid = resid;
 
                     predictions.add(new PlayerPredictions(playerGameData.getSeasonYear(), playerGameData.getGameId(), playerGameData.getPlayerId(), numbGames, gamesInSeason, playerGameData.getMinPlayed(), playerCoef, targetPerMinPredicted, real, playerGameData.getThreeAttempted(), playerGameData.getFgAttempted(), playerGameData.getThreeMade(), playerGameData.getFgMade(), playerGameData.getOffRebounds(), playerGameData.getDefRbounds(), playerGameData.getFtMade(), playerGameData.getFtAttempted(), priorForPlayer, playerGameData.getAverageMinutesInSeason()));
                     playerCoef += Math.exp(weight1) * Math.log(playerGameData.getMinPlayed()) * resid / (Math.log(gamesInSeason * Math.exp(weight2) + 1));
+                   // playerCoef = playerCoef > 0.5 ? 0.5:playerCoef;
+
                     numbGames++;
                 }else{
                     predictions.add(new PlayerPredictions(playerGameData.getSeasonYear(), playerGameData.getGameId(), playerGameData.getPlayerId(), numbGames, gamesInSeason, playerGameData.getMinPlayed(), playerCoef, -1, -1, playerGameData.getThreeAttempted(), playerGameData.getFgAttempted(), playerGameData.getThreeMade(), playerGameData.getFgMade(), playerGameData.getOffRebounds(), playerGameData.getDefRbounds(), playerGameData.getFtMade(), playerGameData.getFtAttempted(), priorForPlayer, playerGameData.getAverageMinutesInSeason()));

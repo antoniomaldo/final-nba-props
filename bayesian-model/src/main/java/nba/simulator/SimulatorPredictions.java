@@ -12,10 +12,11 @@ public class SimulatorPredictions {
     private final double rebounds;
     private final double blocks;
     private final double steals;
+    private final double averageMinutesInSeason;
 
 
 
-    public SimulatorPredictions(int gameId, int playerId, double fgAttemptedPred, double twosAvg, double threesAvg, double ftsAvg, double rebounds, double blocks, double steals) {
+    public SimulatorPredictions(int gameId, int playerId, double fgAttemptedPred, double twosAvg, double threesAvg, double ftsAvg, double rebounds, double blocks, double steals, double averageMinutesInSeason) {
         this.gameId = gameId;
         this.playerId = playerId;
         this.fgAttemptedPred = fgAttemptedPred;
@@ -25,6 +26,7 @@ public class SimulatorPredictions {
         this.rebounds = rebounds;
         this.blocks = blocks;
         this.steals = steals;
+        this.averageMinutesInSeason = averageMinutesInSeason;
     }
 
     public int getGameId() {
@@ -51,6 +53,10 @@ public class SimulatorPredictions {
         return ftsAvg;
     }
 
+    public double getAverageMinutesInSeason() {
+        return averageMinutesInSeason;
+    }
+
     public String[] toRow(){
         String[] row = {
                 Integer.toString(this.gameId),
@@ -61,8 +67,8 @@ public class SimulatorPredictions {
                 Double.toString(this.ftsAvg),
                 Double.toString(this.rebounds),
                 Double.toString(this.steals),
-                Double.toString(this.blocks)
-
+                Double.toString(this.blocks),
+                Double.toString(this.averageMinutesInSeason)
         };
         return row;
     }

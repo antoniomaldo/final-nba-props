@@ -65,9 +65,19 @@ public class CsvUtils {
 
 
     public static List<PlayerWithCoefs> loadPredictionsData() {
+        return loadPredictionsData("C:\\czrs-ds-models\\nba-player-props\\testing\\allPreds.csv");
+
+    }
+
+    public static List<PlayerWithCoefs> loadLatestPredictionsData() {
+        return loadPredictionsData("C:\\czrs-ds-models\\nba-player-props\\testing\\lastUpdate.csv");
+
+    }
+
+    public static List<PlayerWithCoefs> loadPredictionsData(String csvDir) {
         List<PlayerWithCoefs> playerData = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader("C:\\czrs-ds-models\\nba-player-props\\testing\\allPreds.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(csvDir))) {
             String line;
             String[] colNames = br.readLine().split(",");
             Map<String, Integer> colNamesIndex = createColNamesMap(colNames);
@@ -151,7 +161,7 @@ public class CsvUtils {
 
     public static void savePredictions(List<SimulatorPredictions> simulatorPredictions) {
         List<String[]> csvData = new ArrayList<>();
-        csvData.add(new String[]{"GameId", "PlayerId", "fgAttemptedPred", "twosAvg", "threesAvg", "ftsAvg", "rebounds", "steals", "blocks"});
+        csvData.add(new String[]{"GameId", "PlayerId", "fgAttemptedPred", "twosAvg", "threesAvg", "ftsAvg", "rebounds", "steals", "blocks", "averageMinutesInSeason"});
         for (SimulatorPredictions playerPredictions : simulatorPredictions) {
             csvData.add(playerPredictions.toRow());
         }

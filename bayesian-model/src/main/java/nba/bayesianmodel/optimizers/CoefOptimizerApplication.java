@@ -23,7 +23,7 @@ public class CoefOptimizerApplication {
     public static void main(String[] args) throws OptimizationException, FunctionEvaluationException {
         //Get data from google big query
 
-        PlayersData playersData = CsvUtils.loadData(true);
+        PlayersData playersData = CsvUtils.loadData(false);
 
         System.out.println("Running FG attempted per minute application");
         new FgAttemptedApplication().run(playersData); //Fg Attempted per minute

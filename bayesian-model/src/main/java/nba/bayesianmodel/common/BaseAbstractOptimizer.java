@@ -24,7 +24,7 @@ public abstract class BaseAbstractOptimizer implements MultivariateRealFunction 
     }
 
     protected Predicate<PlayerPredictions> filterGamesToOptimize() {
-        return p -> p.getNumbOfGames() > 0 && p.getSeasonYear() > 2017;
+        return p -> p.getNumbOfGames() > 0 && p.getSeasonYear() > 2017 && p.getSeasonYear() < 2024;
     }
 
     protected abstract double getDistance(PlayerPredictions p);

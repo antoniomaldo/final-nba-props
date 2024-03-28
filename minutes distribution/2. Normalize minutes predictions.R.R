@@ -182,7 +182,7 @@ extendedCoefs$shape <- (48 - extendedCoefs$meanMin) / extendedCoefs$scale
 
 
 #Testing
-n = 37
+n = 32
 subsetTest <- subset(allData, round(allData$predGivenPlayed) == n)
 sampleGammaProbs <- discretizeGamma(sc = coefDf$scale[coefDf$meanMin==n], sh = coefDf$shape[coefDf$meanMin==n])
 sampleGamma <- sample(1:length(sampleGammaProbs), size = 10000, prob = sampleGammaProbs, replace = T)

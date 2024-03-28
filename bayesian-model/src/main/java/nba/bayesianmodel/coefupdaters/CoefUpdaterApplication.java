@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class CoefUpdaterApplication {
 
-    private static final double[] FG_ATTEMPTED_MODEL_COEFS = new double[]{-1.1466455244675586, 2.4817708354406802};
+    private static final double[] FG_ATTEMPTED_MODEL_COEFS = new double[]{-1.1550927033412701, 2.2777687531274093};
     private static final double[] THREE_PROP_MODEL_COEFS = new double[]{-1.2775242621304437, -4.106190216427862};
     private static final double[] TWO_PERC_MODEL_COEFS = new double[]{-0.9399967072371814, 9.384618913204807};
     private static final double[] THREE_PERC_MODEL_COEFS = new double[]{-3.6694823610069403, -1.0942849926848508};

@@ -6,14 +6,14 @@ library(zoo)
 BASE_DIR <- "C:\\czrs-ds-models\\nba-player-props\\"
 
 source(paste0(BASE_DIR, "mappings\\mappings-service.R"))
-
-bq_auth()
-
-con <- dbConnect(
-  bigrquery::bigquery(),
-  project = "ea-moneyball",
-  dataset = "NBA"
-)
+# 
+# bq_auth()
+# 
+# con <- dbConnect(
+#   bigrquery::bigquery(),
+#   project = "ea-moneyball",
+#   dataset = "NBA"
+# )
 
 #dbListTables(con)
 # 

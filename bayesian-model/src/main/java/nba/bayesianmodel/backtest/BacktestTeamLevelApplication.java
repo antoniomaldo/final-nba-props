@@ -70,7 +70,8 @@ public class BacktestTeamLevelApplication {
                         fts / 40000d,
                         rebounds,
                         blocks,
-                        steals
+                        steals,
+                        player.getAverageMinutesInSeason()
 
                 ));
             }

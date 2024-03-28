@@ -35,7 +35,7 @@ binnedplot(javaPreds$threeExp, javaPreds$threeResid)
 binnedplot(javaPreds$totalPoints, javaPreds$threeResid)
 
 binnedplot(javaPreds$fgAttempted, javaPreds$ftResid)
-binnedplot(javaPreds$minPlayed, javaPreds$ftResid)
+binnedplot(javaPreds$minPlayed, javaPreds$resid)
 
 binnedplot(javaPreds$playerCoef, javaPreds$ftResid)
 

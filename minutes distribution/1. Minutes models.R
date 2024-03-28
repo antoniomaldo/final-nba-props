@@ -5,6 +5,7 @@ library(arm)
 library(splines)
 library(zoo)
 library(h2o)
+library(sqldf)
 
 source("C:\\czrs-ds-models\\nba-player-props\\mappings\\mappings-service.R")
 
@@ -19,7 +20,40 @@ con <- dbConnect(
 )
 
 
-rotowirePreds <- dbGetQuery(con, "SELECT * FROM rotowire_preds")
+#rotowirePreds <- dbGetQuery(con, "SELECT * FROM rotowire_preds")
+#Load rotowire data 
+
+csvs <- list.files("C:/Users/amaldonado/Documents/NBA/data/rotowire/rotowire/", full.names = T)
+csvs <- csvs[!grepl("\\.R", csvs)]
+
+loadCsvForDay <- function(fileDir, season){
+  if(grepl("rotowire", fileDir)){
+    dayCsv = read.csv(fileDir)
+    colNames = as.character(dayCsv[1,])
+    dayCsv = dayCsv[-1,]
+    colnames(dayCsv) = colNames
+    date = str_remove_all(fileDir, pattern = paste0("C:/Users/amaldonado/Documents/NBA/data/rotowire/rotowire/",season, "/rotowire-nba-projections-"))
+    dayCsv$date = str_remove_all(date, pattern = ".csv")
+    
+    dayCsv$name = dayCsv$NAME
+    dayCsv = dayCsv[,-which(colnames(dayCsv) == "Team")]
+    return(dayCsv)
+  }else{
+    return(read.csv(fileDir))
+  }
+}
+
+rotowirePreds <- data.frame()
+
+for(csvPath in csvs){
+  csvFiles <- list.files(csvPath, full.names = T)
+  for(csvFilePath in csvFiles){
+    year = str_remove_all(pattern = "C:/Users/amaldonado/Documents/NBA/data/rotowire/rotowire/", string = csvPath)
+    dayData <- loadCsvForDay(csvFilePath, year)
+    rotowirePreds <- rbind(rotowirePreds, dayData)
+  }
+  rotowirePreds <- rotowirePreds[c("date", colnames(rotowirePreds)[colnames(rotowirePreds) != "date"])]
+}
 allPlayers <- read.csv(paste0(BASE_DIR, "data\\allPlayers.csv"))
 
 #Add cum data
@@ -28,16 +62,24 @@ cumData <- cumData[order(cumData$PlayerId, cumData$Date),]
 cumData$cumMinInSeason <- unlist(aggregate(Min ~ seasonYear + PlayerId, cumData, FUN = function(x){cumsum(c(0, x[-length(x)]))})$Min)
 cumData$cumGamesPlayedInSeason <- unlist(aggregate(Min ~ seasonYear + PlayerId, cumData, FUN = function(x){(0: (length(x) - 1))})$Min)
 cumData$averageMinutesInSeason <- cumData$cumMinInSeason / cumData$cumGamesPlayedInSeason
+
+cumData$rowId <- 1:nrow(cumData)
+
+cumData <- sqldf("SELECT t1.*, t2.Min AS lastGameMin FROM cumData t1 
+                  LEFT JOIN cumData t2 ON t1.PlayerId = t2.PlayerId AND t1.rowId = t2.rowId + 1")
+
+cumData$lastGameMin[cumData$cumGamesPlayedInSeason==0] <- -1
+
 ##
 
-
-allPlayers <- merge(allPlayers, cumData[c("GameId", "PlayerId", "cumMinInSeason", "cumGamesPlayedInSeason", "averageMinutesInSeason")], all.x = T)
+allPlayers <- merge(allPlayers, cumData[c("GameId", "PlayerId", "cumMinInSeason", "cumGamesPlayedInSeason", "averageMinutesInSeason", "lastGameMin")], all.x = T)
 allPlayers <- allPlayers[order(allPlayers$PlayerId, allPlayers$Date),]
 allPlayers$averageMinutesInSeason[!is.na(allPlayers$cumGamesPlayedInSeason) & allPlayers$cumGamesPlayedInSeason == 0] <- -1
 
 allPlayers$averageMinutesInSeason <- na.locf(allPlayers$averageMinutesInSeason)
+allPlayers$lastGameMin <- na.locf(allPlayers$averageMinutesInSeason)
 
-View(allPlayers[c("GameId", "Name", "cumGamesPlayedInSeason", "averageMinutesInSeason")])
+View(allPlayers[c("seasonYear", "GameId", "Name", "Min", "cumGamesPlayedInSeason", "averageMinutesInSeason")])
 
 totalMin <- aggregate(Min ~ GameId + Team, allPlayers, sum)
 idsNotToUse <- unique(subset(totalMin$GameId, !(totalMin$Min %in% c(238, 239, 240, 241, 242, 264, 265, 266))))
@@ -111,6 +153,7 @@ fullGames$resid <- 1 * (fullGames$Min == 0) - fullGames$zeroPred
 
 binnedplot(fullGames$zeroPred, fullGames$resid)
 binnedplot(fullGames$pmin, fullGames$resid)
+binnedplot(fullGames$lastGameMin, fullGames$resid)
 
 binnedplot(fullGames$pmin, fullGames$resid)
 binnedplot(fullGames$pmin[fullGames$hasOt == 1], fullGames$resid[fullGames$hasOt == 1])
@@ -138,6 +181,7 @@ cat(test, sep="\n")
 
 #Given played model
 noZeroData <- subset(fullGames, fullGames$pmin > 0 & fullGames$Min > 0)
+noZeroData$lastGameMin[noZeroData$lastGameMin == -1] <- noZeroData$pmin[noZeroData$lastGameMin == -1]  
 
 lm <- glm(Min ~  
             bs(pmin, knots = c(20, 37, 40), Boundary.knots = c(0,45)) +
@@ -147,19 +191,39 @@ lm <- glm(Min ~
             pmin : abs(ownExp - oppExp) + 
             pmax(pmin - averageMinutesInSeason, 0) + 
             + ifelse(Starter == 1, pmax(30 - pmin, 0), 0) 
-          + ifelse(Starter == 0, pmax(pmin - 20, 0), 0) 
+            + ifelse(Starter == 0, pmax(pmin - 20, 0), 0) 
+            + I(lastGameMin - pmin)
+            + pmax(pmin - 30, 0) : I(lastGameMin - 30)
+            + pmax(30 - pmin, 0) : I(lastGameMin - 15)
+            + ifelse(hasOt == 1, log(pmax(pmin - 20, 1)), 0) 
+            + I(teamSumAvgMinutes - 240)
+            + I(teamSumAvgMinutes - 240) : pmin
           
-          + ifelse(hasOt == 1, log(pmax(pmin - 20, 1)), 0) 
-          + I(teamSumAvgMinutes - 240)
+            + abs(teamSumAvgMinutes - 240)
+            
           
           , data = noZeroData, family = poisson)
 summary(lm)
-AIC(lm)#40152.47
+AIC(lm) #229866.4
 
 noZeroData$pmin2 <- predict(lm, noZeroData, type = "response")
 noZeroData$minResid2 <- noZeroData$Min - noZeroData$pmin2
 
 binnedplot(noZeroData$pmin2, noZeroData$minResid2)
+
+binnedplot(noZeroData$pmin2[noZeroData$teamSumAvgMinutes > 250], noZeroData$minResid2[noZeroData$teamSumAvgMinutes > 250])
+binnedplot(noZeroData$pmin2[noZeroData$teamSumAvgMinutes < 230], noZeroData$minResid2[noZeroData$teamSumAvgMinutes < 230])
+
+binnedplot(noZeroData$teamSumAvgMinutes, noZeroData$minResid2)
+binnedplot(noZeroData$teamSumAvgMinutes, noZeroData$minResid2)
+
+binnedplot(noZeroData$lastGameMin, noZeroData$minResid2)
+binnedplot(noZeroData$lastGameMin[noZeroData$pmin > 35], noZeroData$minResid2[noZeroData$pmin > 35])
+
+binnedplot(noZeroData$lastGameMin[noZeroData$pmin > 30], noZeroData$minResid2[noZeroData$pmin > 30])
+binnedplot(noZeroData$lastGameMin[noZeroData$pmin < 30], noZeroData$minResid2[noZeroData$pmin < 30])
+binnedplot(noZeroData$lastGameMin[noZeroData$pmin < 10], noZeroData$minResid2[noZeroData$pmin < 10])
+
 binnedplot(noZeroData$pmin, noZeroData$minResid2)
 binnedplot(noZeroData$pmin[noZeroData$seasonYear==2024], noZeroData$minResid2[noZeroData$seasonYear==2024])
 binnedplot(noZeroData$pmin[noZeroData$seasonYear==2024 & noZeroData$pmin>34], noZeroData$minResid2[noZeroData$seasonYear==2024 & noZeroData$pmin>34])
@@ -201,7 +265,7 @@ set.seed(100)
 javaData <- noZeroData[sample(1:nrow(noZeroData), 100),]
 predictions <- predict(lm, javaData, type = "response")
 
-covariates <- with(javaData, paste(pmin, averageMinutesInSeason, ownExp, oppExp, seasonYear, Starter, hasOt, teamSumAvgMinutes,
+covariates <- with(javaData, paste(pmin, averageMinutesInSeason, ownExp, oppExp, seasonYear, Starter, hasOt, teamSumAvgMinutes,lastGameMin,
                                    sep = ","))
 
 test <- paste("Assert.assertEquals(", predictions, "d, MinutesGivenPlayedModel.getAverageGivenPlayed(", covariates, ") , DELTA);", sep = "")

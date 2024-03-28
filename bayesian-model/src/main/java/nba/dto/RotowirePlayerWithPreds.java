@@ -5,8 +5,8 @@ public class RotowirePlayerWithPreds extends RotowirePlayer{
     private final double zeroPred;
     private final double givenPlayedPred;
 
-    public RotowirePlayerWithPreds(String name, String pmin, double zeroPred, double givenPlayedPred) {
-        super(name, pmin);
+    public RotowirePlayerWithPreds(String name, String pmin, String pos, double zeroPred, double givenPlayedPred) {
+        super(name, pmin, pos);
         this.zeroPred = zeroPred;
         this.givenPlayedPred = givenPlayedPred;
     }

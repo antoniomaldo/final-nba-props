@@ -18,7 +18,7 @@ public class EnrichRotowirePlayerWithMinutesPredictions {
 
         for(PlayerRequest player : team){
             double zeroPred = ZeroMinutesModel.zeroMinutesProb(player.getPmin(), player.getStarter(), 0);
-            double predGivenPlayed = MinutesGivenPlayedModel.getAverageGivenPlayed((int) player.getPmin(), player.getAverageMinutesInSeason(), ownExp, oppExp, 2024, player.getStarter(), 0, teamSumAvgMinutes);
+            double predGivenPlayed = MinutesGivenPlayedModel.getAverageGivenPlayed((int) player.getPmin(), player.getAverageMinutesInSeason(), ownExp, oppExp, 2024, player.getStarter(), 0, teamSumAvgMinutes, 0);
         }
 
 

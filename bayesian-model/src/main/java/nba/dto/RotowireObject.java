@@ -20,6 +20,7 @@ public abstract class RotowireObject {
     public abstract String getPlayer();
 
     public abstract String getMin();
+    public abstract String getPos();
 
     @AutoValue.Builder
     @JsonPOJOBuilder(withPrefix = "")
@@ -30,6 +31,7 @@ public abstract class RotowireObject {
         public abstract Builder player(final String player);
 
         public abstract Builder min(final String min);
+        public abstract Builder pos(final String pos);
 
         public abstract RotowireObject build();
 

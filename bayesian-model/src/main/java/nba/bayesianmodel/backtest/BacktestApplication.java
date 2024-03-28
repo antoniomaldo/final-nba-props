@@ -25,11 +25,6 @@ public class BacktestApplication {
         for (Integer gameId : gameIds) {
             System.out.println(gameId);
             List<PlayerWithCoefs> gamePlayers = playerWithCoefs.stream().filter(p -> p.getGameId() == gameId).collect(Collectors.toList());
-            List<String> teams = gamePlayers.stream().map(p -> p.getTeam()).distinct().collect(Collectors.toList());
-
-            List<PlayerWithCoefs> teamAPlayers = playerWithCoefs.stream().filter(p-> p.getTeam() == teams.get(0)).collect(Collectors.toList());
-            List<PlayerWithCoefs> teamBPlayers = playerWithCoefs.stream().filter(p-> p.getTeam() == teams.get(1)).collect(Collectors.toList());
-
 
             for (PlayerWithCoefs player : gamePlayers) {
                 double fgAttemptedPerMin = TargetPredicted.forFgAttempted(player.getFgAttemptedPlayerCoef(), player.getFgAttemptedPrior());
@@ -56,8 +51,8 @@ public class BacktestApplication {
                         fts / 40000d,
                         rebounds,
                         blocks,
-                        steals
-
+                        steals,
+                        player.getAverageMinutesInSeason()
                 ));
             }
             counter++;

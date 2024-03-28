@@ -71,9 +71,6 @@ mapToPlayerId <- function(df, baseDir){
   mappingsFile = paste0(baseDir, "mappings/rotowire-mappings.csv")
   playerMappins <- unique(read.csv(mappingsFile)[c(1,3)])
   
-  charPos <- which(playerMappins$PlayerId == 3988)
-  specialChar <- substr(playerMappins$rotoName[charPos], start = 6, stop = 8)
-  playerMappins$rotoName <- str_replace_all(playerMappins$rotoName, specialChar, " ")
   playerMappins <- unique(playerMappins)
   
   colnames(playerMappins) <- c("PlayerId", "playerName")
@@ -93,8 +90,8 @@ removeDupPredictions <- function(df){
   multiplePred <- subset(df, df$PlayerId %in% dupPreds$PlayerId)
   
   cleanedDf <- data.frame()
-  for(id in unique(multiplePred$PlayerId)){
-    dupPlayer <- subset(multiplePred, multiplePred$PlayerId == id)
+  for(i in unique(multiplePred$PlayerId)){
+    dupPlayer <- subset(multiplePred, multiplePred$PlayerId == i)
     dupPlayer$hasPred <- !is.na(dupPlayer$pmin)
     
     if(sum(dupPlayer$hasPred) > 0){

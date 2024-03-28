@@ -56,32 +56,9 @@ allPreds <- merge(allPreds, ftPerc, by = c("GameId", "PlayerId"))
 
 allPreds <- merge(allPreds, players, by = c("GameId", "PlayerId"), all.x = T)
 
+latestPreds <- subset(allPreds, allPreds$GameId == -1)
+
 allPreds <- subset(allPreds, !is.na(allPreds$matchSpread))
 write.csv(allPreds, paste0(COEFS_DIR, "allPreds.csv"))
 
-#Get latest predictions
-
-BASE_DATA_DIR = "C:/Users/amaldonado/Documents/NBA/data/"
-
-loadDataInDirectory <- function(dir){
-  folders <- list.files(dir, full.names = T)  
-  df <- data.frame()
-  for(folder in folders){
-    season <- str_remove(folder, dir)
-    seasonData <- do.call(rbind, lapply(list.files(folder, full.names = T), read.csv))
-    seasonData$seasonYear = season
-    df <- rbind(df, seasonData)
-  }
-  return(df)
-}
-
-events <- loadDataInDirectory(paste0(BASE_DATA_DIR, "espn/Boxscores/"))
-
-allPreds <- merge(allPreds, events[c("GameId", "Date")], all.x = T)
-
-lastUpdate <- aggregate(Date ~ PlayerId, allPreds, max)
-lastUpdate$isLastUpdate <- 1
-
-lastUpdates <- merge(allPreds, lastUpdate)
-
-write.csv(allPreds, paste0(COEFS_DIR, "lastUpdate.csv"))
+write.csv(latestPreds, paste0(COEFS_DIR, "lastUpdate.csv"))

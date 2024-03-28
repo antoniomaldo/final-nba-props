@@ -7,7 +7,7 @@ allPlayers <- read.csv(paste0(BASE_DIR, "data\\allPlayers.csv"))
 javaPreds <- read.csv(paste0(BASE_DIR, "backtest_analysis\\backtest.csv"))
 javaPreds$pointsAvg <- 3 * javaPreds$threesAvg + 2 * javaPreds$twosAvg + javaPreds$ftsAvg
 
-merged <- merge(javaPreds, allPlayers[c("GameId", "Min", "PlayerId", "Team", "Points", "Fg_Attempted", "Three_Made", "Total_Rebounds", "Blocks", "Steals", "HomeTeam", "AwayTeam",  "matchSpread", "totalPoints")], by = c("GameId", "PlayerId"))
+merged <- merge(javaPreds, allPlayers[c("GameId", "Min", "PlayerId", "Team", "Points", "Fg.Attempted", "Three.Made", "Total.Rebounds", "Blocks", "Steals", "HomeTeam", "AwayTeam",  "matchSpread", "totalPoints")], by = c("GameId", "PlayerId"))
 
 merged$homeExp <- (merged$totalPoints - merged$matchSpread) / 2
 merged$awayExp <- merged$totalPoints - merged$homeExp
@@ -18,9 +18,9 @@ merged$oppExp <- ifelse(merged$HomeTeam == merged$Team, merged$awayExp, merged$h
 merged <- subset(merged, !is.na(merged$ownExp))
 
 merged$resid <- merged$Points - merged$pointsAvg
-merged$residFg <- merged$Fg_Attempted - merged$fgAttemptedPred
-merged$residThree <- merged$Three_Made - merged$threesAvg
-merged$residRebounds <- merged$rebounds - merged$Total_Rebounds
+merged$residFg <- merged$Fg.Attempted - merged$fgAttemptedPred
+merged$residThree <- merged$Three.Made - merged$threesAvg
+merged$residRebounds <- merged$rebounds - merged$Total.Rebounds
 merged$residSteals <- merged$steals - merged$Steals
 merged$residBlocks <- merged$blocks - merged$Blocks
 
@@ -36,7 +36,7 @@ binnedplot(merged$Fg_Attempted, merged$residRebounds)
 binnedplot(merged$Min, merged$residRebounds)
 binnedplot(merged$pointsAvg, merged$residRebounds)
 
-binnedplot(merged$Fg_Attempted, merged$residSteals)
+binnedplot(merged$Fg.Attempted, merged$residSteals)
 binnedplot(merged$Min, merged$residSteals)
 
 binnedplot(merged$rebounds, merged$residRebounds)
