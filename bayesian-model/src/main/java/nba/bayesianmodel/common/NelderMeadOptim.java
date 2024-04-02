@@ -13,7 +13,7 @@ public class NelderMeadOptim {
         NelderMead nelderMead = new NelderMead();
         nelderMead.setMaxIterations(20000); //FIXME
 
-        RealPointValuePair optimize = nelderMead.optimize(coefficientsOptimizer, GoalType.MINIMIZE, new double[]{0, 0});
+        RealPointValuePair optimize = nelderMead.optimize(coefficientsOptimizer, GoalType.MINIMIZE, new double[]{0, 0, 0});
         return optimize.getPoint();
     }
 }

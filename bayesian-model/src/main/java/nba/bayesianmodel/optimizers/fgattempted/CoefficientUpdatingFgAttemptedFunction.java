@@ -22,6 +22,7 @@ public class CoefficientUpdatingFgAttemptedFunction extends BaseCoefficientUpdat
 
             double weight1 = par[0];
             double weight2 = par[1];
+            double weight3 = par[2];
 
             playerData = playerData.stream().
                     sorted(Comparator.comparingInt(PlayerGameData::getDate)).
@@ -40,6 +41,8 @@ public class CoefficientUpdatingFgAttemptedFunction extends BaseCoefficientUpdat
             double lastTwoResid = 0;
             double lastThreeResid = 0;
 
+            double weightForLastResid = Math.exp(weight3);
+
             for (int i = 0; i < playerData.size(); i++) {
                 PlayerGameData playerGameData = playerData.get(i);
 
@@ -56,15 +59,12 @@ public class CoefficientUpdatingFgAttemptedFunction extends BaseCoefficientUpdat
                     real = (double) playerGameData.getFgAttempted() / playerGameData.getMinPlayed();
                     resid = real - targetPerMinPredicted;
 
-                    if(i > 3){
-                        resid = (4 * resid + 3 * lastResid + 2 * lastTwoResid + lastThreeResid) / 10d;
-                    }else if(i > 2){
-                        resid = (3 * resid + 2 * lastResid + lastTwoResid) / 6d;
+                    if(i > 2){
+                        resid = (weightForLastResid * resid + 3 * lastResid + 2 * lastTwoResid) / (weightForLastResid + 5);
                     }else if (i > 1) {
-                        resid = (2 * resid + lastResid) / 3d;
+                        resid = (weightForLastResid * resid + lastResid) / (weightForLastResid + 1);
                     }
 
-                    lastThreeResid = lastTwoResid;
                     lastTwoResid = lastResid;
                     lastResid = resid;
 
