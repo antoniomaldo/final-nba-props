@@ -518,6 +518,22 @@ public class RotowireNameToEspnPlayerIdMapping {
         map.put("Derrick Jones",3936099);
         map.put("P.J. Washington",4278078);
         map.put("Jrue Holiday",3995);
+        map.put("RJ Barrett",4395625);
+        map.put("Kobi Simmons",4066335);
+
+        map.put("Marvin Bagley",4277848);
+        map.put("Jordan Poole",4277956);
+        map.put("Tristan Vukcevic",4997537);
+        map.put("Mo Bamba",4277919);
+        map.put("KJ Martin",4431828);
+        map.put("Jordan McLaughlin",3134916);
+        map.put("Monte Morris",3059310);
+        map.put("Jeff Green",3209);
+        map.put("Justin Holiday",2284101);
+        map.put("Michael Porter",4278104);
+        map.put("Marcus Morris",6462);
+        map.put("Terance Mann",3907823);
+
     }
 
     public static Integer getPlayerId(String rotowireName){
