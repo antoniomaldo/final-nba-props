@@ -1,6 +1,7 @@
 package nba.bayesianmodel.backtest;
 
 import hex.genmodel.easy.exception.PredictException;
+import nba.BaseDirectory;
 import nba.bayesianmodel.common.CsvUtils;
 import nba.bayesianmodel.optimizers.targets.TargetPredicted;
 import nba.dto.NbaGameEventDto;
@@ -22,7 +23,7 @@ public class BacktestApplication {
     private static final PlayerSimulator PLAYER_SIMULATOR = new PlayerSimulator();
 
     public static void main(String[] args)  {
-        List<BacktestPlayerWithCoefs> playerWithCoefs = CsvUtils.loadPredictionsDataWithProjMinutes("C:\\czrs-ds-models\\nba-player-props\\backtest_analysis\\backtestInputs.csv");
+        List<BacktestPlayerWithCoefs> playerWithCoefs = CsvUtils.loadPredictionsDataWithProjMinutes(BaseDirectory.baseDirectoryToUse().getBaseDir() + "backtest_analysis\\backtestInputs.csv");
 
         playerWithCoefs = playerWithCoefs.stream().filter(p -> p.getSeasonYear() == 2024).collect(Collectors.toList());
 

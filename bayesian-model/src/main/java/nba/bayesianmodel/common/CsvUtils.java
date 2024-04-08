@@ -1,6 +1,7 @@
 package nba.bayesianmodel.common;
 
 import com.opencsv.CSVWriter;
+import nba.BaseDirectory;
 import nba.bayesianmodel.backtest.BacktestPlayerWithCoefs;
 import nba.simulator.PlayerWithCoefs;
 import nba.simulator.SimulatorPredictions;
@@ -17,7 +18,7 @@ public class CsvUtils {
     public static PlayersData loadData(boolean shouldRemoveLastSeason) {
         List<PlayerGameData> playerData = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader("C:\\czrs-ds-models\\nba-player-props\\data\\allPlayers.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(BaseDirectory.baseDirectoryToUse().getBaseDir() + "data\\allPlayers.csv"))) {
             String line;
             String[] colNames = br.readLine().split(",");
             Map<String, Integer> colNamesIndex = createColNamesMap(colNames);
@@ -64,12 +65,12 @@ public class CsvUtils {
 
 
     public static List<PlayerWithCoefs> loadPredictionsData() {
-        return loadPredictionsData("C:\\czrs-ds-models\\nba-player-props\\testing\\allPreds.csv");
+        return loadPredictionsData(BaseDirectory.baseDirectoryToUse().getBaseDir() + "testing\\allPreds.csv");
 
     }
 
     public static List<PlayerWithCoefs> loadLatestPredictionsData() {
-        return loadPredictionsData("C:\\czrs-ds-models\\nba-player-props\\testing\\lastUpdate.csv");
+        return loadPredictionsData(BaseDirectory.baseDirectoryToUse().getBaseDir() + "testing\\lastUpdate.csv");
 
     }
 
@@ -213,7 +214,7 @@ public class CsvUtils {
             csvData.add(playerPredictions.toRow());
         }
 
-        try (CSVWriter writer = new CSVWriter(new FileWriter("C:\\czrs-ds-models\\nba-player-props\\testing\\" + csvName + ".csv"))) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter(BaseDirectory.baseDirectoryToUse().getBaseDir() + "testing\\" + csvName + ".csv"))) {
             writer.writeAll(csvData);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -227,7 +228,7 @@ public class CsvUtils {
             csvData.add(playerPredictions.toRow());
         }
 
-        try (CSVWriter writer = new CSVWriter(new FileWriter("C:\\czrs-ds-models\\nba-player-props\\backtest_analysis\\backtest.csv"))) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter(BaseDirectory.baseDirectoryToUse().getBaseDir() + "backtest_analysis\\backtest.csv"))) {
             writer.writeAll(csvData);
         } catch (IOException e) {
             throw new RuntimeException(e);
