@@ -11,13 +11,13 @@ source("C:\\czrs-ds-models\\nba-player-props\\mappings\\mappings-service.R")
 
 BASE_DIR <- "C:\\czrs-ds-models\\nba-player-props\\"
 
-bq_auth()
-
-con <- dbConnect(
-  bigrquery::bigquery(),
-  project = "ea-moneyball",
-  dataset = "NBA"
-)
+# bq_auth()
+# 
+# con <- dbConnect(
+#   bigrquery::bigquery(),
+#   project = "ea-moneyball",
+#   dataset = "NBA"
+# )
 
 
 #rotowirePreds <- dbGetQuery(con, "SELECT * FROM rotowire_preds")
@@ -143,7 +143,7 @@ zeroMinsModel <- glm(I(Min == 0) ~ 1 +
             
             data = fullGames, family = binomial)
 summary(zeroMinsModel)
-AIC(zeroMinsModel) #1460.206
+AIC(zeroMinsModel) #9114.458
 
 fullGames$zeroPred <- predict(zeroMinsModel, fullGames, type = "response")
 summary(fullGames$zeroPred)
@@ -204,7 +204,7 @@ lm <- glm(Min ~
           
           , data = noZeroData, family = poisson)
 summary(lm)
-AIC(lm) #229866.4
+AIC(lm) #233558.1
 
 noZeroData$pmin2 <- predict(lm, noZeroData, type = "response")
 noZeroData$minResid2 <- noZeroData$Min - noZeroData$pmin2

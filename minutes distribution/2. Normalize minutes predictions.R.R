@@ -40,8 +40,6 @@ for(i in 1:nrow(fullGames)){
     
     game$toDistribute <- sum(game$minutesAvg) - aggMins$predMins[aggMins$numbPlayers == nrow(game)]
     
-    game$sumRawAvg <- sum(game$minutesAvg)
-    
     n = 20 
     if(sum(game$minutesAvg < n) > 2){
       game$sumRawAvgNonStarters <- sum(game$minutesAvg[game$Starter == 0])
@@ -89,6 +87,18 @@ binnedplot(allData$adjMinutes[allData$sumRawAvg>245], allData$resid[allData$sumR
 binnedplot(allData$adjMinutes[allData$sumRawAvg<230], allData$resid[allData$sumRawAvg<230])
 binnedplot(allData$adjMinutes[allData$sumRawAvg<228], allData$resid[allData$sumRawAvg<228])
 binnedplot(allData$adjMinutes[allData$sumRawAvg<225], allData$resid[allData$sumRawAvg<225])
+
+#Given it playes
+allData$predGivenPlayedNorm <- allData$adjMinutes / (1 - allData$zeroPred)
+
+played <- subset(allData, allData$Min > 0)
+
+played$givenPlayedResid <- played$predGivenPlayedNorm - played$Min
+binnedplot(played$adjMinutes, played$resid)
+binnedplot(played$adjMinutes, played$givenPlayedResid)
+binnedplot(played$predGivenPlayedNorm, played$givenPlayedResid)
+binnedplot(played$zeroPred, played$givenPlayedResid)
+
 
 write.csv(allData, file = "C:\\czrs-ds-models\\nba-player-props\\minutes distribution\\mappedDataWithAdjustedPreds.csv" )
 
