@@ -3,19 +3,19 @@ package nba.bayesianmodel.optimizers.targets;
 public class TargetPredicted {
 
     public static double forAssists(double playerCoef, double priorForPlayer) {
-        return Math.exp(Math.log(Math.exp(playerCoef) * priorForPlayer));
+        return Math.exp(playerCoef) * priorForPlayer;
     }
 
     public static double forBlocks(double playerCoef, double priorForPlayer) {
-        return Math.exp(Math.log(Math.exp(playerCoef) * priorForPlayer));
+        return Math.exp(playerCoef) * priorForPlayer;
     }
 
     public static double forFgAttempted(double playerCoef, double priorForPlayer) {
-        return Math.exp(Math.log(Math.exp(playerCoef) * priorForPlayer));
+        return Math.exp(playerCoef) * priorForPlayer;
     }
 
     public static double forFouls(double playerCoef, Double priorForPlayer) {
-        return Math.exp(Math.log(Math.exp(playerCoef) * priorForPlayer));
+        return Math.exp(playerCoef) * priorForPlayer;
     }
 
     public static double forFtPerc(double playerCoef, Double priorForPlayer) {
@@ -23,7 +23,7 @@ public class TargetPredicted {
         return logitToProb(playerCoef + priorLogit);
     }
     public static double forFtsAttempted(double playerCoef, Double priorForPlayer) {
-        return Math.exp(Math.log(Math.exp(playerCoef) * priorForPlayer));
+        return Math.exp(playerCoef) * priorForPlayer;
     }
 
     public static double forOffRebProp(double playerCoef, Double priorForPlayer) {
@@ -32,11 +32,11 @@ public class TargetPredicted {
     }
 
     public static double forRebounds(double playerCoef, Double priorForPlayer) {
-        return Math.exp(Math.log(Math.exp(playerCoef) * priorForPlayer));
+        return Math.exp(playerCoef) * priorForPlayer;
     }
 
     public static double forSteals(double playerCoef, Double priorForPlayer) {
-        return Math.exp(Math.log(Math.exp(playerCoef) * priorForPlayer));
+        return Math.exp(playerCoef) * priorForPlayer;
     }
 
     public static double forThreePerc(double playerCoef, int threeAttempted, Double priorForPlayer, double weight2) {
@@ -57,7 +57,7 @@ public class TargetPredicted {
     }
 
     public static double forTurnovers(double playerCoef, Double priorForPlayer) {
-        return  Math.exp(Math.log(Math.exp(playerCoef) * priorForPlayer));
+        return  Math.exp(playerCoef) * priorForPlayer;
     }
 
     public static double forTwoPerc(double playerCoef, Double priorForPlayer) {
