@@ -1,6 +1,7 @@
 package nba.bayesianmodel.common;
 
 import com.opencsv.CSVWriter;
+import nba.bayesianmodel.backtest.BacktestPlayerWithCoefs;
 import nba.simulator.PlayerWithCoefs;
 import nba.simulator.SimulatorPredictions;
 
@@ -24,8 +25,6 @@ public class CsvUtils {
                 String[] values = line.split(",");
                 int minPlayed = getAsInteger(values, colNamesIndex, "Min");
                 if(minPlayed > 0) {
-
-
                     playerData.add(new PlayerGameData(
                             getAsInteger(values, colNamesIndex, "Date"),
                             getAsInteger(values, colNamesIndex, "GameId"),
@@ -74,6 +73,67 @@ public class CsvUtils {
 
     }
 
+    public static List<BacktestPlayerWithCoefs> loadPredictionsDataWithProjMinutes(String csvDir) {
+        List<BacktestPlayerWithCoefs> playerData = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(csvDir))) {
+            String line;
+            String[] colNames = br.readLine().split(",");
+            Map<String, Integer> colNamesIndex = createColNamesMap(colNames);
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                int minPlayed = getAsInteger(values, colNamesIndex, "minPlayed");
+                if(minPlayed >= 0) {
+                    playerData.add(new BacktestPlayerWithCoefs(
+                            getAsInteger(values, colNamesIndex, "GameId"),
+                            getAsInteger(values, colNamesIndex, "seasonYear"),
+                            values[colNamesIndex.get("Team")].replace("\"", ""),
+                            values[colNamesIndex.get("Name")].replace("\"", ""),
+                            getAsInteger(values, colNamesIndex, "PlayerId"),
+                            getAsInteger(values, colNamesIndex, "pmin"),
+                            getAsDouble(values, colNamesIndex, "fgPlayerCoef"),
+                            getAsDouble(values, colNamesIndex, "fgPrior"),
+                            getAsDouble(values, colNamesIndex, "threePropPlayerCoef"),
+                            getAsDouble(values, colNamesIndex, "threePropPrior"),
+                            getAsDouble(values, colNamesIndex, "threePercPlayerCoef"),
+                            getAsDouble(values, colNamesIndex, "threePercPrior"),
+                            getAsDouble(values, colNamesIndex, "twoPercPlayerCoef"),
+                            getAsDouble(values, colNamesIndex, "twoPercPrior"),
+                            getAsDouble(values, colNamesIndex, "ftsAttemptedPerMinPlayerCoef"),
+                            getAsDouble(values, colNamesIndex, "ftsAttemptedPerMinPrior"),
+                            getAsDouble(values, colNamesIndex, "ftsPercPlayerCoef"),
+                            getAsDouble(values, colNamesIndex, "ftsPercPrior"),
+                            getAsDouble(values, colNamesIndex, "reboundsPlayerCoef"),
+                            getAsDouble(values, colNamesIndex, "reboundsPrior"),
+                            getAsDouble(values, colNamesIndex, "ofReboundsPropPlayerCoef"),
+                            getAsDouble(values, colNamesIndex, "ofReboundsPropPrior"),
+                            getAsDouble(values, colNamesIndex, "blocksPlayerCoef"),
+                            getAsDouble(values, colNamesIndex, "blocksPrior"),
+                            getAsDouble(values, colNamesIndex, "stealsPlayerCoef"),
+                            getAsDouble(values, colNamesIndex, "stealsPrior"),
+                            getAsDouble(values, colNamesIndex, "turnoversPlayerCoef"),
+                            getAsDouble(values, colNamesIndex, "turnoversPrior"),
+
+                            getAsDouble(values, colNamesIndex, "personalFoulsPlayerCoef"),
+                            getAsDouble(values, colNamesIndex, "personalFoulsPrior"),
+                            getAsDouble(values, colNamesIndex, "averageMinutesInSeason"),
+                            getAsDouble(values, colNamesIndex, "lastGameMin"),
+                            getAsInteger(values, colNamesIndex, "pmin"),
+                            getAsDouble(values, colNamesIndex, "ownExp"),
+                            getAsDouble(values, colNamesIndex, "oppExp"),
+                            values[colNamesIndex.get("HomeTeam")].replace("\"", ""),
+                            getAsInteger(values, colNamesIndex, "Starter")
+
+                            ));//getAsDouble(values, colNamesIndex, "oppExp")));
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return playerData;
+    }
+
     public static List<PlayerWithCoefs> loadPredictionsData(String csvDir) {
         List<PlayerWithCoefs> playerData = new ArrayList<>();
 
@@ -118,7 +178,8 @@ public class CsvUtils {
 
                             getAsDouble(values, colNamesIndex, "personalFoulsPlayerCoef"),
                             getAsDouble(values, colNamesIndex, "personalFoulsPrior"),
-                            getAsDouble(values, colNamesIndex, "averageMinutesInSeason")));//getAsDouble(values, colNamesIndex, "oppExp")));
+                            getAsDouble(values, colNamesIndex, "averageMinutesInSeason"),
+                            getAsDouble(values, colNamesIndex, "lastGameMin")));//getAsDouble(values, colNamesIndex, "oppExp")));
                 }
             }
         } catch (IOException e) {
@@ -161,7 +222,7 @@ public class CsvUtils {
 
     public static void savePredictions(List<SimulatorPredictions> simulatorPredictions) {
         List<String[]> csvData = new ArrayList<>();
-        csvData.add(new String[]{"GameId", "PlayerId", "fgAttemptedPred", "twosAvg", "threesAvg", "ftsAvg", "rebounds", "steals", "blocks", "averageMinutesInSeason"});
+        csvData.add(new String[]{"GameId", "PlayerId", "fgAttemptedPred", "twosAvg", "threesAvg", "ftsAvg", "rebounds", "steals", "blocks", "averageMinutesInSeason", "zeroProb"});
         for (SimulatorPredictions playerPredictions : simulatorPredictions) {
             csvData.add(playerPredictions.toRow());
         }

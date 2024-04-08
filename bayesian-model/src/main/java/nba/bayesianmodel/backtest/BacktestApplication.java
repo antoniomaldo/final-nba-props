@@ -1,21 +1,30 @@
 package nba.bayesianmodel.backtest;
 
+import hex.genmodel.easy.exception.PredictException;
 import nba.bayesianmodel.common.CsvUtils;
 import nba.bayesianmodel.optimizers.targets.TargetPredicted;
+import nba.dto.NbaGameEventDto;
+import nba.dto.PlayerRequest;
+import nba.minutedistribution.NormalizedGivenPlayedPredictions;
+import nba.minutedistribution.ZeroMinutesModel;
 import nba.simulator.*;
+import nba.ui_application.ApplicationController;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class BacktestApplication {
 
     private static final PlayerSimulator PLAYER_SIMULATOR = new PlayerSimulator();
 
-    public static void main(String[] args) {
-        List<PlayerWithCoefs> playerWithCoefs = CsvUtils.loadPredictionsData();
+    public static void main(String[] args)  {
+        List<BacktestPlayerWithCoefs> playerWithCoefs = CsvUtils.loadPredictionsDataWithProjMinutes("C:\\czrs-ds-models\\nba-player-props\\backtest_analysis\\backtestInputs.csv");
 
-        playerWithCoefs = playerWithCoefs.stream().filter(p->p.getSeasonYear() == 2024).collect(Collectors.toList());
+        playerWithCoefs = playerWithCoefs.stream().filter(p -> p.getSeasonYear() == 2024).collect(Collectors.toList());
 
         List<Integer> gameIds = playerWithCoefs.stream().map(p -> p.getGameId()).distinct().collect(Collectors.toList());
 
@@ -24,36 +33,56 @@ public class BacktestApplication {
 
         for (Integer gameId : gameIds) {
             System.out.println(gameId);
-            List<PlayerWithCoefs> gamePlayers = playerWithCoefs.stream().filter(p -> p.getGameId() == gameId).collect(Collectors.toList());
+            Integer finalGameId = gameId;
+            List<BacktestPlayerWithCoefs> gamePlayers = playerWithCoefs.stream().filter(p -> p.getGameId() == finalGameId).collect(Collectors.toList());
 
-            for (PlayerWithCoefs player : gamePlayers) {
-                double fgAttemptedPerMin = TargetPredicted.forFgAttempted(player.getFgAttemptedPlayerCoef(), player.getFgAttemptedPrior());
-                double fgAttemptedPrediction = FgAttemptedModel.getFgAttemptedPrediction(fgAttemptedPerMin, player.getMinPlayed());
+            List<BacktestPlayerWithCoefs> homePlayers = gamePlayers.stream().filter(p -> p.getTeam().equalsIgnoreCase(p.getHomeTeam())).collect(Collectors.toList());
+            List<BacktestPlayerWithCoefs> awayPlayers = gamePlayers.stream().filter(p -> !p.getTeam().equalsIgnoreCase(p.getHomeTeam())).collect(Collectors.toList());
 
-                int twoPoints = 0;
-                int threePoints = 0;
-                int fts = 0;
-                for (int i = 0; i < 40000; i++) {
-                    SimulatedPlayerScoring simulatedPlayerScoring = PLAYER_SIMULATOR.simulatePoints(player, player.getMinPlayed(), fgAttemptedPrediction);
-                    twoPoints += simulatedPlayerScoring.getTwoPointers();
-                    threePoints += simulatedPlayerScoring.getThreePoints();
-                    fts += simulatedPlayerScoring.getFts();
-                }
+            double homeExp;
+            double awayExp;
 
-                double rebounds = player.getMinPlayed() * TargetPredicted.forRebounds(player.getReboundsCoef(), player.getReboundsPrior());
-                double blocks = player.getMinPlayed() * TargetPredicted.forBlocks(player.getBlocksCoef(), player.getBlocksPrior());
-                double steals = player.getMinPlayed() * TargetPredicted.forAssists(player.getStealsCoef(), player.getStealsPrior());
-                list.add(new SimulatorPredictions(player.getGameId(),
-                        player.getPlayerId(),
-                        fgAttemptedPrediction,
-                        twoPoints / 40000d,
-                        threePoints / 40000d,
-                        fts / 40000d,
-                        rebounds,
-                        blocks,
-                        steals,
-                        player.getAverageMinutesInSeason()
-                ));
+            if (homePlayers.size() > 0) {
+                homeExp = homePlayers.get(0).getOwnExp();
+                awayExp = homePlayers.get(0).getOppExp();
+            } else {
+                homeExp = awayPlayers.get(0).getOppExp();
+                awayExp = awayPlayers.get(0).getOwnExp();
+            }
+            double matchTotalPoints = homeExp + awayExp;
+            double matchSpread = awayExp - homeExp;
+
+            NbaGameEventDto nbaGameEventDto = NbaGameEventDto.builder().
+                    eventName("").
+                    eventTime("").
+                    homeTeamName("").
+                    awayTeamName("").
+                    homePlayers(toPlayerRequest(homePlayers, true)).
+                    awayPlayers(toPlayerRequest(awayPlayers, false)).
+                    totalPoints(matchTotalPoints).
+                    matchSpread(matchSpread).
+                    build();
+
+
+            ResponseEntity<?> modelResponse = new ApplicationController().getGamePred(nbaGameEventDto);
+
+            Map<String, Map<String, Map<Integer, Double>>> modelOutputMap  = (Map<String, Map<String, Map<Integer, Double>>>) modelResponse.getBody();
+
+            for(BacktestPlayerWithCoefs player : gamePlayers){
+                Double expThrees = modelOutputMap.get("playerThreePoints").get(player.getPlayerName()).get(-1);
+                Double expFgPred = modelOutputMap.get("fgAttempted").get(player.getPlayerName()).get(-1);
+                Double expTwos = modelOutputMap.get("playerTwoPoints").get(player.getPlayerName()).get(-1);
+                Double expFts = modelOutputMap.get("playerFts").get(player.getPlayerName()).get(-1);
+
+
+                double zeroProb = ZeroMinutesModel.zeroMinutesProb(player.getPmin(), player.getStarter(), 0);
+
+                list.add(new SimulatorPredictions(gameId, player.getPlayerId(),
+                        expFgPred,
+                        expTwos,
+                        expThrees,
+                        expFts,
+                        0,0,0,0, zeroProb));
             }
             counter++;
             if (counter % 100 == 0) {
@@ -61,17 +90,49 @@ public class BacktestApplication {
             }
         }
         CsvUtils.savePredictions(list);
-
-
     }
 
-    private static double calculateTeamTotalFgPred(List<PlayerWithCoefs> teamPlayers) {
-        double totalFgPred = 0d;
-        for(PlayerWithCoefs player : teamPlayers){
-            double fgAttemptedPerMin = TargetPredicted.forFgAttempted(player.getFgAttemptedPlayerCoef(), player.getFgAttemptedPrior());
-            double fgAttemptedPrediction = FgAttemptedModel.getFgAttemptedPrediction(fgAttemptedPerMin, player.getMinPlayed());
-            totalFgPred += fgAttemptedPrediction;
+    private static List<PlayerRequest> toPlayerRequest(List<BacktestPlayerWithCoefs> homePlayersWithCoefs, boolean isHomePlayer) {
+        List<PlayerRequest> list = new ArrayList<>();
+        for(BacktestPlayerWithCoefs playerWithCoefs : homePlayersWithCoefs) {
+            PlayerRequest playerRequest = PlayerRequest.builder()
+                    .team("")
+                    .name(playerWithCoefs.getPlayerName())
+                    .pmin(playerWithCoefs.getPmin())
+                    .position("")
+                    .starter(playerWithCoefs.getStarter())
+                    .isHomePlayer(isHomePlayer)
+                    .averageMinutes(playerWithCoefs.getAverageMinutesInSeason())
+                    .fgAttemptedCoef((playerWithCoefs.getFgAttemptedPlayerCoef()))
+                    .fgAttemptedPrior((playerWithCoefs.getFgAttemptedPrior()))
+                    .threePropCoef((playerWithCoefs.getThreePropCoef()))
+                    .threePropPrior(playerWithCoefs.getThreePropPrior())
+                    .threePercCoef((playerWithCoefs.getThreePercCoef()))
+                    .threePercPrior(playerWithCoefs.getThreePercPrior())
+                    .twoPercCoef((playerWithCoefs.getTwoPercCoef()))
+                    .twoPercPrior(playerWithCoefs.getTwoPercPrior())
+                    .ftsAttemptedCoef((playerWithCoefs.getFtsAttemptedCoef()))
+                    .ftsAttemptedPrior(playerWithCoefs.getFtsAttemptedPrior())
+                    .ftPercCoef((playerWithCoefs.getFtPercCoef()))
+                    .ftPercPrior(playerWithCoefs.getFtPercPrior())
+                    .reboundsCoef((playerWithCoefs.getReboundsCoef()))
+                    .reboundsPrior(playerWithCoefs.getReboundsPrior())
+                    .offReboundsPropCoef((playerWithCoefs.getOffReboundsPropCoef()))
+                    .offReboundsPropPrior(playerWithCoefs.getOffReboundsPropPrior())
+                    .blocksCoef((playerWithCoefs.getBlocksCoef()))
+                    .blocksPrior(playerWithCoefs.getBlocksPrior())
+                    .stealsCoef((playerWithCoefs.getStealsCoef()))
+                    .stealsPrior(playerWithCoefs.getStealsPrior())
+                    .turnoversCoef((playerWithCoefs.getTurnoversCoef()))
+                    .turnoversPrior(playerWithCoefs.getTurnoversPrior())
+                    .foulsCoef((playerWithCoefs.getFoulsCoef()))
+                    .foulsPrior(playerWithCoefs.getFoulsPrior())
+                    .averageMinutesInSeason(playerWithCoefs.getAverageMinutesInSeason())
+                    .lastGameMin(playerWithCoefs.getLastGameMin())
+                    .build();
+
+            list.add(playerRequest);
         }
-        return totalFgPred;
+        return list;
     }
 }
