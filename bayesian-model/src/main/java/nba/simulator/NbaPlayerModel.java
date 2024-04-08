@@ -8,26 +8,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static nba.simulator.PlayerSimulator.simulateFgAttemped;
+
 public class NbaPlayerModel {
     private static final PlayerSimulator PLAYER_SIMULATOR = new PlayerSimulator();
     private static final Random RANDOM = new Random();
 
-    public static ModelOutput runModel(List<PlayerWithCoefs> players){
+    public static ModelOutput runModel(List<PlayerWithCoefs> players, Map<String, Double> minutesExpected){
 
         Map<String, Map<Integer, Double>> playerPointsMap = initializePlayerMap(players);
         Map<String, Map<Integer, Double>> playerThreePointsMap = initializePlayerMap(players);
+        Map<String, Map<Integer, Double>> playerTwoPointsMap = initializePlayerMap(players);
+        Map<String, Map<Integer, Double>> playerFtsPointsMap = initializePlayerMap(players);
+        Map<String, Map<Integer, Double>> playerFgAttemptedMap = initializePlayerMap(players);
 
         for (PlayerWithCoefs player : players) {
             double fgAttemptedPerMin = TargetPredicted.forFgAttempted(player.getFgAttemptedPlayerCoef(), player.getFgAttemptedPrior());
 
-
-            double[] minutesDistributionForPrediction = SimulateMinutesForPlayer.getMinutesDistributionForPrediction(player.getMinPlayed());
+            double minutesPredicted = minutesExpected.get(player.getPlayerName());
+            minutesPredicted = minutesPredicted < 7 ? 7 : minutesPredicted;
+            minutesPredicted = minutesPredicted > 40 ? 40 : minutesPredicted;
+            double[] minutesDistributionForPrediction = SimulateMinutesForPlayer.getMinutesDistributionForPrediction((int) Math.round(minutesPredicted));
 
             for (int i = 0; i < 40000; i++) {
                 int simulateMinutesPlayed = simulateMinutesPlayed(minutesDistributionForPrediction);
 
-                double fgAttemptedPrediction = FgAttemptedModel.getFgAttemptedPrediction(fgAttemptedPerMin, simulateMinutesPlayed);
-                SimulatedPlayerScoring simulatedPlayerScoring = PLAYER_SIMULATOR.simulatePoints(player, simulateMinutesPlayed, fgAttemptedPrediction);
+                double fgAttemptedPrediction = simulateMinutesPlayed * fgAttemptedPerMin;// FgAttemptedModel.getFgAttemptedPrediction(fgAttemptedPerMin, simulateMinutesPlayed);
+                int fgAttempted = simulateFgAttemped(fgAttemptedPrediction);
+
+                SimulatedPlayerScoring simulatedPlayerScoring = PLAYER_SIMULATOR.simulatePoints(player, simulateMinutesPlayed, fgAttempted);
 
                 int twoPoints = simulatedPlayerScoring.getTwoPointers();
                 int threePoints = simulatedPlayerScoring.getThreePoints();
@@ -45,9 +54,28 @@ public class NbaPlayerModel {
                 }else {
                     playerThreePointsMap.get(player.getPlayerName()).put(threePoints, playerThreePointsMap.get(player.getPlayerName()).get(threePoints) + 1d / 40000d);
                 }
+
+                if(playerTwoPointsMap.get(player.getPlayerName()).get(twoPoints) == null){
+                    playerTwoPointsMap.get(player.getPlayerName()).put(twoPoints, 1d / 40000d);
+                }else {
+                    playerTwoPointsMap.get(player.getPlayerName()).put(twoPoints, playerTwoPointsMap.get(player.getPlayerName()).get(twoPoints) + 1d / 40000d);
+                }
+
+                if(playerFtsPointsMap.get(player.getPlayerName()).get(fts) == null){
+                    playerFtsPointsMap.get(player.getPlayerName()).put(fts, 1d / 40000d);
+                }else {
+                    playerFtsPointsMap.get(player.getPlayerName()).put(fts, playerFtsPointsMap.get(player.getPlayerName()).get(fts) + 1d / 40000d);
+                }
+
+                if(playerFgAttemptedMap.get(player.getPlayerName()).get(fgAttempted) == null){
+                    playerFgAttemptedMap.get(player.getPlayerName()).put(fgAttempted, 1d / 40000d);
+                }else {
+                    playerFgAttemptedMap.get(player.getPlayerName()).put(fgAttempted, playerFgAttemptedMap.get(player.getPlayerName()).get(fgAttempted) + 1d / 40000d);
+                }
+
             }
         }
-        return new ModelOutput(playerPointsMap, playerThreePointsMap);
+        return new ModelOutput(playerPointsMap, playerThreePointsMap, playerFgAttemptedMap, playerTwoPointsMap, playerFtsPointsMap);
     }
 
     private static int simulateMinutesPlayed(double[] minutesDistributionForPrediction) {

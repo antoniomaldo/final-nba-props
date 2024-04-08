@@ -7,10 +7,16 @@ public class ModelOutput {
 
     private final Map<String, Map<Integer, Double>> playerOutput;
     private final Map<String, Map<Integer, Double>> playerThreePointsMap;
+    private final Map<String, Map<Integer, Double>> fgAttemptedMap;
 
-    public ModelOutput(Map<String, Map<Integer, Double>> playerOutput, Map<String, Map<Integer, Double>> playerThreePointsMap) {
+    private final Map<String, Map<Integer, Double>> playerTwoPointsMap;
+    private final Map<String, Map<Integer, Double>> playerFtsPointsMap;
+    public ModelOutput(Map<String, Map<Integer, Double>> playerOutput, Map<String, Map<Integer, Double>> playerThreePointsMap, Map<String, Map<Integer, Double>> playerFgAttemptedMap, Map<String, Map<Integer, Double>> playerTwoPointsMap, Map<String, Map<Integer, Double>> playerFtsPointsMap) {
         this.playerOutput = playerOutput;
         this.playerThreePointsMap = playerThreePointsMap;
+        this.fgAttemptedMap = playerFgAttemptedMap;
+        this.playerTwoPointsMap = playerTwoPointsMap;
+        this.playerFtsPointsMap = playerFtsPointsMap;
     }
 
     public Map<String, Map<Integer, Double>> getPlayerOutput() {
@@ -22,22 +28,36 @@ public class ModelOutput {
     }
 
     public Map<String, Map<Integer, Double>> getPlayerOverProb() {
-        Map<String, Map<Integer, Double>> map = new HashMap<>();
-        for (String playerName : this.playerOutput.keySet()) {
-            Map<Integer, Double> playerOverProb = new HashMap<>();
-            playerOverProb.putAll(this.playerOutput.get(playerName));
-            playerOverProb.put(-1, getAverageForPlayer(playerName));
-            map.put(playerName, playerOverProb);
-        }
+        Map<String, Map<Integer, Double>> map = getPlayerThreePointsOverProb(this.playerOutput);
         return map;
     }
 
     public Map<String, Map<Integer, Double>> getPlayerThreePointsOverProb() {
+        Map<String, Map<Integer, Double>> map = getPlayerThreePointsOverProb(this.playerThreePointsMap);
+        return map;
+    }
+
+    public Map<String, Map<Integer, Double>> getPlayerFgAttemptedOverProb() {
+        Map<String, Map<Integer, Double>> map = getPlayerThreePointsOverProb(this.fgAttemptedMap);
+        return map;
+    }
+
+    public Map<String, Map<Integer, Double>> getPlayerTwoPointsOverProb() {
+        Map<String, Map<Integer, Double>> map = getPlayerThreePointsOverProb(this.playerTwoPointsMap);
+        return map;
+    }
+
+    public Map<String, Map<Integer, Double>> getPlayerFtsOverProb() {
+        Map<String, Map<Integer, Double>> map = getPlayerThreePointsOverProb(this.playerFtsPointsMap);
+        return map;
+    }
+
+    private Map<String, Map<Integer, Double>> getPlayerThreePointsOverProb(Map<String, Map<Integer, Double>> playerMap) {
         Map<String, Map<Integer, Double>> map = new HashMap<>();
-        for (String playerName : this.playerThreePointsMap.keySet()) {
+        for (String playerName : playerMap.keySet()) {
             Map<Integer, Double> playerOverProb = new HashMap<>();
-            playerOverProb.putAll(this.playerThreePointsMap.get(playerName));
-            playerOverProb.put(-1, getAverageForPlayer(playerName));
+            playerOverProb.putAll(playerMap.get(playerName));
+            playerOverProb.put(-1, getAverageForPlayer(playerName, playerMap));
             map.put(playerName, playerOverProb);
         }
         return map;
@@ -52,6 +72,11 @@ public class ModelOutput {
     public double getAverageForPlayer(String player) {
         Map<Integer, Double> playerPointsMap = this.playerOutput.get(player);
         return playerPointsMap.keySet().stream().mapToDouble(k -> k * playerPointsMap.get(k)).sum();
+    }
+
+    public double getAverageForPlayer(String player, Map<String, Map<Integer, Double>> playersMap) {
+        Map<Integer, Double> playerMap = playersMap.get(player);
+        return playerMap.keySet().stream().mapToDouble(k -> k * playerMap.get(k)).sum();
     }
 
     public double getProbabilityOfEvenScoreForPlayer(String player) {

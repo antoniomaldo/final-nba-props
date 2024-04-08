@@ -8,8 +8,7 @@ public class PlayerSimulator {
     public static final Random RANDOM = new Random();
     private static final double THREE_PROP_WEIGHT = -4.1182636747493655;
     private static final double THREE_PERC_WEIGHT = -1.0895411400443664;
-    public SimulatedPlayerScoring simulatePoints(PlayerWithCoefs playerWithCoefs, int minutesPlayed, double fgAttemptedPrediction) {
-        int fgAttempted = simulateFgAttemped(fgAttemptedPrediction);
+    public SimulatedPlayerScoring simulatePoints(PlayerWithCoefs playerWithCoefs, int minutesPlayed, int fgAttempted) {
 
         double threeProp = TargetPredicted.forThreeProp(playerWithCoefs.getThreePropCoef(), fgAttempted, playerWithCoefs.getThreePropPrior(), THREE_PROP_WEIGHT);
 
@@ -60,7 +59,7 @@ public class PlayerSimulator {
         }
         return threes;
     }
-    private static int simulateFgAttemped(double mean) {
+    public static int simulateFgAttemped(double mean) {
         double L = Math.exp(-mean);
         int k = 0;
         double p = 1.0;
