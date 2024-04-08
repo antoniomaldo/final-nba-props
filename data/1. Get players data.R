@@ -69,12 +69,35 @@ playedData$cumMinInSeason <- unlist(aggregate(Min ~ seasonYear + PlayerId, playe
 playedData$cumGamesPlayedInSeason <- unlist(aggregate(Min ~ seasonYear + PlayerId, playedData, FUN = function(x){(0: (length(x) - 1))})$Min)
 playedData$averageMinutesInSeason <- playedData$cumMinInSeason / playedData$cumGamesPlayedInSeason
 
+playedData$rowId <- 1:nrow(playedData)
 
-players <- merge(players, playedData[c("GameId", "PlayerId", "cumMinInSeason", "cumGamesPlayedInSeason", "averageMinutesInSeason", "Date")], all.x = T)
+playedData <- sqldf("SELECT t1.*, t2.Min AS lastGameMin FROM playedData t1 
+                  LEFT JOIN playedData t2 ON t1.PlayerId = t2.PlayerId AND t1.rowId = t2.rowId + 1")
+
+playedData$lastGameMin[playedData$cumGamesPlayedInSeason==0] <- -1
+playedData$averageMinutesInSeason[playedData$cumGamesPlayedInSeason==0] <- -1
+
+players <- merge(players, playedData[c("GameId", "PlayerId", "cumMinInSeason", "cumGamesPlayedInSeason", "averageMinutesInSeason", "lastGameMin", "Date")], all.x = T)
 players <- players[order(players$PlayerId, players$Date),]
+
+#First game per season for players
+firstDate <- aggregate(Date ~ PlayerId + seasonYear, players, min)
+colnames(firstDate)[3] <- "FirstDate"
+
+players <- merge(players, firstDate)
+
+players$firstGame <- 1 * (players$FirstDate == players$Date)
+
+players$averageMinutesInSeason[players$firstGame == 1] <- -1
+players$lastGameMin[players$firstGame == 1] <- -1
+
 players$averageMinutesInSeason[!is.na(players$cumGamesPlayedInSeason) & players$cumGamesPlayedInSeason == 0] <- -1
+players$lastGameMin[!is.na(players$cumGamesPlayedInSeason) & players$cumGamesPlayedInSeason == 0] <- -1
 
 players$averageMinutesInSeason <- na.locf(players$averageMinutesInSeason)
+players$lastGameMin <- na.locf(players$lastGameMin)
+
+
 
 #Map to odds
 mappedOdds <- mapSbrDataToEspn(eventsData = events, sbrData = sbrOdds, baseDir = BASE_DIR)
