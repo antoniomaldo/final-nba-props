@@ -1,9 +1,9 @@
 package nba.ui_application;
 
 
-import hex.genmodel.easy.exception.PredictException;
 import nba.dto.NbaGameEventDto;
 import nba.dto.PlayerRequest;
+import nba.minutedistribution.NormalizedGivenPlayedPredictions;
 import nba.simulator.ModelOutput;
 import nba.simulator.NbaPlayerModel;
 import nba.simulator.PlayerWithCoefs;
@@ -28,23 +28,48 @@ public class ApplicationController {
 
     @ResponseBody
     @PostMapping(value = "/getMatchPredictions", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getGamePred(@RequestBody NbaGameEventDto gameRequest) throws PredictException {
+    public ResponseEntity<?> getGamePred(@RequestBody NbaGameEventDto gameRequest) {
+
+        Map<String, Double> minutesExpected = buildMinutesExpectedMap(gameRequest);
 
         List<PlayerWithCoefs> homePlayers = toPlayerList(gameRequest.getHomePlayers(), "home");
         List<PlayerWithCoefs> awayPlayers = toPlayerList(gameRequest.getAwayPlayers(), "away");
 
         List<PlayerWithCoefs> collect = Stream.concat(homePlayers.stream(), awayPlayers.stream()).collect(Collectors.toList());
 
-        ModelOutput modelOutput = NbaPlayerModel.runModel(collect);
-        Map<String, Double> percShotsGivenSpread = new HashMap<>();
+        ModelOutput modelOutput = NbaPlayerModel.runModel(collect, minutesExpected);
 
         Map<String, Object> modelOutputMap = new HashMap<>();
 
-        modelOutputMap.put("percShots", percShotsGivenSpread);
         modelOutputMap.put("modelOutput", modelOutput.getPlayerOverProb());
         modelOutputMap.put("playerThreePoints", modelOutput.getPlayerThreePointsOverProb());
+        modelOutputMap.put("fgAttempted", modelOutput.getPlayerFgAttemptedOverProb());
+        modelOutputMap.put("playerTwoPoints", modelOutput.getPlayerTwoPointsOverProb());
+        modelOutputMap.put("playerFts", modelOutput.getPlayerFtsOverProb());
 
         return new ResponseEntity<>(modelOutputMap, HttpStatus.OK);
+    }
+
+    private Map<String, Double> buildMinutesExpectedMap(NbaGameEventDto gameRequest) {
+        Map<String, Double> map = new HashMap<>();
+        double matchTotalPoints = gameRequest.getTotalPoints();
+        double matchSpread = gameRequest.getMatchSpread();
+
+        double homeExp = (matchTotalPoints - matchSpread) / 2d;
+        double awayExp = matchTotalPoints - homeExp;
+
+        List<PlayerRequest> homePlayers = NormalizedGivenPlayedPredictions.addNormalizedPredictions(gameRequest.getHomePlayers(), homeExp, awayExp);
+        List<PlayerRequest> awayPlayers = NormalizedGivenPlayedPredictions.addNormalizedPredictions(gameRequest.getAwayPlayers(), awayExp,homeExp);
+
+        for(PlayerRequest playerRequest : homePlayers){
+            map.put(playerRequest.getName(), playerRequest.getTeamAdjustedMinAvg() / (1 - playerRequest.getZeroPred()));
+        }
+
+        for(PlayerRequest playerRequest : awayPlayers){
+            map.put(playerRequest.getName(), playerRequest.getTeamAdjustedMinAvg() / (1 - playerRequest.getZeroPred()));
+        }
+
+        return map;
     }
 
     private List<PlayerWithCoefs> toPlayerList(List<PlayerRequest> playerRequestList, String team) {
@@ -86,7 +111,8 @@ public class ApplicationController {
                 playerRequest.getTurnoversPrior(),
                 playerRequest.getFoulsCoef(),
                 playerRequest.getFoulsPrior(),
-                playerRequest.getAverageMinutesInSeason()
+                playerRequest.getAverageMinutesInSeason(),
+                playerRequest.getLastGameMin()
                 );
     }
 

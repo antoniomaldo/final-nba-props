@@ -6,6 +6,7 @@ import nba.dto.PlayerRequest;
 import nba.dto.RotowireDataLoader;
 import nba.dto.RotowirePlayer;
 import nba.mappings.SbrToRotowireTeamNameMapping;
+import nba.minutedistribution.NormalizedGivenPlayedPredictions;
 import nba.sbr.domain.MatchWithOdds;
 import nba.sbr.scraper.NbaScraper;
 import nba.simulator.PlayerWithCoefs;
@@ -50,13 +51,22 @@ public class DataServiceController {
             List<PlayerRequest> homePlayers = buildPlayers(homeTeamName, true);
             List<PlayerRequest> awayPlayers = buildPlayers(awayTeamName, false);
 
+            double matchTotalPoints = matchWithOdds.getMatchTotal().getLine();
+            double matchSpread = matchWithOdds.getMatchSpread().getLine();
+
+            double homeExp = (matchTotalPoints - matchSpread) / 2d;
+            double awayExp = matchTotalPoints - homeExp;
+
+            homePlayers = NormalizedGivenPlayedPredictions.addNormalizedPredictions(homePlayers, homeExp, awayExp);
+            awayPlayers = NormalizedGivenPlayedPredictions.addNormalizedPredictions(awayPlayers, awayExp,homeExp);
+
             NbaGameEventDto nbaGameEventDto = NbaGameEventDto.builder().
                     eventName(eventName).
                     eventTime(matchWithOdds.getMatchWithoutOdds().getDateTime().toLocalDate().toString()).
                     homeTeamName(homeTeamName).
                     awayTeamName(awayTeamName).
-                    totalPoints(matchWithOdds.getMatchTotal().getLine()).
-                    matchSpread(matchWithOdds.getMatchSpread().getLine()).
+                    totalPoints(matchTotalPoints).
+                    matchSpread(matchSpread).
                     homePlayers(homePlayers).
                     awayPlayers(awayPlayers).
                     build();
@@ -118,6 +128,7 @@ public class DataServiceController {
                         .foulsCoef(round(playerWithCoefs.getFoulsCoef()))
                         .foulsPrior(playerWithCoefs.getFoulsPrior())
                         .averageMinutesInSeason(playerWithCoefs.getAverageMinutesInSeason())
+                        .lastGameMin(playerWithCoefs.getLastGameMin())
                         .build();
                 playerRequests.add(playerRequest);
             }else{

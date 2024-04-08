@@ -47,9 +47,10 @@ public class PlayerWithCoefs {
     private final double foulsPrior;
 
     private final double averageMinutesInSeason;
+    private final double lastGameMin;
 
 
-    public PlayerWithCoefs(int gameId, int seasonYear, String team, String playerName, int playerId, int minPlayed, double fgAttemptedPlayerCoef, double fgAttemptedPrior, double threePropCoef, double threePropPrior, double threePercCoef, double threePercPrior, double twoPercCoef, double twoPercPrior, double ftsAttemptedCoef, double ftsAttemptedPrior, double ftPercCoef, double ftPercPrior, double reboundsCoef, double reboundsPrior, double offReboundsPropCoef, double offReboundsPropPrior, double blocksCoef, double blocksPrior, double stealsCoef, double stealsPrior, double turnoversCoef, double turnoversPrior, double foulsCoef, double foulsPrior, double averageMinutesInSeason) {
+    public PlayerWithCoefs(int gameId, int seasonYear, String team, String playerName, int playerId, int minPlayed, double fgAttemptedPlayerCoef, double fgAttemptedPrior, double threePropCoef, double threePropPrior, double threePercCoef, double threePercPrior, double twoPercCoef, double twoPercPrior, double ftsAttemptedCoef, double ftsAttemptedPrior, double ftPercCoef, double ftPercPrior, double reboundsCoef, double reboundsPrior, double offReboundsPropCoef, double offReboundsPropPrior, double blocksCoef, double blocksPrior, double stealsCoef, double stealsPrior, double turnoversCoef, double turnoversPrior, double foulsCoef, double foulsPrior, double averageMinutesInSeason, double lastGameMin) {
         this.gameId = gameId;
         this.seasonYear = seasonYear;
         this.team = team;
@@ -81,6 +82,7 @@ public class PlayerWithCoefs {
         this.foulsCoef = foulsCoef;
         this.foulsPrior = foulsPrior;
         this.averageMinutesInSeason = averageMinutesInSeason;
+        this.lastGameMin = lastGameMin;
     }
 
     public int getGameId() {
@@ -205,5 +207,9 @@ public class PlayerWithCoefs {
 
     public double getAverageMinutesInSeason(){
         return averageMinutesInSeason;
+    }
+
+    public double getLastGameMin() {
+        return lastGameMin;
     }
 }
