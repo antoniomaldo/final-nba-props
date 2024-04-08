@@ -40,7 +40,7 @@ public class CoefUpdaterApplication {
         PlayersData allPlayers = CsvUtils.loadData(false);
 
         PlayersData playersForSeason = allPlayers.getPlayersDataForSeason(2024);
-
+        playersForSeason = allPlayers;
         addDummyGameForAllPlayers(playersForSeason);
 
         List<PlayerPredictions> fgAttemptedPredictions = getPlayersPredictions(new CoefficientUpdatingFgAttemptedFunction(), new FgAttemptedPrior(), playersForSeason, FG_ATTEMPTED_MODEL_COEFS);
