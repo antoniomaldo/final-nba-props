@@ -88,6 +88,24 @@ public abstract class PlayerRequest {
     public abstract Double getFoulsPrior();
 
     public abstract Double getAverageMinutesInSeason();
+    public abstract Double getLastGameMin();
+
+
+    public double getAverageMinutesInSeasonOrPmin(){
+        if(getAverageMinutesInSeason() == null){
+            return getPmin();
+        }else{
+            return getAverageMinutesInSeason();
+        }
+    }
+
+    public double getLastGameMinOrPmin(){
+        if(getLastGameMin() == null || getLastGameMin() <= 0){
+            return getPmin();
+        }else{
+            return getLastGameMin();
+        }
+    }
 
     public abstract double getZeroPred();
     public abstract double getGivenPlayedPred();
@@ -166,6 +184,7 @@ public abstract class PlayerRequest {
         public abstract Builder foulsPrior(Double foulsPrior);
 
         public abstract Builder averageMinutesInSeason(Double averageMinutesInSeason);
+        public abstract Builder lastGameMin(Double lastGameMin);
         public abstract Builder zeroPred(double zeroPred);
         public abstract Builder givenPlayedPred(double givenPlayedPred);
         public abstract Builder teamAdjustedMinAvg(double teamAdjustedMinAvg);

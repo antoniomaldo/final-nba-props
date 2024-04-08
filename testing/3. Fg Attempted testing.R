@@ -8,6 +8,11 @@ javaPreds <- read.csv("C:\\czrs-ds-models\\nba-player-props\\testing\\fgAttempte
 javaPreds <- subset(javaPreds, javaPreds$seasonYear > 2017 & javaPreds$target >= 0)
 javaPreds <- merge(javaPreds, allPlayers[c("GameId", "PlayerId", "Team", "HomeTeam", "AwayTeam",  "matchSpread", "totalPoints")])
 
+doncic <- subset(javaPreds, javaPreds$PlayerId == 3945274)
+
+plot.ts(doncic$target)
+lines(doncic$targetPredicted, col = "red")
+
 javaPreds$homeExp <- (javaPreds$totalPoints - javaPreds$matchSpread) / 2
 javaPreds$awayExp <- javaPreds$totalPoints - javaPreds$homeExp
 
@@ -31,6 +36,7 @@ binnedplot(javaPreds$targetPredicted[javaPreds$PlayerId == 3992],
 binnedplot(javaPreds$targetPredicted, javaPreds$resid)
 binnedplot(javaPreds$ownExp, javaPreds$resid)
 binnedplot(javaPreds$ownExp, javaPreds$fgResid)
+binnedplot(javaPreds$minPlayed, javaPreds$fgResid)
 
 
 binnedplot(javaPreds$threeExp, javaPreds$threeResid)

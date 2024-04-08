@@ -4,7 +4,7 @@ BASE_DIR <- "C:\\czrs-ds-models\\nba-player-props\\"
 COEFS_DIR <- paste0(BASE_DIR, "testing\\")
 
 players <- read.csv(paste0(BASE_DIR, "data\\allPlayers.csv"))
-players <- unique(players[c("GameId", "Name", "PlayerId", "Team", "HomeTeam", "totalPoints", "matchSpread")])
+players <- unique(players[c("GameId", "Date",  "Name", "PlayerId", "Team", "HomeTeam", "totalPoints", "matchSpread", "lastGameMin")])
 players <- subset(players, !is.na(players$matchSpread) & !is.na(players$totalPoints))
 
 players$homeExp <- (players$totalPoints - players$matchSpread) / 2
@@ -13,7 +13,7 @@ players$ownExp <- ifelse(players$HomeTeam == players$Team, players$homeExp, play
 players$oppExp <- ifelse(players$HomeTeam == players$Team, players$awayExp, players$homeExp)
 
 
-fgPred <- read.csv(paste0(COEFS_DIR, "fgAttemptedPerMin.csv"))[c("seasonYear", "GameId", "PlayerId", "minPlayed", "priorForPlayer", "playerCoef", "averageMinutesInSeason")]
+fgPred <- read.csv(paste0(COEFS_DIR, "fgAttemptedPerMin.csv"))[c("seasonYear", "GameId", "PlayerId", "minPlayed", "gamesPlayedInSeason", "priorForPlayer", "playerCoef", "averageMinutesInSeason")]
 threeProp <- read.csv(paste0(COEFS_DIR, "threeProp.csv"))[c("GameId", "PlayerId", "priorForPlayer", "playerCoef")]
 twoPerc <- read.csv(paste0(COEFS_DIR, "twoPerc.csv"))[c("GameId", "PlayerId", "priorForPlayer", "playerCoef")]
 threePerc <- read.csv(paste0(COEFS_DIR, "threePerc.csv"))[c("GameId", "PlayerId", "priorForPlayer", "playerCoef")]
@@ -27,7 +27,7 @@ personalFouls <- read.csv(paste0(COEFS_DIR, "personalFoulsPerMin.csv"))[c("GameI
 ftsAttemptedPerMin <- read.csv(paste0(COEFS_DIR, "ftsAttemptedPerMin.csv"))[c("GameId", "PlayerId", "priorForPlayer", "playerCoef")]
 ftPerc <- read.csv(paste0(COEFS_DIR, "ftPerc.csv"))[c("GameId", "PlayerId", "priorForPlayer", "playerCoef")]
 
-colnames(fgPred)[5:6] <- c("fgPrior", "fgPlayerCoef")
+colnames(fgPred)[6:7] <- c("fgPrior", "fgPlayerCoef")
 colnames(threeProp)[3:4] <- c( "threePropPrior", "threePropPlayerCoef")
 colnames(twoPerc)[3:4] <- c( "twoPercPrior", "twoPercPlayerCoef")
 colnames(threePerc)[3:4] <- c("threePercPrior", "threePercPlayerCoef")
@@ -57,8 +57,22 @@ allPreds <- merge(allPreds, ftPerc, by = c("GameId", "PlayerId"))
 allPreds <- merge(allPreds, players, by = c("GameId", "PlayerId"), all.x = T)
 
 latestPreds <- subset(allPreds, allPreds$GameId == -1)
+#allPreds <- subset(allPreds, !is.na(allPreds$matchSpread))
 
-allPreds <- subset(allPreds, !is.na(allPreds$matchSpread))
 write.csv(allPreds, paste0(COEFS_DIR, "allPreds.csv"))
+
+noLatest <- subset(allPreds, allPreds$GameId != -1)
+lastDate <- aggregate(Date ~ PlayerId, noLatest, max)
+colnames(lastDate)[2] <- "LastDate"
+
+allPreds <- merge(allPreds, lastDate)
+lastDateData <- subset(allPreds, allPreds$LastDate == allPreds$Date)
+
+lastDateData$totalMinPlayed <- lastDateData$averageMinutesInSeason * (lastDateData$gamesPlayedInSeason - 1) + lastDateData$minPlayed
+lastDateData$averageMinutesInSeason <- lastDateData$totalMinPlayed / lastDateData$gamesPlayedInSeason
+lastDateData$lastGameMin <- lastDateData$minPlayed
+
+latestPreds <- latestPreds[,-which(colnames(latestPreds) %in% c("averageMinutesInSeason", "lastGameMin"))]
+latestPreds <- merge(latestPreds, lastDateData[c("PlayerId", "averageMinutesInSeason", "lastGameMin")])
 
 write.csv(latestPreds, paste0(COEFS_DIR, "lastUpdate.csv"))

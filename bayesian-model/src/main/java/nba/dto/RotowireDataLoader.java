@@ -29,7 +29,7 @@ public class RotowireDataLoader {
         try {
             res = Jsoup
                     .connect("https://www.rotowire.com/users/login.php")
-                    .data("username", "", "password", "")
+                    .data("username", "antonomaldo", "password", "Roto174114!")
                     .method(Connection.Method.POST)
                     .execute();
 

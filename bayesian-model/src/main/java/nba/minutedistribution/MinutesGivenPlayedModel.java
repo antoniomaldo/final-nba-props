@@ -5,7 +5,7 @@ import com.williamhill.trading.framework.math.common.splines.IntegerSpline;
 import org.apache.commons.math3.util.FastMath;
 
 public class MinutesGivenPlayedModel {
-    private static final double[] COEF = {1.842925d,0.3757121d,0.6938182d,1.184432d,1.185465d,1.524933d,1.122663d,0.015659d,-0.0003016792d,0.007669456d,0.006936485d,0.01896025d,-0.008255174d,0.002208371d,0.06374597d,-0.003229507d,0.0005362478d,-0.000335765d,-0.0001700901d,0.0002998766d,8.65262e-05};
+    private static final double[] COEF = {1.912834d,0.3414087d,0.7235398d,1.262182d,1.352581d,1.672959d,1.282233d,0.01081333d,-0.0003189751d,0.008385791d,0.001023392d,0.01942846d,-0.008347188d,0d,0.06393102d,-0.003387699d,0.0005614642d,-0.0003613362d,-0.0007119915d,0.0004255616d,9.573341e-05};
     private static int COUNTER = 0;
 
     private static double INTERCEPT = COEF[COUNTER++];
