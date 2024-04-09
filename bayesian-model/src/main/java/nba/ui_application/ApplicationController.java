@@ -85,7 +85,7 @@ public class ApplicationController {
                 2024,
                 team,
                 playerRequest.getName(),
-                1,
+                playerRequest.getPlayerId(),
                 (int) playerRequest.getPmin(),
                 playerRequest.getFgAttemptedCoef(),
                 playerRequest.getFgAttemptedPrior(),

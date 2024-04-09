@@ -17,6 +17,7 @@ public abstract class PlayerRequest {
     public abstract String getTeam();
 
     public abstract String getName();
+    public abstract Integer getPlayerId();
 
     public abstract double getPmin();
     public abstract int getStarter();
@@ -120,11 +121,13 @@ public abstract class PlayerRequest {
             zeroPred(0d);
             givenPlayedPred(0d);
             teamAdjustedMinAvg(0d);
+            playerId(1);
         }
 
         public abstract Builder team(final String team);
 
         public abstract Builder name(String name);
+        public abstract Builder playerId(Integer playerId);
 
         public abstract Builder pmin(double pmin);
 

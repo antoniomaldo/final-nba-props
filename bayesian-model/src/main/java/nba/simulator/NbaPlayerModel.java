@@ -16,11 +16,11 @@ public class NbaPlayerModel {
 
     public static ModelOutput runModel(List<PlayerWithCoefs> players, Map<String, Double> minutesExpected){
 
-        Map<String, Map<Integer, Double>> playerPointsMap = initializePlayerMap(players);
-        Map<String, Map<Integer, Double>> playerThreePointsMap = initializePlayerMap(players);
-        Map<String, Map<Integer, Double>> playerTwoPointsMap = initializePlayerMap(players);
-        Map<String, Map<Integer, Double>> playerFtsPointsMap = initializePlayerMap(players);
-        Map<String, Map<Integer, Double>> playerFgAttemptedMap = initializePlayerMap(players);
+        Map<Integer, Map<Integer, Double>> playerPointsMap = initializePlayerMap(players);
+        Map<Integer, Map<Integer, Double>> playerThreePointsMap = initializePlayerMap(players);
+        Map<Integer, Map<Integer, Double>> playerTwoPointsMap = initializePlayerMap(players);
+        Map<Integer, Map<Integer, Double>> playerFtsPointsMap = initializePlayerMap(players);
+        Map<Integer, Map<Integer, Double>> playerFgAttemptedMap = initializePlayerMap(players);
 
         for (PlayerWithCoefs player : players) {
             double fgAttemptedPerMin = TargetPredicted.forFgAttempted(player.getFgAttemptedPlayerCoef(), player.getFgAttemptedPrior());
@@ -43,34 +43,34 @@ public class NbaPlayerModel {
                 int fts = simulatedPlayerScoring.getFts();
                 int points = 3 * threePoints + 2 * twoPoints + fts;
 
-                if(playerPointsMap.get(player.getPlayerName()).get(points) == null){
-                    playerPointsMap.get(player.getPlayerName()).put(points, 1d / 40000d);
+                if(playerPointsMap.get(player.getPlayerId()).get(points) == null){
+                    playerPointsMap.get(player.getPlayerId()).put(points, 1d / 40000d);
                 }else {
-                    playerPointsMap.get(player.getPlayerName()).put(points, playerPointsMap.get(player.getPlayerName()).get(points) + 1d / 40000d);
+                    playerPointsMap.get(player.getPlayerId()).put(points, playerPointsMap.get(player.getPlayerId()).get(points) + 1d / 40000d);
                 }
 
-                if(playerThreePointsMap.get(player.getPlayerName()).get(threePoints) == null){
-                    playerThreePointsMap.get(player.getPlayerName()).put(threePoints, 1d / 40000d);
+                if(playerThreePointsMap.get(player.getPlayerId()).get(threePoints) == null){
+                    playerThreePointsMap.get(player.getPlayerId()).put(threePoints, 1d / 40000d);
                 }else {
-                    playerThreePointsMap.get(player.getPlayerName()).put(threePoints, playerThreePointsMap.get(player.getPlayerName()).get(threePoints) + 1d / 40000d);
+                    playerThreePointsMap.get(player.getPlayerId()).put(threePoints, playerThreePointsMap.get(player.getPlayerId()).get(threePoints) + 1d / 40000d);
                 }
 
-                if(playerTwoPointsMap.get(player.getPlayerName()).get(twoPoints) == null){
-                    playerTwoPointsMap.get(player.getPlayerName()).put(twoPoints, 1d / 40000d);
+                if(playerTwoPointsMap.get(player.getPlayerId()).get(twoPoints) == null){
+                    playerTwoPointsMap.get(player.getPlayerId()).put(twoPoints, 1d / 40000d);
                 }else {
-                    playerTwoPointsMap.get(player.getPlayerName()).put(twoPoints, playerTwoPointsMap.get(player.getPlayerName()).get(twoPoints) + 1d / 40000d);
+                    playerTwoPointsMap.get(player.getPlayerId()).put(twoPoints, playerTwoPointsMap.get(player.getPlayerId()).get(twoPoints) + 1d / 40000d);
                 }
 
-                if(playerFtsPointsMap.get(player.getPlayerName()).get(fts) == null){
-                    playerFtsPointsMap.get(player.getPlayerName()).put(fts, 1d / 40000d);
+                if(playerFtsPointsMap.get(player.getPlayerId()).get(fts) == null){
+                    playerFtsPointsMap.get(player.getPlayerId()).put(fts, 1d / 40000d);
                 }else {
-                    playerFtsPointsMap.get(player.getPlayerName()).put(fts, playerFtsPointsMap.get(player.getPlayerName()).get(fts) + 1d / 40000d);
+                    playerFtsPointsMap.get(player.getPlayerId()).put(fts, playerFtsPointsMap.get(player.getPlayerId()).get(fts) + 1d / 40000d);
                 }
 
-                if(playerFgAttemptedMap.get(player.getPlayerName()).get(fgAttempted) == null){
-                    playerFgAttemptedMap.get(player.getPlayerName()).put(fgAttempted, 1d / 40000d);
+                if(playerFgAttemptedMap.get(player.getPlayerId()).get(fgAttempted) == null){
+                    playerFgAttemptedMap.get(player.getPlayerId()).put(fgAttempted, 1d / 40000d);
                 }else {
-                    playerFgAttemptedMap.get(player.getPlayerName()).put(fgAttempted, playerFgAttemptedMap.get(player.getPlayerName()).get(fgAttempted) + 1d / 40000d);
+                    playerFgAttemptedMap.get(player.getPlayerId()).put(fgAttempted, playerFgAttemptedMap.get(player.getPlayerId()).get(fgAttempted) + 1d / 40000d);
                 }
 
             }
@@ -88,11 +88,11 @@ public class NbaPlayerModel {
         return 0;
     }
 
-    private static Map<String, Map<Integer, Double>> initializePlayerMap(List<PlayerWithCoefs> players) {
-        Map<String, Map<Integer, Double>> map = new HashMap<>();
+    private static Map<Integer, Map<Integer, Double>> initializePlayerMap(List<PlayerWithCoefs> players) {
+        Map<Integer, Map<Integer, Double>> map = new HashMap<>();
 
         for (PlayerWithCoefs player : players) {
-            map.put(player.getPlayerName(), new HashMap<>());
+            map.put(player.getPlayerId(), new HashMap<>());
         }
         return map;
     }

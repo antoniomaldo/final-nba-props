@@ -67,13 +67,13 @@ public class BacktestApplication {
 
             ResponseEntity<?> modelResponse = new ApplicationController().getGamePred(nbaGameEventDto);
 
-            Map<String, Map<String, Map<Integer, Double>>> modelOutputMap  = (Map<String, Map<String, Map<Integer, Double>>>) modelResponse.getBody();
+            Map<String, Map<Integer, Map<Integer, Double>>> modelOutputMap  = (Map<String, Map<Integer, Map<Integer, Double>>>) modelResponse.getBody();
 
             for(BacktestPlayerWithCoefs player : gamePlayers){
-                Double expThrees = modelOutputMap.get("playerThreePoints").get(player.getPlayerName()).get(-1);
-                Double expFgPred = modelOutputMap.get("fgAttempted").get(player.getPlayerName()).get(-1);
-                Double expTwos = modelOutputMap.get("playerTwoPoints").get(player.getPlayerName()).get(-1);
-                Double expFts = modelOutputMap.get("playerFts").get(player.getPlayerName()).get(-1);
+                Double expThrees = modelOutputMap.get("playerThreePoints").get(player.getPlayerId()).get(-1);
+                Double expFgPred = modelOutputMap.get("fgAttempted").get(player.getPlayerId()).get(-1);
+                Double expTwos = modelOutputMap.get("playerTwoPoints").get(player.getPlayerId()).get(-1);
+                Double expFts = modelOutputMap.get("playerFts").get(player.getPlayerId()).get(-1);
 
 
                 double zeroProb = ZeroMinutesModel.zeroMinutesProb(player.getPmin(), player.getStarter(), 0);
@@ -100,6 +100,7 @@ public class BacktestApplication {
                     .team("")
                     .name(playerWithCoefs.getPlayerName())
                     .pmin(playerWithCoefs.getPmin())
+                    .playerId(playerWithCoefs.getPlayerId())
                     .position("")
                     .starter(playerWithCoefs.getStarter())
                     .isHomePlayer(isHomePlayer)
