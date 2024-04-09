@@ -49,6 +49,8 @@ public class PlayerWithCoefs {
     private final double averageMinutesInSeason;
     private final double lastGameMin;
 
+    private double fgCoefMultiplier = 1;
+
 
     public PlayerWithCoefs(int gameId, int seasonYear, String team, String playerName, int playerId, int minPlayed, double fgAttemptedPlayerCoef, double fgAttemptedPrior, double threePropCoef, double threePropPrior, double threePercCoef, double threePercPrior, double twoPercCoef, double twoPercPrior, double ftsAttemptedCoef, double ftsAttemptedPrior, double ftPercCoef, double ftPercPrior, double reboundsCoef, double reboundsPrior, double offReboundsPropCoef, double offReboundsPropPrior, double blocksCoef, double blocksPrior, double stealsCoef, double stealsPrior, double turnoversCoef, double turnoversPrior, double foulsCoef, double foulsPrior, double averageMinutesInSeason, double lastGameMin) {
         this.gameId = gameId;
@@ -211,5 +213,13 @@ public class PlayerWithCoefs {
 
     public double getLastGameMin() {
         return lastGameMin;
+    }
+
+    public double getFgCoefMultiplier() {
+        return fgCoefMultiplier;
+    }
+
+    public void setFgCoefMultiplier(double fgCoefMultiplier) {
+        this.fgCoefMultiplier = fgCoefMultiplier;
     }
 }

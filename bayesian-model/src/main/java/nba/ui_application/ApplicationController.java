@@ -7,6 +7,7 @@ import nba.minutedistribution.NormalizedGivenPlayedPredictions;
 import nba.simulator.ModelOutput;
 import nba.simulator.NbaPlayerModel;
 import nba.simulator.PlayerWithCoefs;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,8 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -30,14 +29,14 @@ public class ApplicationController {
     @PostMapping(value = "/getMatchPredictions", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getGamePred(@RequestBody NbaGameEventDto gameRequest) {
 
-        Map<String, Double> minutesExpected = buildMinutesExpectedMap(gameRequest);
+        Pair<Map<String, Double>, Map<Integer, Double>> mapMapPair = buildMinutesExpectedMap(gameRequest);
+        Map<String, Double> minutesExpected =  mapMapPair.getLeft();
+        Map<Integer, Double> zeroMinProb = mapMapPair.getRight();
 
         List<PlayerWithCoefs> homePlayers = toPlayerList(gameRequest.getHomePlayers(), "home");
         List<PlayerWithCoefs> awayPlayers = toPlayerList(gameRequest.getAwayPlayers(), "away");
 
-        List<PlayerWithCoefs> collect = Stream.concat(homePlayers.stream(), awayPlayers.stream()).collect(Collectors.toList());
-
-        ModelOutput modelOutput = NbaPlayerModel.runModel(collect, minutesExpected);
+        ModelOutput modelOutput = NbaPlayerModel.runModel(homePlayers, awayPlayers, minutesExpected, zeroMinProb, gameRequest.getTotalPoints(), gameRequest.getMatchSpread());
 
         Map<String, Object> modelOutputMap = new HashMap<>();
 
@@ -50,8 +49,10 @@ public class ApplicationController {
         return new ResponseEntity<>(modelOutputMap, HttpStatus.OK);
     }
 
-    private Map<String, Double> buildMinutesExpectedMap(NbaGameEventDto gameRequest) {
+    private Pair<Map<String, Double>, Map<Integer, Double>> buildMinutesExpectedMap(NbaGameEventDto gameRequest) {
         Map<String, Double> map = new HashMap<>();
+        Map<Integer, Double> zeroPredMap = new HashMap<>();
+
         double matchTotalPoints = gameRequest.getTotalPoints();
         double matchSpread = gameRequest.getMatchSpread();
 
@@ -63,13 +64,16 @@ public class ApplicationController {
 
         for(PlayerRequest playerRequest : homePlayers){
             map.put(playerRequest.getName(), playerRequest.getTeamAdjustedMinAvg() / (1 - playerRequest.getZeroPred()));
+            zeroPredMap.put(playerRequest.getPlayerId(), playerRequest.getZeroPred());
         }
 
         for(PlayerRequest playerRequest : awayPlayers){
             map.put(playerRequest.getName(), playerRequest.getTeamAdjustedMinAvg() / (1 - playerRequest.getZeroPred()));
+            zeroPredMap.put(playerRequest.getPlayerId(), playerRequest.getZeroPred());
+
         }
 
-        return map;
+        return Pair.of(map, zeroPredMap);
     }
 
     private List<PlayerWithCoefs> toPlayerList(List<PlayerRequest> playerRequestList, String team) {
