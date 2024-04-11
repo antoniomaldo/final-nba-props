@@ -48,11 +48,10 @@ public class CoefficientUpdatingThreePropFunction extends BaseCoefficientUpdatin
                     gamesInSeason++;
                 }
 
-                if (i > 1) {
-                    resid = (2 * resid + lastResid) / 3d;
-                }
                 if (i > 2) {
                     resid = (3 * resid + 2 * lastResid +  lastTwoResid) / 6d;
+                }else if (i > 1) {
+                    resid = (2 * resid + lastResid) / 3d;
                 }
                 lastTwoResid = lastResid;
                 lastResid = resid;
@@ -65,7 +64,7 @@ public class CoefficientUpdatingThreePropFunction extends BaseCoefficientUpdatin
                     resid = real - targetPredicted;
 
                     predictions.add(new PlayerPredictions(playerGameData.getSeasonYear(), playerGameData.getGameId(), playerGameData.getPlayerId(), numbGames, gamesInSeason, playerGameData.getMinPlayed(), playerCoef, targetPredicted, real, playerGameData.getThreeAttempted(), fgAttempted, playerGameData.getThreeMade(), playerGameData.getFgMade(), playerGameData.getOffRebounds(), playerGameData.getDefRbounds(), playerGameData.getFtMade(), playerGameData.getFtAttempted(), priorForPlayer, playerGameData.getAverageMinutesInSeason()));
-                    playerCoef += Math.exp(weight1) * Math.log(fgAttempted) * resid;
+                    playerCoef += Math.exp(weight1) * Math.log(playerGameData.getMinPlayed() + 1) * resid / (Math.log(gamesInSeason * Math.exp(weight2) + 1));;
                 } else{
                     predictions.add(new PlayerPredictions(playerGameData.getSeasonYear(), playerGameData.getGameId(), playerGameData.getPlayerId(), numbGames, gamesInSeason, playerGameData.getMinPlayed(), playerCoef, -1, -1, playerGameData.getThreeAttempted(), fgAttempted, playerGameData.getThreeMade(), playerGameData.getFgMade(), playerGameData.getOffRebounds(), playerGameData.getDefRbounds(), playerGameData.getFtMade(), playerGameData.getFtAttempted(), priorForPlayer, playerGameData.getAverageMinutesInSeason()));
                 }

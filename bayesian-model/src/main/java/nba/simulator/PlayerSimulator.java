@@ -1,5 +1,8 @@
 package nba.simulator;
 
+import nba.bayesianmodel.models.ThreePercModelGivenOwnExp;
+import nba.bayesianmodel.models.ThreeProportionModelGivenFgAttempted;
+import nba.bayesianmodel.models.TwoPercModelGivenOwnExp;
 import nba.bayesianmodel.optimizers.targets.TargetPredicted;
 
 import java.util.Random;
@@ -8,15 +11,21 @@ public class PlayerSimulator {
     public static final Random RANDOM = new Random();
     private static final double THREE_PROP_WEIGHT = -4.1182636747493655;
     private static final double THREE_PERC_WEIGHT = -1.0895411400443664;
-    public SimulatedPlayerScoring simulatePoints(PlayerWithCoefs playerWithCoefs, int minutesPlayed, int fgAttempted) {
+    public SimulatedPlayerScoring simulatePoints(PlayerWithCoefs playerWithCoefs, int minutesPlayed, int fgAttempted, double fgAttemptedPrediction, double ownExp) {
 
         double threeProp = TargetPredicted.forThreeProp(playerWithCoefs.getThreePropCoef(), fgAttempted, playerWithCoefs.getThreePropPrior(), THREE_PROP_WEIGHT);
 
-        int threeAttempted = simulateThreeAttempted(fgAttempted, threeProp);
+        double threePropAdjusted = ThreeProportionModelGivenFgAttempted.adjustRate(threeProp,fgAttemptedPrediction, fgAttempted);
+
+        int threeAttempted = simulateThreeAttempted(fgAttempted, threePropAdjusted);
         int twoAttempted = fgAttempted - threeAttempted;
 
         double threePerc = TargetPredicted.forThreePerc(playerWithCoefs.getThreePercCoef(), threeAttempted, playerWithCoefs.getThreePercPrior(), THREE_PERC_WEIGHT);
+
+        double threePercAdjusted = threeAttempted == 0 ? 0 : ThreePercModelGivenOwnExp.adjustRate(threePerc, fgAttemptedPrediction, fgAttempted, ownExp, minutesPlayed, threeAttempted);
+
         double twoPerc = TargetPredicted.forTwoPerc(playerWithCoefs.getTwoPercCoef(), playerWithCoefs.getTwoPercPrior());
+        double twoPercAdjusted = TwoPercModelGivenOwnExp.adjustRate(twoPerc, fgAttemptedPrediction,fgAttempted, ownExp, minutesPlayed, threeAttempted);
 
         double ftsAttemptedPred = minutesPlayed * TargetPredicted.forFtsAttempted(playerWithCoefs.getFtsAttemptedCoef(), playerWithCoefs.getFtsAttemptedPrior());
         double ftsPercPred = TargetPredicted.forFtPerc(playerWithCoefs.getFtPercCoef(), playerWithCoefs.getFtPercPrior());
@@ -25,14 +34,14 @@ public class PlayerSimulator {
 
         int threePointers = 0;
         for (int i = 0; i < threeAttempted; i++) {
-            if(Math.random() < threePerc){
+            if(Math.random() < threePercAdjusted){
                 threePointers ++;
             }
         }
 
         int twoPointers = 0;
         for (int i = 0; i < twoAttempted; i++) {
-            if(Math.random() < twoPerc){
+            if(Math.random() < twoPercAdjusted){
                 twoPointers ++;
             }
         }

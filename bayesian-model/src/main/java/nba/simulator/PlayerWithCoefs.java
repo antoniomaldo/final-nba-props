@@ -50,6 +50,7 @@ public class PlayerWithCoefs {
     private final double lastGameMin;
 
     private double fgCoefMultiplier = 1;
+    private boolean isHomePlayer = false;
 
 
     public PlayerWithCoefs(int gameId, int seasonYear, String team, String playerName, int playerId, int minPlayed, double fgAttemptedPlayerCoef, double fgAttemptedPrior, double threePropCoef, double threePropPrior, double threePercCoef, double threePercPrior, double twoPercCoef, double twoPercPrior, double ftsAttemptedCoef, double ftsAttemptedPrior, double ftPercCoef, double ftPercPrior, double reboundsCoef, double reboundsPrior, double offReboundsPropCoef, double offReboundsPropPrior, double blocksCoef, double blocksPrior, double stealsCoef, double stealsPrior, double turnoversCoef, double turnoversPrior, double foulsCoef, double foulsPrior, double averageMinutesInSeason, double lastGameMin) {
@@ -221,5 +222,13 @@ public class PlayerWithCoefs {
 
     public void setFgCoefMultiplier(double fgCoefMultiplier) {
         this.fgCoefMultiplier = fgCoefMultiplier;
+    }
+
+    public boolean isHomePlayer() {
+        return isHomePlayer;
+    }
+
+    public void setHomePlayer(boolean homePlayer) {
+        isHomePlayer = homePlayer;
     }
 }

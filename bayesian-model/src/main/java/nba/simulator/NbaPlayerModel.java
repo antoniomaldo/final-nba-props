@@ -1,7 +1,5 @@
 package nba.simulator;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +11,11 @@ public class NbaPlayerModel {
     private static final Random RANDOM = new Random();
 
     public static ModelOutput runModel(List<PlayerWithCoefs> homePlayers, List<PlayerWithCoefs> awayPlayers, Map<String, Double> minutesExpected, Map<Integer, Double> zeroMinProb, Double totalPoints, Double matchSpread){
-        ModelOutput homePlayersOutput = TeamSimulator.runTeamBasedModel(homePlayers, minutesExpected);
-        ModelOutput awayPlayersOutput = TeamSimulator.runTeamBasedModel(awayPlayers, minutesExpected);
+        double homeExp = (totalPoints - matchSpread) / 2d;
+        double awayExp = totalPoints - homeExp;
+
+        ModelOutput homePlayersOutput = TeamSimulator.runTeamBasedModel(homePlayers, minutesExpected, homeExp, awayExp);
+        ModelOutput awayPlayersOutput = TeamSimulator.runTeamBasedModel(awayPlayers, minutesExpected, homeExp, awayExp);
 
         Map<Integer, Map<Integer, Double>> homePlayersFgAttemptedOverProb = homePlayersOutput.getPlayerFgAttemptedOverProb();
         Map<Integer, Map<Integer, Double>> awayPlayersFgAttemptedOverProb = awayPlayersOutput.getPlayerFgAttemptedOverProb();
@@ -25,9 +26,6 @@ public class NbaPlayerModel {
         double homeTeamSumOfFgPredicted = homeFgAvgMap.keySet().stream().mapToDouble(i -> homeFgAvgMap.get(i)).sum();
         double awayTeamSumOfFgPredicted = awayFgAvgMap.keySet().stream().mapToDouble(i -> awayFgAvgMap.get(i)).sum();
 
-        double homeExp = (totalPoints - matchSpread) / 2d;
-        double awayExp = totalPoints - homeExp;
-
         Map<Integer, Double> homeFgAdjustedGivenPlayedap = adjustFgPred(homeFgAvgMap, homeTeamSumOfFgPredicted, homeExp, awayExp, zeroMinProb);
         Map<Integer, Double> awayFgAdjustedGivenPlayedap = adjustFgPred(awayFgAvgMap, awayTeamSumOfFgPredicted, awayExp, homeExp, zeroMinProb);
 
@@ -37,9 +35,12 @@ public class NbaPlayerModel {
         updatePlayerCoefMultiplier(homePlayers, homePlayerCoefMultiplier);
         updatePlayerCoefMultiplier(awayPlayers, awayPlayerCoefMultiplier);
 
+        homePlayers.forEach(p->p.setHomePlayer(true));
+        awayPlayers.forEach(p->p.setHomePlayer(false));
+
         List<PlayerWithCoefs> allPlayers = Stream.concat(homePlayers.stream(), awayPlayers.stream()).collect(Collectors.toList());
 
-        return TeamSimulator.runTeamBasedModel(allPlayers, minutesExpected);
+        return TeamSimulator.runTeamBasedModel(allPlayers, minutesExpected, homeExp, awayExp);
     }
 
     private static void updatePlayerCoefMultiplier(List<PlayerWithCoefs> players, Map<Integer, Double> teamPlayerCoefMultiplier) {

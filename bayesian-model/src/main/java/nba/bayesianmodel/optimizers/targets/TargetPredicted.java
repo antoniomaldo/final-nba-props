@@ -52,7 +52,6 @@ public class TargetPredicted {
         double priorLogit = probToLogit(priorForPlayer * 1.3);
 
         return logitToProb(playerCoef +
-                -1 * Math.exp(weight2) * fgAttempted +
                 priorLogit);
     }
 

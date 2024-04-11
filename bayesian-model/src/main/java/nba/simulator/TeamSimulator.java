@@ -14,7 +14,7 @@ public class TeamSimulator {
     private static final Random RANDOM = new Random();
     private static final PlayerSimulator PLAYER_SIMULATOR = new PlayerSimulator();
 
-    public static ModelOutput runTeamBasedModel(List<PlayerWithCoefs> team, Map<String, Double> minutesExpected) {
+    public static ModelOutput runTeamBasedModel(List<PlayerWithCoefs> team, Map<String, Double> minutesExpected, double homeExp, double awayExp) {
 
         Map<Integer, Map<Integer, Double>> playerPointsMap = initializePlayerMap(team);
         Map<Integer, Map<Integer, Double>> playerThreePointsMap = initializePlayerMap(team);
@@ -23,6 +23,7 @@ public class TeamSimulator {
         Map<Integer, Map<Integer, Double>> playerFgAttemptedMap = initializePlayerMap(team);
 
         for (PlayerWithCoefs player : team) {
+            double ownExp = player.isHomePlayer() ? homeExp : awayExp;
             double fgAttemptedPerMin = TargetPredicted.forFgAttempted(player.getFgAttemptedPlayerCoef(), player.getFgAttemptedPrior()) * player.getFgCoefMultiplier();
 
             double minutesPredicted = minutesExpected.get(player.getPlayerName());
@@ -30,13 +31,15 @@ public class TeamSimulator {
             minutesPredicted = minutesPredicted > 40 ? 40 : minutesPredicted;
             double[] minutesDistributionForPrediction = SimulateMinutesForPlayer.getMinutesDistributionForPrediction((int) Math.round(minutesPredicted));
 
+
             for (int i = 0; i < 40000; i++) {
                 int simulateMinutesPlayed = simulateMinutesPlayed(minutesDistributionForPrediction);
 
                 double fgAttemptedPrediction = simulateMinutesPlayed * fgAttemptedPerMin;// FgAttemptedModel.getFgAttemptedPrediction(fgAttemptedPerMin, simulateMinutesPlayed);
                 int fgAttempted = simulateFgAttemped(fgAttemptedPrediction);
 
-                SimulatedPlayerScoring simulatedPlayerScoring = PLAYER_SIMULATOR.simulatePoints(player, simulateMinutesPlayed, fgAttempted);
+
+                SimulatedPlayerScoring simulatedPlayerScoring = PLAYER_SIMULATOR.simulatePoints(player, simulateMinutesPlayed, fgAttempted, fgAttemptedPrediction, ownExp);
 
                 int twoPoints = simulatedPlayerScoring.getTwoPointers();
                 int threePoints = simulatedPlayerScoring.getThreePoints();
