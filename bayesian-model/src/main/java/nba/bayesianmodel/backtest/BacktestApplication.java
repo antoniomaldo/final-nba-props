@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class BacktestApplication {
 
     private static final PlayerSimulator PLAYER_SIMULATOR = new PlayerSimulator();
+    public static final ApplicationController APPLICATION_CONTROLLER = new ApplicationController();
 
     public static void main(String[] args)  {
         List<BacktestPlayerWithCoefs> playerWithCoefs = CsvUtils.loadPredictionsDataWithProjMinutes(BaseDirectory.baseDirectoryToUse().getBaseDir() + "backtest_analysis\\backtestInputs.csv");
@@ -65,7 +66,7 @@ public class BacktestApplication {
                     build();
 
 
-            ResponseEntity<?> modelResponse = new ApplicationController().getGamePred(nbaGameEventDto);
+            ResponseEntity<?> modelResponse = APPLICATION_CONTROLLER.getGamePred(nbaGameEventDto);
 
             Map<String, Map<Integer, Map<Integer, Double>>> modelOutputMap  = (Map<String, Map<Integer, Map<Integer, Double>>>) modelResponse.getBody();
 

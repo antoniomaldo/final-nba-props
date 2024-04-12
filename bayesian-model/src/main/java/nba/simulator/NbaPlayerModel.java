@@ -1,5 +1,8 @@
 package nba.simulator;
 
+import nba.bayesianmodel.optimizers.targets.TargetPredicted;
+import nba.minutedistribution.SimulateMinutesForPlayer;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,14 +20,9 @@ public class NbaPlayerModel {
         homePlayers.forEach(p->p.setHomePlayer(true));
         awayPlayers.forEach(p->p.setHomePlayer(false));
 
-        ModelOutput homePlayersOutput = TeamSimulator.runTeamBasedModel(homePlayers, minutesExpected, homeExp, awayExp);
-        ModelOutput awayPlayersOutput = TeamSimulator.runTeamBasedModel(awayPlayers, minutesExpected, homeExp, awayExp);
-
-        Map<Integer, Map<Integer, Double>> homePlayersFgAttemptedOverProb = homePlayersOutput.getPlayerFgAttemptedOverProb();
-        Map<Integer, Map<Integer, Double>> awayPlayersFgAttemptedOverProb = awayPlayersOutput.getPlayerFgAttemptedOverProb();
-
-        Map<Integer, Double> homeFgAvgMap = buildFgAvgMap(homePlayersOutput, zeroMinProb);
-        Map<Integer, Double> awayFgAvgMap = buildFgAvgMap(awayPlayersOutput, zeroMinProb);
+        //Calculate fgPredicted without having to run the model
+        Map<Integer, Double> homeFgAvgMap = getTeamFgAvg(homePlayers, minutesExpected, zeroMinProb);
+        Map<Integer, Double> awayFgAvgMap = getTeamFgAvg(awayPlayers, minutesExpected, zeroMinProb);
 
         double homeTeamSumOfFgPredicted = homeFgAvgMap.keySet().stream().mapToDouble(i -> homeFgAvgMap.get(i)).sum();
         double awayTeamSumOfFgPredicted = awayFgAvgMap.keySet().stream().mapToDouble(i -> awayFgAvgMap.get(i)).sum();
@@ -32,25 +30,32 @@ public class NbaPlayerModel {
         Map<Integer, Double> homeFgAdjustedGivenPlayedap = adjustFgPred(homeFgAvgMap, homeTeamSumOfFgPredicted, homeExp, awayExp, zeroMinProb);
         Map<Integer, Double> awayFgAdjustedGivenPlayedap = adjustFgPred(awayFgAvgMap, awayTeamSumOfFgPredicted, awayExp, homeExp, zeroMinProb);
 
-        Map<Integer, Double> homePlayerCoefMultiplier = buildPlayerCoefMultiplier(homeFgAdjustedGivenPlayedap, homePlayersFgAttemptedOverProb);
-        Map<Integer, Double> awayPlayerCoefMultiplier = buildPlayerCoefMultiplier(awayFgAdjustedGivenPlayedap, awayPlayersFgAttemptedOverProb);
+        Map<Integer, Double> homePlayerCoefMultiplier = buildPlayerCoefMultiplier(homeFgAdjustedGivenPlayedap, homeFgAvgMap, zeroMinProb);
+        Map<Integer, Double> awayPlayerCoefMultiplier = buildPlayerCoefMultiplier(awayFgAdjustedGivenPlayedap, awayFgAvgMap, zeroMinProb);
 
         updatePlayerCoefMultiplier(homePlayers, homePlayerCoefMultiplier);
         updatePlayerCoefMultiplier(awayPlayers, awayPlayerCoefMultiplier);
 
-//        homePlayersOutput = TeamSimulator.runTeamBasedModel(homePlayers, minutesExpected, homeExp, awayExp);
-//        awayPlayersOutput = TeamSimulator.runTeamBasedModel(awayPlayers, minutesExpected, homeExp, awayExp);
-//
-//
-//        double homePointsExp = calculateTeamPointsExp(homePlayers, homePlayersOutput.getPlayerOverProb(), zeroMinProb);
-//        double awayPointsExp = calculateTeamPointsExp(awayPlayers, awayPlayersOutput.getPlayerOverProb(), zeroMinProb);
-//
-
-
-
         List<PlayerWithCoefs> allPlayers = Stream.concat(homePlayers.stream(), awayPlayers.stream()).collect(Collectors.toList());
 
         return TeamSimulator.runTeamBasedModel(allPlayers, minutesExpected, homeExp, awayExp);
+    }
+
+    private static Map<Integer, Double> getTeamFgAvg(List<PlayerWithCoefs> players, Map<String, Double> minutesExpected, Map<Integer, Double> zeroMinProb) {
+        Map<Integer, Double> fgAttemptedMap = new HashMap<>();
+        for(PlayerWithCoefs player : players){
+            double fgAttemptedPerMin = TargetPredicted.forFgAttempted(player.getFgAttemptedPlayerCoef(), player.getFgAttemptedPrior()) * player.getFgCoefMultiplier();
+            double minutesPredicted = minutesExpected.get(player.getPlayerName());
+            minutesPredicted = minutesPredicted < 7 ? 7 : minutesPredicted;
+            minutesPredicted = minutesPredicted > 40 ? 40 : minutesPredicted;
+            double[] minutesDistributionForPrediction = SimulateMinutesForPlayer.getMinutesDistributionForPrediction((int) Math.round(minutesPredicted));
+            double fgAttemptedPrediction = 0;
+            for (int i = 0; i < minutesDistributionForPrediction.length; i++) {
+                fgAttemptedPrediction += fgAttemptedPerMin * i * minutesDistributionForPrediction[i];
+            }
+            fgAttemptedMap.put(player.getPlayerId(), fgAttemptedPrediction * (1 - zeroMinProb.get(player.getPlayerId())));
+        }
+        return fgAttemptedMap;
     }
 
     private static double calculateTeamPointsExp(List<PlayerWithCoefs> players, Map<Integer, Map<Integer, Double>> playerOverProb, Map<Integer, Double> zeroMinProb) {
@@ -68,10 +73,10 @@ public class NbaPlayerModel {
         }
     }
 
-    private static Map<Integer, Double> buildPlayerCoefMultiplier(Map<Integer, Double> teamFgAdjustedGivenPlayedap, Map<Integer, Map<Integer, Double>> teamPlayersFgAttemptedOverProb) {
+    private static Map<Integer, Double> buildPlayerCoefMultiplier(Map<Integer, Double> teamFgAdjustedGivenPlayedap, Map<Integer, Double> teamPlayersFgAttempted, Map<Integer, Double> zeroMinProb) {
         Map<Integer, Double> map = new HashMap<>();
         for(Integer id : teamFgAdjustedGivenPlayedap.keySet()){
-            double multiplier = teamFgAdjustedGivenPlayedap.get(id) / teamPlayersFgAttemptedOverProb.get(id).get(-1);
+            double multiplier = teamFgAdjustedGivenPlayedap.get(id) / (teamPlayersFgAttempted.get(id) / (1 - zeroMinProb.get(id)));
             map.put(id, multiplier);
         }
         return map;
