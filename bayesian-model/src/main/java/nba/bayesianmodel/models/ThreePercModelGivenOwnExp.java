@@ -2,7 +2,7 @@ package nba.bayesianmodel.models;
 
 public class ThreePercModelGivenOwnExp {
 
-    private static final double[] COEF = new double[] {-0.5790297d,0.6099052d,-0.06518171d,-0.06742697d,0.007951269d,-0.1601985d,-0.1523179d,-0.3341614d,0.0125178d,-0.06390849};
+    private static final double[] COEF = new double[] {-0.8193749d,0.5521683d,-0.05975689d,-0.06035606d,0.009316366d,-0.1863359d,-0.1262039d,-0.3468742d,0.01306175d,-0.05572258};
     private static int COUNTER = 0;
     private static final double INTERCEPT = COEF[COUNTER++];
     private static final double LOGIT_TARGET_PREDICTED = COEF[COUNTER++];

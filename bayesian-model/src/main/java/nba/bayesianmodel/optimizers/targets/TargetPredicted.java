@@ -48,7 +48,7 @@ public class TargetPredicted {
                 priorLogit);
     }
 
-    public static double forThreeProp(double playerCoef, int fgAttempted, Double priorForPlayer, double weight2) {
+    public static double forThreeProp(double playerCoef, Double priorForPlayer) {
         double priorLogit = probToLogit(priorForPlayer * 1.3);
 
         return logitToProb(playerCoef +

@@ -13,7 +13,7 @@ public class PlayerSimulator {
     private static final double THREE_PERC_WEIGHT = -1.0895411400443664;
     public SimulatedPlayerScoring simulatePoints(PlayerWithCoefs playerWithCoefs, int minutesPlayed, int fgAttempted, double fgAttemptedPrediction, double ownExp) {
 
-        double threeProp = TargetPredicted.forThreeProp(playerWithCoefs.getThreePropCoef(), fgAttempted, playerWithCoefs.getThreePropPrior(), THREE_PROP_WEIGHT);
+        double threeProp = TargetPredicted.forThreeProp(playerWithCoefs.getThreePropCoef(), playerWithCoefs.getThreePropPrior());
 
         double threePropAdjusted = ThreeProportionModelGivenFgAttempted.adjustRate(threeProp,fgAttemptedPrediction, fgAttempted);
 

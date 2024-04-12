@@ -14,6 +14,9 @@ public class NbaPlayerModel {
         double homeExp = (totalPoints - matchSpread) / 2d;
         double awayExp = totalPoints - homeExp;
 
+        homePlayers.forEach(p->p.setHomePlayer(true));
+        awayPlayers.forEach(p->p.setHomePlayer(false));
+
         ModelOutput homePlayersOutput = TeamSimulator.runTeamBasedModel(homePlayers, minutesExpected, homeExp, awayExp);
         ModelOutput awayPlayersOutput = TeamSimulator.runTeamBasedModel(awayPlayers, minutesExpected, homeExp, awayExp);
 
@@ -35,12 +38,28 @@ public class NbaPlayerModel {
         updatePlayerCoefMultiplier(homePlayers, homePlayerCoefMultiplier);
         updatePlayerCoefMultiplier(awayPlayers, awayPlayerCoefMultiplier);
 
-        homePlayers.forEach(p->p.setHomePlayer(true));
-        awayPlayers.forEach(p->p.setHomePlayer(false));
+//        homePlayersOutput = TeamSimulator.runTeamBasedModel(homePlayers, minutesExpected, homeExp, awayExp);
+//        awayPlayersOutput = TeamSimulator.runTeamBasedModel(awayPlayers, minutesExpected, homeExp, awayExp);
+//
+//
+//        double homePointsExp = calculateTeamPointsExp(homePlayers, homePlayersOutput.getPlayerOverProb(), zeroMinProb);
+//        double awayPointsExp = calculateTeamPointsExp(awayPlayers, awayPlayersOutput.getPlayerOverProb(), zeroMinProb);
+//
+
+
 
         List<PlayerWithCoefs> allPlayers = Stream.concat(homePlayers.stream(), awayPlayers.stream()).collect(Collectors.toList());
 
         return TeamSimulator.runTeamBasedModel(allPlayers, minutesExpected, homeExp, awayExp);
+    }
+
+    private static double calculateTeamPointsExp(List<PlayerWithCoefs> players, Map<Integer, Map<Integer, Double>> playerOverProb, Map<Integer, Double> zeroMinProb) {
+        double  points=0;
+        for(PlayerWithCoefs player : players){
+            Double playerPointsExp = playerOverProb.get(player.getPlayerId()).get(-1);
+            points+=playerPointsExp * (1 - zeroMinProb.get(player.getPlayerId()));
+        }
+        return points;
     }
 
     private static void updatePlayerCoefMultiplier(List<PlayerWithCoefs> players, Map<Integer, Double> teamPlayerCoefMultiplier) {

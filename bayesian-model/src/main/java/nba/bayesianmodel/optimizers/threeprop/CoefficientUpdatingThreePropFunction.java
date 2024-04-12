@@ -58,13 +58,13 @@ public class CoefficientUpdatingThreePropFunction extends BaseCoefficientUpdatin
 
                 int fgAttempted = playerGameData.getFgAttempted();
                 if (fgAttempted > 0) {
-                    targetPredicted = TargetPredicted.forThreeProp(playerCoef, playerGameData.getFgAttempted(), priorForPlayer, weight2);
+                    targetPredicted = TargetPredicted.forThreeProp(playerCoef, priorForPlayer);
 
                     real = (double) playerGameData.getThreeAttempted() / fgAttempted;
                     resid = real - targetPredicted;
 
                     predictions.add(new PlayerPredictions(playerGameData.getSeasonYear(), playerGameData.getGameId(), playerGameData.getPlayerId(), numbGames, gamesInSeason, playerGameData.getMinPlayed(), playerCoef, targetPredicted, real, playerGameData.getThreeAttempted(), fgAttempted, playerGameData.getThreeMade(), playerGameData.getFgMade(), playerGameData.getOffRebounds(), playerGameData.getDefRbounds(), playerGameData.getFtMade(), playerGameData.getFtAttempted(), priorForPlayer, playerGameData.getAverageMinutesInSeason()));
-                    playerCoef += Math.exp(weight1) * Math.log(playerGameData.getMinPlayed() + 1) * resid / (Math.log(gamesInSeason * Math.exp(weight2) + 1));;
+                    playerCoef += Math.exp(weight1) * Math.log(playerGameData.getFgAttempted() + 1) * resid / (Math.log(gamesInSeason * Math.exp(weight2) + 1));;
                 } else{
                     predictions.add(new PlayerPredictions(playerGameData.getSeasonYear(), playerGameData.getGameId(), playerGameData.getPlayerId(), numbGames, gamesInSeason, playerGameData.getMinPlayed(), playerCoef, -1, -1, playerGameData.getThreeAttempted(), fgAttempted, playerGameData.getThreeMade(), playerGameData.getFgMade(), playerGameData.getOffRebounds(), playerGameData.getDefRbounds(), playerGameData.getFtMade(), playerGameData.getFtAttempted(), priorForPlayer, playerGameData.getAverageMinutesInSeason()));
                 }
