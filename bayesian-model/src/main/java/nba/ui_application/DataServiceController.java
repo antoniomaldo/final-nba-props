@@ -99,6 +99,7 @@ public class DataServiceController {
                 PlayerRequest playerRequest = PlayerRequest.builder()
                         .team(rotowireTeam)
                         .name(rotowirePlayer.getName())
+                        .playerId(playerWithCoefs.getPlayerId())
                         .pmin(Double.parseDouble(rotowirePlayer.getPmin()))
                         .position(rotowirePlayer.getPos())
                         .isHomePlayer(isHomePlayer)
@@ -232,6 +233,7 @@ public class DataServiceController {
         for(PlayerWithCoefs player : players){
             PlayerRequest playerRequest = PlayerRequest.builder()
                     .team(teamName)
+                    .playerId(player.getPlayerId())
                     .name(player.getPlayerName())
                     .pmin(player.getMinPlayed())
                     .position("NA")

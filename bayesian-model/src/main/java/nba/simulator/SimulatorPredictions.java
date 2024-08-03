@@ -1,5 +1,7 @@
 package nba.simulator;
 
+import java.util.Map;
+
 public class SimulatorPredictions {
 
     private final int gameId;
@@ -15,9 +17,11 @@ public class SimulatorPredictions {
     private final double averageMinutesInSeason;
     private final double zeroProb;
 
+    private final Map<Integer, Double> playerMins;
 
 
-    public SimulatorPredictions(int gameId, int playerId, double fgAttemptedPred, double twosAvg, double threesAvg, double ftsAvg, double rebounds, double blocks, double steals, double averageMinutesInSeason, double zeroProb) {
+
+    public SimulatorPredictions(int gameId, int playerId, double fgAttemptedPred, double twosAvg, double threesAvg, double ftsAvg, double rebounds, double blocks, double steals, double averageMinutesInSeason, double zeroProb, Map<Integer, Double> playerMins) {
         this.gameId = gameId;
         this.playerId = playerId;
         this.fgAttemptedPred = fgAttemptedPred;
@@ -29,6 +33,7 @@ public class SimulatorPredictions {
         this.steals = steals;
         this.averageMinutesInSeason = averageMinutesInSeason;
         this.zeroProb = zeroProb;
+        this.playerMins = playerMins;
     }
 
     public int getGameId() {
@@ -59,6 +64,14 @@ public class SimulatorPredictions {
         return averageMinutesInSeason;
     }
 
+    public double getProbabilityMinFromTo(int from, int to){
+        double sum = 0;
+        for (int i = from; i < to; i++) {
+            Double sum1 = this.playerMins.get(i);
+            sum += sum1 == null ? 0 : sum1;
+        }
+        return sum;
+    }
     public String[] toRow(){
         String[] row = {
                 Integer.toString(this.gameId),
@@ -71,8 +84,27 @@ public class SimulatorPredictions {
                 Double.toString(this.steals),
                 Double.toString(this.blocks),
                 Double.toString(this.averageMinutesInSeason),
-                Double.toString(this.zeroProb)
+                Double.toString(this.zeroProb),
+                Double.toString(getProbabilityMinFromTo(1,5)),
+                Double.toString(getProbabilityMinFromTo(6,10)),
+                Double.toString(getProbabilityMinFromTo(11, 15)),
+                Double.toString(getProbabilityMinFromTo(16, 20)),
+                Double.toString(getProbabilityMinFromTo(21, 25)),
+                Double.toString(getProbabilityMinFromTo(26, 30)),
+                Double.toString(getProbabilityMinFromTo(31, 35)),
+                Double.toString(getProbabilityMinFromTo(36, 40)),
+                Double.toString(getProbabilityMinFromTo(41, 48)),
+                Double.toString(getAverageMinutes())
+
         };
         return row;
+    }
+
+    private double getAverageMinutes() {
+        double average = 0;
+        for(Integer minutes : this.playerMins.keySet()){
+            average += minutes * this.playerMins.get(minutes);
+        }
+        return average;
     }
 }

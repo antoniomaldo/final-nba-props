@@ -1,15 +1,17 @@
 package nba.minutedistribution;
 
-import com.williamhill.trading.framework.math.common.splines.IntegerBoundedSpline;
-import com.williamhill.trading.framework.math.common.splines.IntegerSpline;
 import org.apache.commons.math3.util.FastMath;
 
 public class MinutesGivenPlayedModel {
-    private static final double[] COEF = {1.912834d,0.3414087d,0.7235398d,1.262182d,1.352581d,1.672959d,1.282233d,0.01081333d,-0.0003189751d,0.008385791d,0.001023392d,0.01942846d,-0.008347188d,0d,0.06393102d,-0.003387699d,0.0005614642d,-0.0003613362d,-0.0007119915d,0.0004255616d,9.573341e-05};
+    private static final double[] COEF = {1.857366d,-0.02515165d,-0.009277764d,0.05184233d,-0.001117285d,1.921506e-05d,0.01566562d,-0.0002856915d,0.007665126d,0.006874877d,0.01927932d,-0.008204186d,0.002131628d,0.06367655d,-0.003258831d,0.0005427317d,-0.0003359147d,-0.0001697139d,0.0003163443d,8.77016e-05};
     private static int COUNTER = 0;
 
     private static double INTERCEPT = COEF[COUNTER++];
-    private static final IntegerSpline PMIN_SPLINE = new IntegerBoundedSpline(new double[]{0, 20, 37, 40, 45}, new double[]{COEF[COUNTER++], COEF[COUNTER++], COEF[COUNTER++], COEF[COUNTER++], COEF[COUNTER++], COEF[COUNTER++]});
+    private static double OVER_THIRTY_PMIN = COEF[COUNTER++];
+    private static double OVER_THIRTY_FIVE_PMIN = COEF[COUNTER++];
+    private static double PMIN = COEF[COUNTER++];
+    private static double PMIN_SQUARED = COEF[COUNTER++];
+    private static double PMIN_CUBIC = COEF[COUNTER++];
     private static double AVERAGE_MINUTES_IN_SEASON = COEF[COUNTER++];
     private static double EXP_POINTS_DIFF = COEF[COUNTER++];
     private static double ABS_EXP_POINTS_DIFF = COEF[COUNTER++];
@@ -27,7 +29,12 @@ public class MinutesGivenPlayedModel {
 
     public static double getAverageGivenPlayed(int pmin, double averageMinutesInSeason, double ownExp, double oppExp, int seasonYear, int Starter, int hasOt, double teamSumAvgMinutes, double lastGameMin) {
         return Math.exp(INTERCEPT +
-                PMIN_SPLINE.value(pmin) +
+                (pmin > 30 ? (pmin - 30) * OVER_THIRTY_PMIN : 0d) +
+                (pmin > 35 ? (pmin - 35) * OVER_THIRTY_FIVE_PMIN : 0d) +
+                pmin * PMIN +
+                pmin * pmin * PMIN_SQUARED +
+                pmin * pmin * pmin * PMIN_CUBIC +
+
                 AVERAGE_MINUTES_IN_SEASON * averageMinutesInSeason +
                 EXP_POINTS_DIFF * (ownExp - oppExp) +
                 Math.abs(ownExp - oppExp) * ABS_EXP_POINTS_DIFF +

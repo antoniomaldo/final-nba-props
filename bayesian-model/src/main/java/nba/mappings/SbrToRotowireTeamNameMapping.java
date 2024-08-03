@@ -29,6 +29,8 @@ public class SbrToRotowireTeamNameMapping {
         map.put("Denver", "DEN");
         map.put("San Antonio", "SAS");
         map.put("L.A. Clippers", "LAC");
+        map.put("Orlando", "ORL");
+        map.put("Indiana", "IND");
     }
 
     public static String mapToRotowire(String sbrName){

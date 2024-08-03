@@ -102,19 +102,22 @@ binnedplot(javaPreds$playerCoef[javaPreds$numbOfGames > 5], javaPreds$resid[java
 
 library(splines)
 
-model <- glm(FT.Attempted ~ log(ftExp) + pmax(fgAttempted - 20, 0)+ pmax(fgAttempted - 10, 0)+ minPlayed + pmin(playerCoef, 0) , data = javaPreds, family = "poisson") 
+modelData <- subset(javaPreds, javaPreds$numbOfGames > 50)
+
+model <- glm(fgAttempted ~ log(fgExp) + pmax(fgExp - 20, 0)+ pmax(fgExp - 10, 0)+ minPlayed  , data = modelData, family = "poisson") 
+
 summary(model)
 
-javaPreds$pred <- predict(model, javaPreds, type = "response")
-javaPreds$resid <- javaPreds$pred - javaPreds$FT.Attempted
+modelData$pred <- predict(model, modelData, type = "response")
+modelData$resid <- modelData$pred - modelData$fgAttempted
 
-binnedplot(javaPreds$pred, javaPreds$resid)
-binnedplot(javaPreds$fgAttempted, javaPreds$resid)
-binnedplot(javaPreds$minPlayed, javaPreds$resid)
+binnedplot(modelData$pred, modelData$resid)
+binnedplot(modelData$fgAttempted, modelData$resid)
+binnedplot(modelData$minPlayed, modelData$resid)
 
-binnedplot(javaPreds$pred[javaPreds$fgAttempted>7], javaPreds$resid[javaPreds$fgAttempted>7])
-binnedplot(javaPreds$pred[javaPreds$fgAttempted<4], javaPreds$resid[javaPreds$fgAttempted<4])
-binnedplot(javaPreds$pred[javaPreds$fgAttempted<2], javaPreds$resid[javaPreds$fgAttempted<2])
-binnedplot(javaPreds$pred[javaPreds$fgAttempted<6], javaPreds$resid[javaPreds$fgAttempted<6])
-binnedplot(javaPreds$playerCoef[javaPreds$fgAttempted<6], javaPreds$resid[javaPreds$fgAttempted<6])
-binnedplot(javaPreds$playerCoef, javaPreds$resid)
+binnedplot(modelData$pred[modelData$fgExp>7], modelData$resid[modelData$fgExp>7])
+binnedplot(modelData$pred[modelData$fgExp<4], modelData$resid[modelData$fgExp<4])
+binnedplot(modelData$pred[modelData$fgExp<2], modelData$resid[modelData$fgExp<2])
+binnedplot(modelData$pred[modelData$fgExp<6], modelData$resid[modelData$fgExp<6])
+binnedplot(modelData$playerCoef[modelData$fgAttempted<6], modelData$resid[modelData$fgAttempted<6])
+binnedplot(modelData$playerCoef, modelData$resid)

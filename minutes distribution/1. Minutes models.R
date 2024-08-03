@@ -1,5 +1,4 @@
 library(DBI)
-library(bigrquery)
 library(stringr)
 library(arm)
 library(splines)
@@ -7,23 +6,13 @@ library(zoo)
 library(h2o)
 library(sqldf)
 
-source("C:\\czrs-ds-models\\nba-player-props\\mappings\\mappings-service.R")
+source("C:\\models\\nba-player-props\\mappings\\mappings-service.R")
 
-BASE_DIR <- "C:\\czrs-ds-models\\nba-player-props\\"
+BASE_DIR <- "C:\\models\\nba-player-props\\"
 
-# bq_auth()
-# 
-# con <- dbConnect(
-#   bigrquery::bigquery(),
-#   project = "ea-moneyball",
-#   dataset = "NBA"
-# )
-
-
-#rotowirePreds <- dbGetQuery(con, "SELECT * FROM rotowire_preds")
 #Load rotowire data 
 
-csvs <- list.files("C:/Users/amaldonado/Documents/NBA/data/rotowire/rotowire/", full.names = T)
+csvs <- list.files("C:/Users/Antonio/Documents/NBA/data/rotowire/", full.names = T)
 csvs <- csvs[!grepl("\\.R", csvs)]
 
 loadCsvForDay <- function(fileDir, season){
@@ -32,7 +21,7 @@ loadCsvForDay <- function(fileDir, season){
     colNames = as.character(dayCsv[1,])
     dayCsv = dayCsv[-1,]
     colnames(dayCsv) = colNames
-    date = str_remove_all(fileDir, pattern = paste0("C:/Users/amaldonado/Documents/NBA/data/rotowire/rotowire/",season, "/rotowire-nba-projections-"))
+    date = str_remove_all(fileDir, pattern = paste0("C:/Users/Antonio/Documents/NBA/data/rotowire/",season, "/rotowire-nba-projections-"))
     dayCsv$date = str_remove_all(date, pattern = ".csv")
     
     dayCsv$name = dayCsv$NAME
@@ -48,7 +37,7 @@ rotowirePreds <- data.frame()
 for(csvPath in csvs){
   csvFiles <- list.files(csvPath, full.names = T)
   for(csvFilePath in csvFiles){
-    year = str_remove_all(pattern = "C:/Users/amaldonado/Documents/NBA/data/rotowire/rotowire/", string = csvPath)
+    year = str_remove_all(pattern = "C:/Users/Antonio/Documents/NBA/data/rotowire/", string = csvPath)
     dayData <- loadCsvForDay(csvFilePath, year)
     rotowirePreds <- rbind(rotowirePreds, dayData)
   }
@@ -93,8 +82,8 @@ totalMin <- unique(totalMin[c("GameId", "hasOt")])
 mappedData = mapMinutesForSeason(boxscores = allPlayers, rotoPreds = rotowirePreds, baseDir = BASE_DIR)
 
 
-#write.csv(mappedData, file = "C:\\czrs-ds-models\\nba-player-props\\minutes distribution\\mappedData.csv" )
-#mappedData <- read.csv(file = "C:\\czrs-ds-models\\nba-player-props\\minutes distribution\\mappedData.csv" )
+#write.csv(mappedData, file = "C:\\models\\nba-player-props\\minutes distribution\\mappedData.csv" )
+#mappedData <- read.csv(file = "C:\\models\\nba-player-props\\minutes distribution\\mappedData.csv" )
 
 mappedData <- subset(mappedData, !is.na(mappedData$pmin))
 mappedData$pmin <- as.numeric(mappedData$pmin)
@@ -184,7 +173,11 @@ noZeroData <- subset(fullGames, fullGames$pmin > 0 & fullGames$Min > 0)
 noZeroData$lastGameMin[noZeroData$lastGameMin == -1] <- noZeroData$pmin[noZeroData$lastGameMin == -1]  
 
 lm <- glm(Min ~  
-            bs(pmin, knots = c(20, 37, 40), Boundary.knots = c(0,45)) +
+            pmax(pmin - 30, 0) +
+            pmax(pmin - 35, 0) +
+            I(pmin) + I(pmin ^ 2) + I(pmin ^ 3) +
+            
+           # bs(pmin, knots = c(20, 37, 40), Boundary.knots = c(0,45)) +
             averageMinutesInSeason + 
             I(ownExp - oppExp) + 
             abs(ownExp - oppExp) + 
@@ -281,7 +274,7 @@ predTerms[1,]
 
 fullGames$predGivenPlayed <- predict(lm, fullGames, type = "response")
 
-write.csv(fullGames, file = "C:\\czrs-ds-models\\nba-player-props\\minutes distribution\\mappedDataWithPreds.csv" )
+write.csv(fullGames, file = "C:\\models\\nba-player-props\\minutes distribution\\mappedDataWithPreds.csv" )
 ### Attach a gamma distribution for no OT
 
 discretizeGamma <- function(sc, sh){

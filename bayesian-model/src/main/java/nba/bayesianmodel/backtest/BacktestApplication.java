@@ -26,7 +26,7 @@ public class BacktestApplication {
     public static void main(String[] args)  {
         List<BacktestPlayerWithCoefs> playerWithCoefs = CsvUtils.loadPredictionsDataWithProjMinutes(BaseDirectory.baseDirectoryToUse().getBaseDir() + "backtest_analysis\\backtestInputs.csv");
 
-        playerWithCoefs = playerWithCoefs.stream().filter(p -> p.getSeasonYear() == 2024).collect(Collectors.toList());
+        //playerWithCoefs = playerWithCoefs.stream().filter(p -> p.getSeasonYear() == 2024).collect(Collectors.toList());
 
         List<Integer> gameIds = playerWithCoefs.stream().map(p -> p.getGameId()).distinct().collect(Collectors.toList());
 
@@ -75,7 +75,7 @@ public class BacktestApplication {
                 Double expFgPred = modelOutputMap.get("fgAttempted").get(player.getPlayerId()).get(-1);
                 Double expTwos = modelOutputMap.get("playerTwoPoints").get(player.getPlayerId()).get(-1);
                 Double expFts = modelOutputMap.get("playerFts").get(player.getPlayerId()).get(-1);
-
+                Map<Integer, Double> playerMins = modelOutputMap.get("mins").get(player.getPlayerId());
 
                 double zeroProb = ZeroMinutesModel.zeroMinutesProb(player.getPmin(), player.getStarter(), 0);
 
@@ -84,7 +84,7 @@ public class BacktestApplication {
                         expTwos,
                         expThrees,
                         expFts,
-                        0,0,0,0, zeroProb));
+                        0,0,0,0, zeroProb,playerMins));
             }
             counter++;
             if (counter % 100 == 0) {

@@ -1,11 +1,10 @@
-
 library(arm)
 
 BASE_DIR <- "C:\\czrs-ds-models\\nba-player-props\\"
 
 allPlayers <- read.csv(paste0(BASE_DIR, "data\\allPlayers.csv"))
 
-javaPreds <- read.csv(paste0(BASE_DIR, "backtest_analysis\\backtest.csv"))
+javaPreds <- read.csv(paste0(BASE_DIR, "backtest_analysis\\backtestAdjusted.csv"))
 javaPreds$pointsAvg <- 3 * javaPreds$threesAvg + 2 * javaPreds$twosAvg + javaPreds$ftsAvg
 
 merged <- merge(javaPreds, allPlayers[c("GameId", "Min", "PlayerId", "Name", "Team", "Points", "Fg.Attempted","Fg.Made", "Three.Attempted", "Three.Made", "Total.Rebounds", "Blocks", "Steals", "HomeTeam", "AwayTeam",  "matchSpread", "totalPoints")], by = c("GameId", "PlayerId"))
@@ -30,30 +29,35 @@ merged$residBlocks <- merged$blocks - merged$Blocks
 
 binnedplot(merged$pointsAvg, merged$resid)
 binnedplot(merged$pointsAvgNorm, merged$residNorm)
+binnedplot(merged$fgAttemptedPred, merged$residFg)
+binnedplot(merged$fgAttemptedPred[merged$Min>0], merged$residFg[merged$Min>0])
 
 binnedplot(merged$pointsAvg[merged$Min > 0], merged$resid[merged$Min > 0])
 
+givenPlayed <- subset(merged, merged$Min > 0)
 
+binnedplot(givenPlayed$fgAttemptedPred, givenPlayed$residFg)
+binnedplot(givenPlayed$pointsAvg, givenPlayed$residFg)
 
-binnedplot(merged$pointsAvg[merged$ownExp > 120], merged$resid[merged$ownExp > 120])
-binnedplot(merged$pointsAvg[merged$ownExp - merged$oppExp > 10], merged$resid[merged$ownExp - merged$oppExp > 10])
-binnedplot(merged$pointsAvg[merged$ownExp - merged$oppExp > 5], merged$resid[merged$ownExp - merged$oppExp > 5])
-binnedplot(merged$pointsAvg[merged$ownExp - merged$oppExp < -5], merged$resid[merged$ownExp - merged$oppExp < -5])
+binnedplot(givenPlayed$pointsAvg[givenPlayed$ownExp > 120], givenPlayed$resid[givenPlayed$ownExp > 120])
+binnedplot(givenPlayed$pointsAvg[givenPlayed$ownExp - givenPlayed$oppExp > 10], givenPlayed$resid[givenPlayed$ownExp - givenPlayed$oppExp > 10])
+binnedplot(givenPlayed$pointsAvg[givenPlayed$ownExp - givenPlayed$oppExp > 5], givenPlayed$resid[givenPlayed$ownExp - givenPlayed$oppExp > 5])
+binnedplot(givenPlayed$pointsAvg[givenPlayed$ownExp - givenPlayed$oppExp < -5], givenPlayed$resid[givenPlayed$ownExp - givenPlayed$oppExp < -5])
 
-binnedplot(merged$pointsAvg[merged$ownExp < 105], merged$resid[merged$ownExp < 105])
-binnedplot(merged$pointsAvg[merged$ownExp < 100], merged$resid[merged$ownExp < 100])
+binnedplot(givenPlayed$pointsAvg[givenPlayed$ownExp < 105], givenPlayed$resid[givenPlayed$ownExp < 105])
+binnedplot(givenPlayed$pointsAvg[givenPlayed$ownExp < 100], givenPlayed$resid[givenPlayed$ownExp < 100])
 
-binnedplot(merged$fgAttemptedPred[merged$ownExp < 100], merged$residFg[merged$ownExp < 100])
-binnedplot(merged$fgAttemptedPred[merged$ownExp < 105], merged$residFg[merged$ownExp < 105])
-binnedplot(merged$fgAttemptedPred[merged$ownExp > 110], merged$residFg[merged$ownExp > 110])
-binnedplot(merged$fgAttemptedPred[merged$ownExp > 120], merged$residFg[merged$ownExp > 120])
+binnedplot(givenPlayed$fgAttemptedPred[givenPlayed$ownExp < 100], givenPlayed$residFg[givenPlayed$ownExp < 100])
+binnedplot(givenPlayed$fgAttemptedPred[givenPlayed$ownExp < 105], givenPlayed$residFg[givenPlayed$ownExp < 105])
+binnedplot(givenPlayed$fgAttemptedPred[givenPlayed$ownExp > 110], givenPlayed$residFg[givenPlayed$ownExp > 110])
+binnedplot(givenPlayed$fgAttemptedPred[givenPlayed$ownExp > 120], givenPlayed$residFg[givenPlayed$ownExp > 120])
 
-binnedplot(merged$ownExp, merged$resid)
-binnedplot(merged$fgAttemptedPred, merged$residFg)
-binnedplot(merged$fgAttemptedPred[merged$Min > 0], merged$residFg[merged$Min > 0])
+binnedplot(givenPlayed$ownExp, givenPlayed$resid)
+binnedplot(givenPlayed$fgAttemptedPred, givenPlayed$residFg)
+binnedplot(givenPlayed$fgAttemptedPred[givenPlayed$Min > 0], givenPlayed$residFg[givenPlayed$Min > 0])
 
-binnedplot(merged$ownExp, merged$residFg)
-binnedplot(merged$oppExp, merged$residFg)
+binnedplot(givenPlayed$ownExp, givenPlayed$residFg)
+binnedplot(givenPlayed$oppExp, givenPlayed$residFg)
 
 binnedplot(merged$threesAvg, merged$residThree)
 binnedplot(merged$threesAvg[merged$Min > 0], merged$residThree[merged$Min > 0])
@@ -72,7 +76,7 @@ binnedplot(merged$rebounds, merged$residRebounds)
 binnedplot(merged$steals, merged$residSteals)
 binnedplot(merged$blocks, merged$residBlocks)
 binnedplot(merged$Min, merged$residBlocks)
-binnedplot(merged$Fg_Attempted, merged$residBlocks)
+binnedplot(merged$Fg.Attempted, merged$residBlocks)
 
 merged$fgAttemptedPredAvg <- merged$fgAttemptedPred * (1 - merged$zeroProb)
 merged$threesAvgNorm <- merged$threesAvg * (1 - merged$zeroProb)
@@ -103,13 +107,20 @@ agg$blocksResid <- agg$Blocks - agg$blocks
 agg$threeResid <- agg$Three.Made - agg$threesAvgNorm
 agg$twoResid <- agg$Fg.Made - agg$Three.Made - agg$twosAvg
 
+agg$residExp <- agg$pointsAvgNorm - agg$ownExp
+
 binnedplot(agg$pointsAvgNorm, agg$resid)
-binnedplot(agg$fgAttemptedPredAvg, agg$residFg)
+binnedplot(agg$ownExp, agg$resid)
+binnedplot(agg$pointsAvgNorm[abs(agg$resid) <= 2], agg$resid[abs(agg$resid) <= 2])
+binnedplot(agg$pointsAvgNorm[(agg$resid)< 0], agg$resid[(agg$resid)< 0])
+binnedplot(agg$pointsAvgNorm[(agg$resid)> 0], agg$resid[(agg$resid)> 0])
+
+binnedplot(agg$fgAttemptedPredAvg, agg$residExp)
 binnedplot(agg$fgAttemptedPredAvg[agg$resid > 0], agg$residFg[agg$resid > 0])
 binnedplot(agg$fgAttemptedPredAvg[agg$resid < 0], agg$residFg[agg$resid < 0])
 
-binnedplot(agg$threesAvgNorm[agg$resid < 0], agg$threeResid[agg$resid < 0])
-binnedplot(agg$threesAvgNorm[agg$resid > 0], agg$threeResid[agg$resid > 0])
+binnedplot(agg$threesAvgNorm[agg$residExp < 0], agg$threeResid[agg$residExp < 0])
+binnedplot(agg$threesAvgNorm[agg$residExp > 0], agg$threeResid[agg$residExp > 0])
 
 binnedplot(agg$ownExp, agg$resid)
 binnedplot(agg$ownExp, agg$resid)
@@ -128,21 +139,25 @@ binnedplot(agg$rebounds, agg$reboundsResid)
 binnedplot(agg$blocks, agg$blocksResid)
 binnedplot(agg$oppExp, agg$reboundsResid)
 
-agg$teamPointsResid <- agg$resid
+agg$teamPointsResid <- agg$residExp
 agg$teamThreesResid <- agg$threeResid
 agg$fgAttemptedPredAvgTeam <- agg$fgAttemptedPredAvg
 merged <- merge(merged, agg[c("GameId", "Team", "fgAttemptedPredAvgTeam", "teamPointsResid", "teamThreesResid")], by = c("GameId", "Team"))
 
 merged$residFgNorm <- merged$fgAttemptedPredAvg - merged$Fg.Attempted
 binnedplot(merged$pointsAvgNorm, merged$residNorm)
+binnedplot(merged$pointsAvgNorm, merged$teamPointsResid)
+
 binnedplot(merged$pointsAvgNorm[merged$teamPointsResid > 0], merged$residNorm[merged$teamPointsResid > 0])
 binnedplot(merged$pointsAvgNorm[merged$teamPointsResid < 0], merged$residNorm[merged$teamPointsResid < 0])
+
+binnedplot(merged$fgAttemptedPredAvg, merged$residFgNorm)
+binnedplot(merged$fgAttemptedPredAvg[merged$teamPointsResid < 0], merged$residFgNorm[merged$teamPointsResid < 0])
 
 binnedplot(merged$fgAttemptedPredAvg, merged$residFgNorm)
 
 binnedplot(merged$fgAttemptedPredAvg[merged$teamPointsResid < -2], merged$residFgNorm[merged$teamPointsResid < -2])
 binnedplot(merged$fgAttemptedPredAvg[merged$teamPointsResid > 2], merged$residFgNorm[merged$teamPointsResid > 2])
-
 binnedplot(merged$fgAttemptedPredAvg[merged$teamPointsResid > 6], merged$residFgNorm[merged$teamPointsResid > 6])
 
 
@@ -159,7 +174,9 @@ testData <- subset(merged, !merged$GameId %in% trainIds)
 model <- glm(Fg.Attempted ~ -1 + 
                offset(log(fgAttemptedPredAvg)) + 
                teamPointsResid :  fgAttemptedPredAvg + 
-               pmax(fgAttemptedPredAvg - 15, 0) : pmin(teamPointsResid, 0) 
+               pmax(fgAttemptedPredAvg - 15, 0) : pmin(teamPointsResid, 0) +
+               teamSumFgPredAvg + 
+               I(1 / teamSumFgPredAvg)
              
              
              , data = trainData, family = poisson)
@@ -170,7 +187,12 @@ testData$pred <- predict(model, testData, type = "response")
 testData$resid <- testData$Fg.Attempted - testData$pred
 
 binnedplot(testData$pred, testData$resid)
+binnedplot(testData$pred[testData$Min>0], testData$resid[testData$Min>0])
+
 binnedplot(testData$teamSumFgPredAvg, testData$resid)
+binnedplot(testData$fgAttemptedPredAvg, testData$resid)
+binnedplot(testData$teamPointsResid, testData$resid)
+binnedplot(testData$ownExp, testData$resid)
 
 binnedplot(testData$pred[testData$teamSumFgPredAvg > 88], testData$resid[testData$teamSumFgPredAvg > 88])
 
@@ -194,98 +216,22 @@ mean(sumPerTeam$resid)
 
 binnedplot(sumPerTeam$pred, sumPerTeam$resid)
 
-colnames(sumPerTeam)[3] <- "teamFgAttemptedPredAvg"
-
-merged <- merge(merged, sumPerTeam[c("GameId", "Team", "teamFgAttemptedPredAvg")])
-
-binnedplot(merged$teamFgAttemptedPredAvg, merged$fgResid)
-
-binnedplot(merged$fgAttemptedPredAvg[merged$teamFgAttemptedPredAvg < 85], merged$fgResid[merged$teamFgAttemptedPredAvg < 85])
-binnedplot(merged$fgAttemptedPredAvg[merged$teamFgAttemptedPredAvg > 91], merged$fgResid[merged$teamFgAttemptedPredAvg > 91])
-
-set.seed(1)
-trainDataIds <- sample(unique(merged$GameId), size = 0.75*length(unique(merged$GameId)))
-trainData <- subset(merged, merged$GameId %in% trainDataIds)
-testData <- subset(merged, !merged$GameId %in% trainDataIds)
-
-model <- glm(Fg.Attempted ~ 
-               log(fgAttemptedPredAvg) + 
-               log(teamFgAttemptedPredAvg) + 
-               ownExp + 
-               I(ownExp - oppExp) + 
-               pmax(fgAttemptedPredAvg - 19, 0) 
-             , data = merged, family = poisson)
-summary(model)
-
-testData$pred <- predict(model, testData, type = "response")
-testData$resid <- testData$Fg.Attempted - testData$pred
-
-testData$predGivenPlayed <- testData$pred / (1 - testData$zeroProb)
-testData$reidGivenPlayed <- testData$predGivenPlayed - testData$Fg.Attempted
-
-binnedplot(testData$pred, testData$resid)
-binnedplot(testData$pred[testData$Min > 0], testData$resid[testData$Min > 0])
-
-binnedplot(testData$predGivenPlayed[testData$Min > 0], testData$reidGivenPlayed[testData$Min > 0])
-
-
-binnedplot(testData$predGivenPlayed[testData$teamFgAttemptedPredAvg < 80], testData$reidGivenPlayed[testData$teamFgAttemptedPredAvg < 80])
-binnedplot(testData$pred[testData$teamFgAttemptedPredAvg < 80], testData$resid[testData$teamFgAttemptedPredAvg < 80])
-
-binnedplot(testData$pred[testData$teamFgAttemptedPredAvg < 85], testData$resid[testData$teamFgAttemptedPredAvg < 85])
-binnedplot(testData$predGivenPlayed[testData$teamFgAttemptedPredAvg < 85 & testData$Min > 0], testData$reidGivenPlayed[testData$teamFgAttemptedPredAvg < 85 & testData$Min > 0])
-
-binnedplot(testData$pred[testData$teamFgAttemptedPredAvg > 90], testData$resid[testData$teamFgAttemptedPredAvg > 90])
-binnedplot(testData$pred[testData$teamFgAttemptedPredAvg > 92], testData$resid[testData$teamFgAttemptedPredAvg > 92])
-
-binnedplot(testData$pred[testData$pred > 20], testData$resid[testData$pred > 20])
-binnedplot(testData$fgAttemptedPredAvg[testData$fgAttemptedPredAvg > 20], testData$resid[testData$fgAttemptedPredAvg > 20])
-
-binnedplot(testData$ownExp, testData$resid)
-binnedplot(testData$ownExp- testData$oppExp, testData$resid)
-
-team <- aggregate(pred ~ GameId + Team, testData, sum)
-team <- merge(team, aggregate(Fg.Attempted ~ GameId + Team, testData, sum))
-
-binnedplot(team$pred, team$pred - team$Fg.Attempted)
-
-
-trainData$pred <- predict(model, trainData, type = "response")
-trainData$resid <- trainData$Fg.Attempted - trainData$pred
-
-binnedplot(trainData$pred, trainData$resid)
-binnedplot(trainData$pred[trainData$teamFgAttemptedPredAvg < 80], trainData$resid[trainData$teamFgAttemptedPredAvg < 80])
-
-binnedplot(trainData$pred[trainData$teamFgAttemptedPredAvg < 85], trainData$resid[trainData$teamFgAttemptedPredAvg < 85])
-binnedplot(trainData$pred[trainData$teamFgAttemptedPredAvg > 90], trainData$resid[trainData$teamFgAttemptedPredAvg > 90])
-binnedplot(trainData$pred[trainData$teamFgAttemptedPredAvg > 92], trainData$resid[trainData$teamFgAttemptedPredAvg > 92])
-
-binnedplot(trainData$pred[trainData$pred > 20], trainData$resid[trainData$pred > 20])
-binnedplot(trainData$pred[trainData$pred > 20 & trainData$teamFgAttemptedPredAvg < 85], trainData$resid[trainData$pred > 20 & trainData$teamFgAttemptedPredAvg < 85])
-
-binnedplot(trainData$fgAttemptedPredAvg[trainData$fgAttemptedPredAvg > 20], trainData$resid[trainData$fgAttemptedPredAvg > 20])
-
-binnedplot(trainData$ownExp, trainData$resid)
-binnedplot(trainData$ownExp- trainData$oppExp, trainData$resid)
-
-team <- aggregate(pred ~ GameId + Team, trainData, sum)
-team <- merge(team, aggregate(Fg.Attempted ~ GameId + Team, trainData, sum))
-
-binnedplot(team$pred, team$pred - team$Fg.Attempted)
-
-
-
-##Java tests
-
+#Java tests
 set.seed(100)
-javaData <- trainData[sample(1:nrow(trainData), 100),]
+javaData <- testData[sample(1:nrow(testData), 100),]
 predictions <- predict(model, javaData, type = "response")
 
-Covariates <- with(javaData, paste(fgAttemptedPredAvg,
-                                   ownExp, oppExp, teamFgAttemptedPredAvg
-                                   , sep = ","))
+Covariates <- with(javaData, paste(fgAttemptedPredAvg, teamPointsResid, teamSumFgPredAvg, sep = ","))
 
 
-test <- paste("Assert.assertEquals(", predictions, "d, TeamFgAttemptedNormalizationModel.adjustPrediction(", Covariates, ") , DELTA);", sep = "")
+test <- paste("Assert.assertEquals(", predictions, "d, TeamBasedFgAdjuster.adjust(", Covariates, ") , DELTA);", sep = "")
 
-cat(test, sep="\n")
+  cat(test, sep="\n")
+
+predictTerms.glm <- function(obj, newdata) {
+  t(t(model.matrix(obj$formula, newdata)) * coef(obj))
+}
+
+predTerms <- predictTerms.glm(model, javaData)
+
+predTerms[1,]

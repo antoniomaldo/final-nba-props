@@ -1,9 +1,5 @@
 package nba.bayesianmodel.models;
 
-import com.williamhill.trading.framework.math.common.splines.BoundedRBSpline;
-import com.williamhill.trading.framework.math.common.splines.IntegerBoundedRBSpline;
-import com.williamhill.trading.framework.math.common.splines.RBSpline;
-
 public class ThreeProportionModelGivenFgAttempted {
 
     public static double adjustRate(double rawTargetPercentage, double fgAttemptedPred, int realFgAttempted){

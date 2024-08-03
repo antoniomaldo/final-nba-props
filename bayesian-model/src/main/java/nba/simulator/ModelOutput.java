@@ -1,7 +1,5 @@
 package nba.simulator;
 
-import org.springframework.ui.Model;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,12 +11,14 @@ public class ModelOutput {
 
     private final Map<Integer, Map<Integer, Double>> playerTwoPointsMap;
     private final Map<Integer, Map<Integer, Double>> playerFtsPointsMap;
-    public ModelOutput(Map<Integer, Map<Integer, Double>> playerOutput, Map<Integer, Map<Integer, Double>> playerThreePointsMap, Map<Integer, Map<Integer, Double>> playerFgAttemptedMap, Map<Integer, Map<Integer, Double>> playerTwoPointsMap, Map<Integer, Map<Integer, Double>> playerFtsPointsMap) {
+    private final Map<Integer, Map<Integer, Double>> playerMinsMap;
+    public ModelOutput(Map<Integer, Map<Integer, Double>> playerOutput, Map<Integer, Map<Integer, Double>> playerThreePointsMap, Map<Integer, Map<Integer, Double>> playerFgAttemptedMap, Map<Integer, Map<Integer, Double>> playerTwoPointsMap, Map<Integer, Map<Integer, Double>> playerFtsPointsMap, Map<Integer, Map<Integer, Double>> playerMinMap) {
         this.playerOutput = playerOutput;
         this.playerThreePointsMap = playerThreePointsMap;
         this.fgAttemptedMap = playerFgAttemptedMap;
         this.playerTwoPointsMap = playerTwoPointsMap;
         this.playerFtsPointsMap = playerFtsPointsMap;
+        this.playerMinsMap = playerMinMap;
     }
 
     public Map<Integer, Map<Integer, Double>> getPlayerOverProb() {
@@ -62,4 +62,7 @@ public class ModelOutput {
         return playerMap.keySet().stream().mapToDouble(k -> k * playerMap.get(k)).sum();
     }
 
+    public Map<Integer, Map<Integer, Double>> getPlayerMinsMap() {
+        return playerMinsMap;
+    }
 }

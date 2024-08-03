@@ -1,5 +1,6 @@
 package nba.simulator;
 
+import nba.bayesianmodel.models.TeamBasedFgAdjuster;
 import nba.bayesianmodel.optimizers.targets.TargetPredicted;
 import nba.minutedistribution.SimulateMinutesForPlayer;
 
@@ -13,32 +14,65 @@ import java.util.stream.Stream;
 public class NbaPlayerModel {
     private static final Random RANDOM = new Random();
 
-    public static ModelOutput runModel(List<PlayerWithCoefs> homePlayers, List<PlayerWithCoefs> awayPlayers, Map<String, Double> minutesExpected, Map<Integer, Double> zeroMinProb, Double totalPoints, Double matchSpread){
+    public static ModelOutput runModel(List<PlayerWithCoefs> homePlayers, List<PlayerWithCoefs> awayPlayers, Map<String, Double> minutesExpected, Map<Integer, Double> zeroMinProb, Double totalPoints, Double matchSpread, boolean shouldAdjust){
         double homeExp = (totalPoints - matchSpread) / 2d;
         double awayExp = totalPoints - homeExp;
 
-        homePlayers.forEach(p->p.setHomePlayer(true));
-        awayPlayers.forEach(p->p.setHomePlayer(false));
+        homePlayers.forEach(p -> p.setHomePlayer(true));
+        awayPlayers.forEach(p -> p.setHomePlayer(false));
+        if(shouldAdjust) {
+            List<PlayerWithCoefs> allPlayers = Stream.concat(homePlayers.stream(), awayPlayers.stream()).collect(Collectors.toList());
+            ModelOutput rawModelOutput = TeamSimulator.runTeamBasedModel(allPlayers, minutesExpected, homeExp, awayExp);
 
-        //Calculate fgPredicted without having to run the model
-        Map<Integer, Double> homeFgAvgMap = getTeamFgAvg(homePlayers, minutesExpected, zeroMinProb);
-        Map<Integer, Double> awayFgAvgMap = getTeamFgAvg(awayPlayers, minutesExpected, zeroMinProb);
+            //we need "fgAttemptedPredAvg" = merged$fgAttemptedPred * (1 - merged$zeroProb)
 
-        double homeTeamSumOfFgPredicted = homeFgAvgMap.keySet().stream().mapToDouble(i -> homeFgAvgMap.get(i)).sum();
-        double awayTeamSumOfFgPredicted = awayFgAvgMap.keySet().stream().mapToDouble(i -> awayFgAvgMap.get(i)).sum();
+            //Calculate fgPredicted without having to run the model
+            Map<Integer, Double> homeFgAvgMap = getTeamFgAvg(homePlayers, minutesExpected, zeroMinProb);
+            Map<Integer, Double> awayFgAvgMap = getTeamFgAvg(awayPlayers, minutesExpected, zeroMinProb);
 
-        Map<Integer, Double> homeFgAdjustedGivenPlayedap = adjustFgPred(homeFgAvgMap, homeTeamSumOfFgPredicted, homeExp, awayExp, zeroMinProb);
-        Map<Integer, Double> awayFgAdjustedGivenPlayedap = adjustFgPred(awayFgAvgMap, awayTeamSumOfFgPredicted, awayExp, homeExp, zeroMinProb);
+            //we need teamSumFgPredAvg
 
-        Map<Integer, Double> homePlayerCoefMultiplier = buildPlayerCoefMultiplier(homeFgAdjustedGivenPlayedap, homeFgAvgMap, zeroMinProb);
-        Map<Integer, Double> awayPlayerCoefMultiplier = buildPlayerCoefMultiplier(awayFgAdjustedGivenPlayedap, awayFgAvgMap, zeroMinProb);
+            double homeTeamSumOfFgPredicted = homeFgAvgMap.keySet().stream().mapToDouble(i -> homeFgAvgMap.get(i)).sum();
+            double awayTeamSumOfFgPredicted = awayFgAvgMap.keySet().stream().mapToDouble(i -> awayFgAvgMap.get(i)).sum();
 
-        updatePlayerCoefMultiplier(homePlayers, homePlayerCoefMultiplier);
-        updatePlayerCoefMultiplier(awayPlayers, awayPlayerCoefMultiplier);
+            //we need teamPointsResid -> agg$pointsAvgNorm - agg$ownExp
+            //agg$pointsAvgNorm -> merged$pointsAvg * (1 - merged$zeroProb)
 
-        List<PlayerWithCoefs> allPlayers = Stream.concat(homePlayers.stream(), awayPlayers.stream()).collect(Collectors.toList());
+            double homeTeamExpPoints = calculateTeamPointsExp(homePlayers, rawModelOutput.getPlayerOverProb(), zeroMinProb);
+            double awayTeamExpPoints = calculateTeamPointsExp(awayPlayers, rawModelOutput.getPlayerOverProb(), zeroMinProb);
 
-        return TeamSimulator.runTeamBasedModel(allPlayers, minutesExpected, homeExp, awayExp);
+            double homeTeamResid = homeTeamExpPoints - homeExp;
+            double awayTeamResid = awayTeamExpPoints - awayExp;
+
+
+
+            for (PlayerWithCoefs player : homePlayers) {
+                Double fdPredictedGivenPlayed = rawModelOutput.getPlayerFgAttemptedOverProb().get(player.getPlayerId()).get(-1);
+                double fgAttemptedPredAvg = fdPredictedGivenPlayed * (1 - zeroMinProb.get(player.getPlayerId()));
+                double fgAdjusted =  TeamBasedFgAdjuster.adjust(fgAttemptedPredAvg, homeTeamResid, homeTeamSumOfFgPredicted);
+
+                double multiplier = fgAdjusted / fgAttemptedPredAvg;
+                player.setFgCoefMultiplier(multiplier);
+            }
+
+            for (PlayerWithCoefs player : awayPlayers) {
+                Double fdPredictedGivenPlayed = rawModelOutput.getPlayerFgAttemptedOverProb().get(player.getPlayerId()).get(-1);
+                double fgAttemptedPredAvg = fdPredictedGivenPlayed * (1 - zeroMinProb.get(player.getPlayerId()));
+                double fgAdjusted = TeamBasedFgAdjuster.adjust(fgAttemptedPredAvg, awayTeamResid, awayTeamSumOfFgPredicted);
+
+                double multiplier = fgAdjusted / fgAttemptedPredAvg;
+                player.setFgCoefMultiplier(multiplier);
+            }
+
+            allPlayers = Stream.concat(homePlayers.stream(), awayPlayers.stream()).collect(Collectors.toList());
+            return TeamSimulator.runTeamBasedModel(allPlayers, minutesExpected, homeExp, awayExp);
+
+        }else{
+            List<PlayerWithCoefs> allPlayers = Stream.concat(homePlayers.stream(), awayPlayers.stream()).collect(Collectors.toList());
+            return TeamSimulator.runTeamBasedModel(allPlayers, minutesExpected, homeExp, awayExp);
+
+        }
+
     }
 
     private static Map<Integer, Double> getTeamFgAvg(List<PlayerWithCoefs> players, Map<String, Double> minutesExpected, Map<Integer, Double> zeroMinProb) {
@@ -86,7 +120,7 @@ public class NbaPlayerModel {
         Map<Integer, Double> map = new HashMap<>();
         for(Integer id : teamFgAvgMap.keySet()){
             Double zeroProb = zeroMinProb.get(id);
-            map.put(id, TeamFgAttemptedNormalizationModel.adjustPrediction(teamFgAvgMap.get(id), ownExp, oppExp, teamTeamSumOfFgPredicted) / (1 - zeroProb));
+//            map.put(id, TeamFgAttemptedNormalizationModel.adjustPrediction(teamFgAvgMap.get(id), ownExp, oppExp, teamTeamSumOfFgPredicted) / (1 - zeroProb));
         }
         return  map;
     }

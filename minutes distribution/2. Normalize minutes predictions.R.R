@@ -1,6 +1,6 @@
 library(arm)
 
-fullGames <- read.csv(file = "C:\\czrs-ds-models\\nba-player-props\\minutes distribution\\mappedDataWithPreds.csv" )
+fullGames <- read.csv(file = "C:\\models\\nba-player-props\\minutes distribution\\mappedDataWithPreds.csv" )
 fullGames <- subset(fullGames, fullGames$pmin > 0)
 
 noOt <- subset(fullGames, fullGames$hasOt == 0)
@@ -88,6 +88,8 @@ binnedplot(allData$adjMinutes[allData$sumRawAvg<230], allData$resid[allData$sumR
 binnedplot(allData$adjMinutes[allData$sumRawAvg<228], allData$resid[allData$sumRawAvg<228])
 binnedplot(allData$adjMinutes[allData$sumRawAvg<225], allData$resid[allData$sumRawAvg<225])
 
+agg <- aggregate(adjMinutes ~ GameId + Team, allData, sum)
+
 #Given it playes
 allData$predGivenPlayedNorm <- allData$adjMinutes / (1 - allData$zeroPred)
 
@@ -100,7 +102,7 @@ binnedplot(played$predGivenPlayedNorm, played$givenPlayedResid)
 binnedplot(played$zeroPred, played$givenPlayedResid)
 
 
-write.csv(allData, file = "C:\\czrs-ds-models\\nba-player-props\\minutes distribution\\mappedDataWithAdjustedPreds.csv" )
+write.csv(allData, file = "C:\\models\\nba-player-props\\minutes distribution\\mappedDataWithAdjustedPreds.csv" )
 
 ## TO DO
 

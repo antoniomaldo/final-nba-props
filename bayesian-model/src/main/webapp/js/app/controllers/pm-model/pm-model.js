@@ -72,7 +72,7 @@ pmModelApp.controller('pmModelController', function ($scope, $http , pmModelServ
             if($scope.modelOutput == null){
                 return null;
             }else {
-                playerAvg = Math.round(1000 * $scope.modelOutput[listPlayers[i].name][-1]) / 1000;
+                playerAvg = Math.round(1000 * $scope.modelOutput[listPlayers[i].playerId][-1]) / 1000;
             }
             sum += playerAvg
         }
@@ -119,7 +119,7 @@ pmModelApp.controller('pmModelController', function ($scope, $http , pmModelServ
 
     $scope.getOverProbForPlayer = function(player){
         if($scope.modelOutput != null){
-            var playerPreds = $scope.modelOutput[player.name]
+            var playerPreds = $scope.modelOutput[player.playerId]
 
             var prob = 0;
             for(var item in playerPreds){
@@ -138,7 +138,7 @@ pmModelApp.controller('pmModelController', function ($scope, $http , pmModelServ
 
     $scope.getThreePointersOverProbForPlayer = function(player){
         if($scope.playerThreePointsOutput != null){
-            var playerPreds = $scope.playerThreePointsOutput[player.name]
+            var playerPreds = $scope.playerThreePointsOutput[player.playerId]
 
             var prob = 0;
             for(var item in playerPreds){

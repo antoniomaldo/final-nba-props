@@ -200,11 +200,10 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.12</version>
         </dependency>
-
         <dependency>
-            <groupId>com.williamhill.trading.framework</groupId>
-            <artifactId>math-common</artifactId>
-            <version>1.3.5</version>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
         </dependency>
 
     </dependencies>

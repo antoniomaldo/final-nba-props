@@ -21,6 +21,7 @@ public class TeamSimulator {
         Map<Integer, Map<Integer, Double>> playerTwoPointsMap = initializePlayerMap(team);
         Map<Integer, Map<Integer, Double>> playerFtsPointsMap = initializePlayerMap(team);
         Map<Integer, Map<Integer, Double>> playerFgAttemptedMap = initializePlayerMap(team);
+        Map<Integer, Map<Integer, Double>> playerMinMap = initializePlayerMap(team);
 
         for (PlayerWithCoefs player : team) {
             double ownExp = player.isHomePlayer() ? homeExp : awayExp;
@@ -35,7 +36,7 @@ public class TeamSimulator {
             for (int i = 0; i < 40000; i++) {
                 int simulateMinutesPlayed = simulateMinutesPlayed(minutesDistributionForPrediction);
 
-                double fgAttemptedPrediction = simulateMinutesPlayed * fgAttemptedPerMin;// FgAttemptedModel.getFgAttemptedPrediction(fgAttemptedPerMin, simulateMinutesPlayed);
+                double fgAttemptedPrediction = FgAttemptedModel.getFgAttemptedPrediction(fgAttemptedPerMin, simulateMinutesPlayed);
                 int fgAttempted = simulateFgAttemped(fgAttemptedPrediction);
 
 
@@ -75,9 +76,15 @@ public class TeamSimulator {
                 }else {
                     playerFgAttemptedMap.get(player.getPlayerId()).put(fgAttempted, playerFgAttemptedMap.get(player.getPlayerId()).get(fgAttempted) + 1d / 40000d);
                 }
+
+                if(playerMinMap.get(player.getPlayerId()).get(simulateMinutesPlayed) == null){
+                    playerMinMap.get(player.getPlayerId()).put(simulateMinutesPlayed, 1d / 40000d);
+                }else {
+                    playerMinMap.get(player.getPlayerId()).put(simulateMinutesPlayed, playerMinMap.get(player.getPlayerId()).get(simulateMinutesPlayed) + 1d / 40000d);
+                }
             }
         }
-        return new ModelOutput(playerPointsMap, playerThreePointsMap, playerFgAttemptedMap, playerTwoPointsMap, playerFtsPointsMap);
+        return new ModelOutput(playerPointsMap, playerThreePointsMap, playerFgAttemptedMap, playerTwoPointsMap, playerFtsPointsMap, playerMinMap);
     }
 
     private static int simulateMinutesPlayed(double[] minutesDistributionForPrediction) {

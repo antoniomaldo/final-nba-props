@@ -223,12 +223,24 @@ public class CsvUtils {
 
     public static void savePredictions(List<SimulatorPredictions> simulatorPredictions) {
         List<String[]> csvData = new ArrayList<>();
-        csvData.add(new String[]{"GameId", "PlayerId", "fgAttemptedPred", "twosAvg", "threesAvg", "ftsAvg", "rebounds", "steals", "blocks", "averageMinutesInSeason", "zeroProb"});
+        csvData.add(new String[]{"GameId", "PlayerId", "fgAttemptedPred", "twosAvg", "threesAvg", "ftsAvg", "rebounds", "steals", "blocks", "averageMinutesInSeason",
+                "zeroProb",
+                "minOneToFive",
+                "minSixToTen",
+                "minElevenToFifteen",
+                "minSixteenToTwenty",
+                "minTwentyOneToTwentyFive",
+                "minTwentySixToThirty",
+                "minThirtyOneToThirtyFive",
+                "minThirtySixToForty",
+                "minOverForty",
+                "averageMinutes"
+        });
         for (SimulatorPredictions playerPredictions : simulatorPredictions) {
             csvData.add(playerPredictions.toRow());
         }
 
-        try (CSVWriter writer = new CSVWriter(new FileWriter(BaseDirectory.baseDirectoryToUse().getBaseDir() + "backtest_analysis\\backtest.csv"))) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter(BaseDirectory.baseDirectoryToUse().getBaseDir() + "backtest_analysis\\backtestRaw.csv"))) {
             writer.writeAll(csvData);
         } catch (IOException e) {
             throw new RuntimeException(e);

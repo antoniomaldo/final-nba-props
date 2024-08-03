@@ -36,7 +36,7 @@ public class ApplicationController {
         List<PlayerWithCoefs> homePlayers = toPlayerList(gameRequest.getHomePlayers(), "home");
         List<PlayerWithCoefs> awayPlayers = toPlayerList(gameRequest.getAwayPlayers(), "away");
 
-        ModelOutput modelOutput = NbaPlayerModel.runModel(homePlayers, awayPlayers, minutesExpected, zeroMinProb, gameRequest.getTotalPoints(), gameRequest.getMatchSpread());
+        ModelOutput modelOutput = NbaPlayerModel.runModel(homePlayers, awayPlayers, minutesExpected, zeroMinProb, gameRequest.getTotalPoints(), gameRequest.getMatchSpread(), false);
 
         Map<String, Object> modelOutputMap = new HashMap<>();
 
@@ -45,6 +45,7 @@ public class ApplicationController {
         modelOutputMap.put("fgAttempted", modelOutput.getPlayerFgAttemptedOverProb());
         modelOutputMap.put("playerTwoPoints", modelOutput.getPlayerTwoPointsOverProb());
         modelOutputMap.put("playerFts", modelOutput.getPlayerFtsOverProb());
+        modelOutputMap.put("mins", modelOutput.getPlayerMinsMap());
 
         return new ResponseEntity<>(modelOutputMap, HttpStatus.OK);
     }

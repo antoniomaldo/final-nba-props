@@ -533,6 +533,8 @@ public class RotowireNameToEspnPlayerIdMapping {
         map.put("Michael Porter",4278104);
         map.put("Marcus Morris",6462);
         map.put("Terance Mann",3907823);
+        map.put("Wendell Carter",4277847);
+        map.put("Moritz Wagner",3150844);
 
     }
 

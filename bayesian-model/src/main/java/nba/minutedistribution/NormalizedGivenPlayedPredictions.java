@@ -64,6 +64,12 @@ public class NormalizedGivenPlayedPredictions {
                 teamWithNormPreds.add(playerRequest.toBuilder().teamAdjustedMinAvg(rawPred * gamePredMis / sumRawAvg).build());
             }
         }
+
+//        teamWithNormPreds = new ArrayList<>();
+//
+//        for(PlayerRequest playerRequest : team){
+//            teamWithNormPreds.add(playerRequest.toBuilder().teamAdjustedMinAvg(playerRequest.getPmin()).givenPlayedPred(playerRequest.getPmin()).build());
+//        }
         return teamWithNormPreds;
     }
 
