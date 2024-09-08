@@ -93,7 +93,7 @@ public abstract class PlayerRequest {
 
 
     public double getAverageMinutesInSeasonOrPmin(){
-        if(getAverageMinutesInSeason() == null){
+        if(getAverageMinutesInSeason() == null || getAverageMinutesInSeason() <= 0){
             return getPmin();
         }else{
             return getAverageMinutesInSeason();

@@ -23,8 +23,8 @@ public class SimulateMinutesForPlayer {
             br.readLine();
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
-                int minExpected = Integer.parseInt(values[1]);
-                int minPlayed = Integer.parseInt(values[2].replace("\"", ""));
+                int minExpected = Integer.parseInt(values[2]);
+                int minPlayed = Integer.parseInt(values[1].replace("\"", ""));
                 double minPlayedProb = Double.parseDouble(values[3]);
 
                 entries.add(Triple.of(minExpected, minPlayed, minPlayedProb));

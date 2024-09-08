@@ -66,7 +66,7 @@ allPlayers <- allPlayers[order(allPlayers$PlayerId, allPlayers$Date),]
 allPlayers$averageMinutesInSeason[!is.na(allPlayers$cumGamesPlayedInSeason) & allPlayers$cumGamesPlayedInSeason == 0] <- -1
 
 allPlayers$averageMinutesInSeason <- na.locf(allPlayers$averageMinutesInSeason)
-allPlayers$lastGameMin <- na.locf(allPlayers$averageMinutesInSeason)
+allPlayers$lastGameMin <- na.locf(allPlayers$lastGameMin)
 
 View(allPlayers[c("seasonYear", "GameId", "Name", "Min", "cumGamesPlayedInSeason", "averageMinutesInSeason")])
 
@@ -132,7 +132,7 @@ zeroMinsModel <- glm(I(Min == 0) ~ 1 +
             
             data = fullGames, family = binomial)
 summary(zeroMinsModel)
-AIC(zeroMinsModel) #9114.458
+AIC(zeroMinsModel) #5827.819
 
 fullGames$zeroPred <- predict(zeroMinsModel, fullGames, type = "response")
 summary(fullGames$zeroPred)
@@ -197,7 +197,7 @@ lm <- glm(Min ~
           
           , data = noZeroData, family = poisson)
 summary(lm)
-AIC(lm) #233558.1
+AIC(lm) #143269
 
 noZeroData$pmin2 <- predict(lm, noZeroData, type = "response")
 noZeroData$minResid2 <- noZeroData$Min - noZeroData$pmin2
@@ -272,6 +272,7 @@ predTerms <- predictTerms.glm(lm, javaData)
 predTerms[1,]
 
 
+fullGames$lastGameMin[fullGames$lastGameMin == -1] <- fullGames$pmin[fullGames$lastGameMin == -1]  
 fullGames$predGivenPlayed <- predict(lm, fullGames, type = "response")
 
 write.csv(fullGames, file = "C:\\models\\nba-player-props\\minutes distribution\\mappedDataWithPreds.csv" )

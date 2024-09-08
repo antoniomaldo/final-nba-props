@@ -221,7 +221,21 @@ public class CsvUtils {
         }
     }
 
-    public static void savePredictions(List<SimulatorPredictions> simulatorPredictions) {
+    public static void saveMinutesPredictions(List<String[]> simulatorPredictions) {
+        List<String[]> csvData = new ArrayList<>();
+        csvData.add(new String[]{"GameId", "PlayerName", "MinutesPredicted", "PlayerId", "zeroPred", "probTenToTwenty", "probTwentyOneThirty", "probThirtyOneForty", "probOverForty"});
+
+        for (String[] playerPredictions : simulatorPredictions) {
+            csvData.add(playerPredictions);
+        }
+
+        try (CSVWriter writer = new CSVWriter(new FileWriter(BaseDirectory.baseDirectoryToUse().getBaseDir() + "backtest_analysis\\minutesPrediction.csv"))) {
+            writer.writeAll(csvData);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+        public static void savePredictions(List<SimulatorPredictions> simulatorPredictions) {
         List<String[]> csvData = new ArrayList<>();
         csvData.add(new String[]{"GameId", "PlayerId", "fgAttemptedPred", "twosAvg", "threesAvg", "ftsAvg", "rebounds", "steals", "blocks", "averageMinutesInSeason",
                 "zeroProb",
