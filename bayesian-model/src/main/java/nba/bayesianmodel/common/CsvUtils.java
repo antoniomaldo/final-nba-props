@@ -235,6 +235,16 @@ public class CsvUtils {
             throw new RuntimeException(e);
         }
     }
+
+    public static void saveRotowirePreds(List<String[]> csvData, String date) {
+
+
+        try (CSVWriter writer = new CSVWriter(new FileWriter("C:\\Users\\Antonio\\Documents\\NBA\\data\\rotowire\\2024\\rotowire-nba-projections-" + date + "-test.csv"))) {
+            writer.writeAll(csvData);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
         public static void savePredictions(List<SimulatorPredictions> simulatorPredictions) {
         List<String[]> csvData = new ArrayList<>();
         csvData.add(new String[]{"GameId", "PlayerId", "fgAttemptedPred", "twosAvg", "threesAvg", "ftsAvg", "rebounds", "steals", "blocks", "averageMinutesInSeason",
