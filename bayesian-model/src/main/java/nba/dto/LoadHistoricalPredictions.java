@@ -14,7 +14,7 @@ public class LoadHistoricalPredictions {
     public static void main(String[] args) throws IOException {
 //        String date = "2023-11-11";
 
-        LocalDate start = LocalDate.of(2023,11,12);
+        LocalDate start = LocalDate.of(2024,04,01);
         LocalDate end = LocalDate.of(2024,04,01);
 
         for (LocalDate localDate = start; localDate.isBefore(end); localDate = localDate.plusDays(1)) {
