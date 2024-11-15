@@ -1,6 +1,6 @@
 library(arm)
 
-BASE_DIR <- "C:\\czrs-ds-models\\nba-player-props\\"
+BASE_DIR <- "C:\\models\\nba-player-props\\"
 COEFS_DIR <- paste0(BASE_DIR, "testing\\")
 
 players <- read.csv(paste0(BASE_DIR, "data\\allPlayers.csv"))
