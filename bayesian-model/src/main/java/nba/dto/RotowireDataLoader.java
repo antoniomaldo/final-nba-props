@@ -19,16 +19,16 @@ import java.util.stream.Collectors;
 import static java.time.LocalTime.now;
 
 public class RotowireDataLoader {
-    private static final String ROTOWIRE_URL = "https://www.rotowire.com/basketball/tables/projections.php?type=daily&pos=ALL&date=";
+    private static final String ROTOWIRE_URL = "https://www.rotowire.com/basketball/tables/projections.php?type=today&pos=ALL&date=";
 
     private static final Map<String, String> COOKIES = getCookies();
 
-    public static Map<String, List<RotowirePlayer>> loadTodaysPredictions()  {
+    public static Map<String, List<FullRotowireObject>> loadTodaysPredictions()  {
         String today = new DateTime().toLocalDate().toString();
         Map<String, List<FullRotowireObject>> stringListMap = loadPredictionsForDay(today);
         Map<String, List<RotowirePlayer>> map = new HashMap<>(); //FIXME
 
-        return map;
+        return stringListMap;
     }
 
     public static Map<String, List<FullRotowireObject>> loadPredictionsForDay(String today) {

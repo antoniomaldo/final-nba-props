@@ -1,15 +1,15 @@
 library(arm)
 
-allPlayers <- read.csv("C:\\czrs-ds-models\\nba-player-props\\data\\allPlayers.csv")
+allPlayers <- read.csv("C:\\models\\nba-player-props\\data\\allPlayers.csv")
 
-BASE_DIR <- "C:\\czrs-ds-models\\nba-player-props\\testing\\"
+BASE_DIR <- "C:\\models\\nba-player-props\\testing\\"
 
-backtest <- read.csv(paste0("C:\\czrs-ds-models\\nba-player-props\\", "backtest_analysis\\backtest.csv"))
+backtest <- read.csv(paste0("C:\\models\\nba-player-props\\", "backtest_analysis\\backtest.csv"))
 
-javaPreds <- read.csv("C:\\czrs-ds-models\\nba-player-props\\testing\\threeProp.csv")
+javaPreds <- read.csv("C:\\models\\nba-player-props\\testing\\threeProp.csv")
 javaPreds <- subset(javaPreds, javaPreds$seasonYear > 2017 & javaPreds$target >= 0)
 javaPreds <- merge(javaPreds, allPlayers[c("GameId", "PlayerId", "Name", "FT.Attempted", "Team", "HomeTeam", "AwayTeam",  "matchSpread", "totalPoints")])
-javaPreds <- merge(javaPreds, backtest[c("GameId", "PlayerId", "fgAttemptedPred", "threesAvg")])
+#javaPreds <- merge(javaPreds, backtest[c("GameId", "PlayerId", "fgAttemptedPred", "threesAvg")])
 
 
 javaPreds$homeExp <- (javaPreds$totalPoints - javaPreds$matchSpread) / 2
@@ -26,8 +26,11 @@ javaPreds$threeResid <- javaPreds$threeAttempted - javaPreds$threeExp
 plot.ts(javaPreds$target[javaPreds$PlayerId == 3992])
 lines(javaPreds$targetPredicted[javaPreds$PlayerId == 3992], col = "red")
 
-plot.ts(javaPreds$target[javaPreds$Name == "L. Doncic"])
-lines(javaPreds$targetPredicted[javaPreds$Name == "L. Doncic"], col = "red")
+plot.ts(javaPreds$target[javaPreds$Name == "L. Doncic" & javaPreds$seasonYear >= 2024])
+lines(javaPreds$targetPredicted[javaPreds$Name == "L. Doncic" & javaPreds$seasonYear >= 2024], col = "red")
+
+plot.ts(javaPreds$target[javaPreds$Name == "Z. Risacher"])
+lines(javaPreds$targetPredicted[javaPreds$Name == "Z. Risacher"], col = "red")
 
 javaPreds$resid <- javaPreds$target - javaPreds$targetPredicted
 

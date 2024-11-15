@@ -1,20 +1,60 @@
 package nba.minutedistribution;
 
+import nba.dto.NbaGameEventDto;
+import nba.dto.PlayerRequest;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SimulateMinutesForPlayer {
-    private final static Map<Integer, double[]> MINUTES_DISTRIBUTION = getScaleAndShapeMap();
+public class MinutesExpectedModel {
+    private final static Map<Integer, double[]> MINUTES_DISTRIBUTION = getMinDistributionMap();
 
     public static double[] getMinutesDistributionForPrediction(int minutesPredicted){
         return MINUTES_DISTRIBUTION.get(minutesPredicted);
     }
 
-    public static Map<Integer, double[]>  getScaleAndShapeMap(){
-        File file = new File(SimulateMinutesForPlayer.class.getResource("/minutesDistribution.csv").getFile());
+
+    public static Pair<Map<Integer, Double>, Map<Integer, Double>> buildMinutesExpectedMap(NbaGameEventDto gameRequest) {
+        Map<Integer, Double> map = new HashMap<>();
+        Map<Integer, Double> zeroPredMap = new HashMap<>();
+
+        double matchTotalPoints = gameRequest.getTotalPoints();
+        double matchSpread = gameRequest.getMatchSpread();
+
+        double homeExp = (matchTotalPoints - matchSpread) / 2d;
+        double awayExp = matchTotalPoints - homeExp;
+
+        List<PlayerRequest> homePlayers = NormalizedGivenPlayedPredictions.addNormalizedPredictions(gameRequest.getHomePlayers(), homeExp, awayExp);
+        List<PlayerRequest> awayPlayers = NormalizedGivenPlayedPredictions.addNormalizedPredictions(gameRequest.getAwayPlayers(), awayExp,homeExp);
+
+        for(PlayerRequest playerRequest : homePlayers){
+            map.put(playerRequest.getPlayerId(), playerRequest.getTeamAdjustedMinAvg());
+            zeroPredMap.put(playerRequest.getPlayerId(), playerRequest.getZeroPred());
+        }
+
+        for(PlayerRequest playerRequest : awayPlayers){
+            map.put(playerRequest.getPlayerId(), playerRequest.getTeamAdjustedMinAvg() );
+            zeroPredMap.put(playerRequest.getPlayerId(), playerRequest.getZeroPred());
+
+        }
+
+        return Pair.of(map, zeroPredMap);
+    }
+
+    public static double[] getMinutesDistributionForPlayer(double minutesPredicted){
+//        double minutesPredicted = minutesExpected.get(player.getPlayerId());
+        minutesPredicted = minutesPredicted < 4 ? 4 : minutesPredicted;
+        minutesPredicted = minutesPredicted > 36 ? 36 : minutesPredicted;
+
+        return getMinutesDistributionForPrediction((int) Math.round(minutesPredicted));
+
+    }
+
+    public static Map<Integer, double[]> getMinDistributionMap(){
+        File file = new File(MinutesExpectedModel.class.getResource("/minutesDistribution.csv").getFile());
 
         List<Triple<Integer, Integer, Double>> entries = new ArrayList<>();
 
@@ -56,14 +96,6 @@ public class SimulateMinutesForPlayer {
             map.put(minPred, probs);
         }
         return map;
-    }
-
-    private static int getAsInteger(String[] values, Map<String, Integer> colNamesIndex, String colName) {
-        return Integer.parseInt(values[colNamesIndex.get(colName)].replace("\"", ""));
-    }
-
-    private static double getAsDouble(String[] values, Map<String, Integer> colNamesIndex, String colName) {
-        return Double.parseDouble(values[colNamesIndex.get(colName)].replace("\"", ""));
     }
 
 }

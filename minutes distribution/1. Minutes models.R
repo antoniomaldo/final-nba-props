@@ -43,6 +43,7 @@ for(csvPath in csvs){
   }
   rotowirePreds <- rotowirePreds[c("date", colnames(rotowirePreds)[colnames(rotowirePreds) != "date"])]
 }
+
 allPlayers <- read.csv(paste0(BASE_DIR, "data\\allPlayers.csv"))
 
 #Add cum data
@@ -79,6 +80,10 @@ allPlayers <- subset(allPlayers, !allPlayers$GameId %in% idsNotToUse)
 totalMin$hasOt <- 1 * (totalMin$Min >= 264)
 totalMin <- unique(totalMin[c("GameId", "hasOt")])
 
+rotowirePreds$date <- str_remove(rotowirePreds$date, "-test")
+
+#Add possition
+
 mappedData = mapMinutesForSeason(boxscores = allPlayers, rotoPreds = rotowirePreds, baseDir = BASE_DIR)
 
 
@@ -89,7 +94,7 @@ mappedData <- subset(mappedData, !is.na(mappedData$pmin))
 mappedData$pmin <- as.numeric(mappedData$pmin)
 mappedData <- subset(mappedData, mappedData$pmin > 0)
 
-aggPmin <- aggregate(pmin ~ GameId + Team, mappedData, sum)
+aggPmin <- aggregate(pmin ~ GameId + Team + seasonYear, mappedData, sum)
 fullGames <- subset(aggPmin, aggPmin$pmin %in% c(238, 239, 240, 241, 242))
 
 fullGames$id <- paste0(fullGames$GameId, "-", fullGames$Team)
@@ -130,7 +135,7 @@ zeroMinsModel <- glm(I(Min == 0) ~ 1 +
             I(Starter == 1)+  
             hasOt:pmin,
             
-            data = fullGames, family = binomial)
+            data = fullGames[fullGames$seasonYear %in% c(2023, 2024),], family = binomial)
 summary(zeroMinsModel)
 AIC(zeroMinsModel) #5827.819
 
@@ -141,7 +146,12 @@ fullGames$resid <- 1 * (fullGames$Min == 0) - fullGames$zeroPred
 
 
 binnedplot(fullGames$zeroPred, fullGames$resid)
+binnedplot(fullGames$zeroPred[fullGames$seasonYear == 2025], fullGames$resid[fullGames$seasonYear == 2025])
+
 binnedplot(fullGames$pmin, fullGames$resid)
+binnedplot(fullGames$pmin[fullGames$seasonYear == 2025], fullGames$resid[fullGames$seasonYear == 2025])
+binnedplot(fullGames$pmin[fullGames$seasonYear == 2024], fullGames$resid[fullGames$seasonYear == 2024])
+
 binnedplot(fullGames$lastGameMin, fullGames$resid)
 
 binnedplot(fullGames$pmin, fullGames$resid)
@@ -195,7 +205,7 @@ lm <- glm(Min ~
             + abs(teamSumAvgMinutes - 240)
             
           
-          , data = noZeroData, family = poisson)
+          , data = noZeroData[noZeroData$seasonYear %in% c(2023, 2024),], family = poisson)
 summary(lm)
 AIC(lm) #143269
 
@@ -203,6 +213,7 @@ noZeroData$pmin2 <- predict(lm, noZeroData, type = "response")
 noZeroData$minResid2 <- noZeroData$Min - noZeroData$pmin2
 
 binnedplot(noZeroData$pmin2, noZeroData$minResid2)
+binnedplot(noZeroData$pmin2[noZeroData$seasonYear == 2025], noZeroData$minResid2[noZeroData$seasonYear == 2025])
 
 binnedplot(noZeroData$pmin2[noZeroData$teamSumAvgMinutes > 250], noZeroData$minResid2[noZeroData$teamSumAvgMinutes > 250])
 binnedplot(noZeroData$pmin2[noZeroData$teamSumAvgMinutes < 230], noZeroData$minResid2[noZeroData$teamSumAvgMinutes < 230])

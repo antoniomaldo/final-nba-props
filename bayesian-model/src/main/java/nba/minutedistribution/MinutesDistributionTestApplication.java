@@ -13,10 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static nba.minutedistribution.MinutesExpectedModel.buildMinutesExpectedMap;
+import static nba.minutedistribution.MinutesExpectedModel.getMinutesDistributionForPrediction;
+
 public class MinutesDistributionTestApplication {
 
     public static void main(String[] args) {
-        List<BacktestPlayerWithCoefs> playerWithCoefs = CsvUtils.loadPredictionsDataWithProjMinutes(BaseDirectory.baseDirectoryToUse().getBaseDir() + "backtest_analysis\\backtestInputs.csv");
+        List<BacktestPlayerWithCoefs> playerWithCoefs = CsvUtils.loadPredictionsDataWithProjMinutesOnly(BaseDirectory.baseDirectoryToUse().getBaseDir() + "backtest_analysis\\backtestInputsMinutes.csv");
 
         List<Integer> gameIds = playerWithCoefs.stream().map(p -> p.getGameId()).distinct().collect(Collectors.toList());
 
@@ -73,18 +76,15 @@ public class MinutesDistributionTestApplication {
                 CsvUtils.saveMinutesPredictions(list);
             }
         }
-
-
-
     }
 
     private static void addToList(List<String[]> list, Integer gameId, Map<Integer, Double> minutesExpected, Map<Integer, Double> zeroMinProb, PlayerRequest player) {
         double adjMinutes = minutesExpected.get(player.getPlayerId());
         double minutesPredicted = minutesExpected.get(player.getPlayerId());
-        minutesPredicted = minutesPredicted < 4 ? 4 : minutesPredicted;
-        minutesPredicted = minutesPredicted > 36 ? 36 : minutesPredicted;
+//        minutesPredicted = minutesPredicted < 4 ? 4 : minutesPredicted;
+//        minutesPredicted = minutesPredicted > 36 ? 36 : minutesPredicted;
 
-        double[] minutesDistributionForPrediction = SimulateMinutesForPlayer.getMinutesDistributionForPrediction((int) Math.round(minutesPredicted));
+        double[] minutesDistributionForPrediction = MinutesExpectedModel.getMinutesDistributionForPlayer((int) Math.round(minutesPredicted));
 
         double probTenToTwenty = getDistributionProb(minutesDistributionForPrediction, 10, 20);
         double probTwentyOneThirty = getDistributionProb(minutesDistributionForPrediction, 21, 30);
@@ -110,34 +110,6 @@ public class MinutesDistributionTestApplication {
         }
         return sum;
     }
-
-    private static Pair<Map<Integer, Double>, Map<Integer, Double>> buildMinutesExpectedMap(NbaGameEventDto gameRequest) {
-        Map<Integer, Double> map = new HashMap<>();
-        Map<Integer, Double> zeroPredMap = new HashMap<>();
-
-        double matchTotalPoints = gameRequest.getTotalPoints();
-        double matchSpread = gameRequest.getMatchSpread();
-
-        double homeExp = (matchTotalPoints - matchSpread) / 2d;
-        double awayExp = matchTotalPoints - homeExp;
-
-        List<PlayerRequest> homePlayers = NormalizedGivenPlayedPredictions.addNormalizedPredictions(gameRequest.getHomePlayers(), homeExp, awayExp);
-        List<PlayerRequest> awayPlayers = NormalizedGivenPlayedPredictions.addNormalizedPredictions(gameRequest.getAwayPlayers(), awayExp,homeExp);
-
-        for(PlayerRequest playerRequest : homePlayers){
-            map.put(playerRequest.getPlayerId(), playerRequest.getTeamAdjustedMinAvg());
-            zeroPredMap.put(playerRequest.getPlayerId(), playerRequest.getZeroPred());
-        }
-
-        for(PlayerRequest playerRequest : awayPlayers){
-            map.put(playerRequest.getPlayerId(), playerRequest.getTeamAdjustedMinAvg() );
-            zeroPredMap.put(playerRequest.getPlayerId(), playerRequest.getZeroPred());
-
-        }
-
-        return Pair.of(map, zeroPredMap);
-    }
-
 
     private static List<PlayerRequest> toPlayerRequest(List<BacktestPlayerWithCoefs> homePlayersWithCoefs, boolean isHomePlayer) {
         List<PlayerRequest> list = new ArrayList<>();

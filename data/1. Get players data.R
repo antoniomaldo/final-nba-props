@@ -1,11 +1,13 @@
-library(DBI)
-library(bigrquery)
+#library(DBI)
+#library(bigrquery)
 library(stringr)
 library(zoo)
 
-BASE_DIR <- "C:\\czrs-ds-models\\nba-player-props\\"
+BASE_DIR <- "C:\\models\\nba-player-props\\"
 
 source(paste0(BASE_DIR, "mappings\\mappings-service.R"))
+source(paste0(BASE_DIR, "data\\Add player position.R"))
+
 # 
 # bq_auth()
 # 
@@ -21,16 +23,39 @@ source(paste0(BASE_DIR, "mappings\\mappings-service.R"))
 # players = dbGetQuery(con, "SELECT * FROM espn_boxscores")
 # sbrOdds <- dbGetQuery(con, "SELECT * FROM nba_sbr_odds")
 
-BASE_DATA_DIR = "C:/Users/amaldonado/Documents/NBA/data/"
+BASE_DATA_DIR = "C:/Users/Antonio/Documents/NBA/data/"
 
 loadDataInDirectory <- function(dir){
   folders <- list.files(dir, full.names = T)  
   df <- data.frame()
   for(folder in folders){
     season <- str_remove(folder, dir)
-    seasonData <- do.call(rbind, lapply(list.files(folder, full.names = T), read.csv))
+    seasonData <- data.frame()
+    for(file in list.files(folder, full.names = T)){
+      a = read.csv(file, row.names = NULL)
+      if(ncol(a) == 34 & !"bookmaker" %in% colnames(a)){
+        colNames <- colnames(a)[2:34]
+        a = a[,1:33]
+        colnames(a) <- colNames
+      }
+      if(nrow(seasonData) > 0){
+        seasonData <- rbind(seasonData, a[colnames(seasonData)])
+        
+      }else{
+        seasonData <- rbind(seasonData, a)
+        
+      }
+    }
+    #seasonData <- do.call(rbind, lapply(list.files(folder, full.names = T), read.csv))
     seasonData$seasonYear = season
-    df <- rbind(df, seasonData)
+    if(!"bookmaker" %in% colnames(seasonData)){
+      seasonData$bookmaker = ""
+    }
+    if(nrow(df) > 0){
+      df <- rbind(df, seasonData[colnames(df)])
+    }else{
+      df <- rbind(df, seasonData)
+    }
   }
   return(df)
 }
@@ -38,6 +63,19 @@ loadDataInDirectory <- function(dir){
 sbrOdds <- loadDataInDirectory(paste0(BASE_DATA_DIR, "sbr-odds/"))
 players <- loadDataInDirectory(paste0(BASE_DATA_DIR, "espn/Players/"))
 events <- loadDataInDirectory(paste0(BASE_DATA_DIR, "espn/Boxscores/"))
+
+#fix sbrodds df columsn
+before22 <- subset(sbrOdds, sbrOdds$seasonYear <= 2021)
+after22 <- subset(sbrOdds, sbrOdds$seasonYear > 2021)
+
+before22 <- before22[c("bookmaker", "seasonYear", "seasonPeriod", "date", "awayTeam", "homeTeam",
+                       "matchSpread", "homeOdds", "awayOdds", "totalPoints", "overOdds","underOdds")]
+after22 <- after22[c("bookmaker", "seasonYear", "seasonPeriod", "date", "awayTeam", "homeTeam",
+                     "home1QScore", "home2QScore", "home3QScore", "home4QScore", "home1OTScore", "home2OTScore")]
+
+colnames(after22) <- colnames(before22)
+
+sbrOdds <- rbind(before22, after22)
 
 #Clean espn data
 players <- players[,-which(colnames(players) == "seasonYear")]
@@ -118,6 +156,8 @@ players <- merge(players, events[c("GameId", "AwayTeam", "HomeTeam")], by = "Gam
 players <- merge(players, mappedOdds[c("GameId", "matchSpread", "totalPoints")], by = "GameId", all.x = T)
 
 players$id <- paste0(players$GameId, "_", players$PlayerId)
-View(table(players$id))
+
+players <- fillOutPositions(players)
 
 write.csv(players, paste0(BASE_DIR, "data/allPlayers.csv"))
+238

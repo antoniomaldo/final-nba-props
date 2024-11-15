@@ -14,11 +14,11 @@ public class LoadHistoricalPredictions {
     public static void main(String[] args) throws IOException {
 //        String date = "2023-11-11";
 
-        LocalDate start = LocalDate.of(2024,04,01);
-        LocalDate end = LocalDate.of(2024,04,01);
-
-        for (LocalDate localDate = start; localDate.isBefore(end); localDate = localDate.plusDays(1)) {
-            String date = localDate.toString();
+//        LocalDate start = LocalDate.of(2024,10,31);
+//        LocalDate end = LocalDate.of(2025,04,13);
+//
+//        for (LocalDate localDate = start; localDate.isBefore(end) && !localDate.isAfter(LocalDate.now()); localDate = localDate.plusDays(1)) {
+            String date = LocalDate.now().toString();
             System.out.println(date);
             Map<String, List<FullRotowireObject>> stringListMap = RotowireDataLoader.loadPredictionsForDay(date);
 
@@ -57,7 +57,7 @@ public class LoadHistoricalPredictions {
 
                 }
 
-            }
+//            }
             CsvUtils.saveRotowirePreds(csv, date);
         }
 

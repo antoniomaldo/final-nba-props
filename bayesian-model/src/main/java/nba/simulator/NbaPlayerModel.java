@@ -2,7 +2,6 @@ package nba.simulator;
 
 import nba.bayesianmodel.models.TeamBasedFgAdjuster;
 import nba.bayesianmodel.optimizers.targets.TargetPredicted;
-import nba.minutedistribution.SimulateMinutesForPlayer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,10 +10,12 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static nba.minutedistribution.MinutesExpectedModel.getMinutesDistributionForPrediction;
+
 public class NbaPlayerModel {
     private static final Random RANDOM = new Random();
 
-    public static ModelOutput runModel(List<PlayerWithCoefs> homePlayers, List<PlayerWithCoefs> awayPlayers, Map<String, Double> minutesExpected, Map<Integer, Double> zeroMinProb, Double totalPoints, Double matchSpread, boolean shouldAdjust){
+    public static ModelOutput runModel(List<PlayerWithCoefs> homePlayers, List<PlayerWithCoefs> awayPlayers, Map<Integer, Double> minutesExpected, Map<Integer, Double> zeroMinProb, Double totalPoints, Double matchSpread, boolean shouldAdjust){
         double homeExp = (totalPoints - matchSpread) / 2d;
         double awayExp = totalPoints - homeExp;
 
@@ -75,14 +76,14 @@ public class NbaPlayerModel {
 
     }
 
-    private static Map<Integer, Double> getTeamFgAvg(List<PlayerWithCoefs> players, Map<String, Double> minutesExpected, Map<Integer, Double> zeroMinProb) {
+    private static Map<Integer, Double> getTeamFgAvg(List<PlayerWithCoefs> players, Map<Integer, Double> minutesExpected, Map<Integer, Double> zeroMinProb) {
         Map<Integer, Double> fgAttemptedMap = new HashMap<>();
         for(PlayerWithCoefs player : players){
             double fgAttemptedPerMin = TargetPredicted.forFgAttempted(player.getFgAttemptedPlayerCoef(), player.getFgAttemptedPrior()) * player.getFgCoefMultiplier();
-            double minutesPredicted = minutesExpected.get(player.getPlayerName());
+            double minutesPredicted = minutesExpected.get(player.getPlayerId());
             minutesPredicted = minutesPredicted < 7 ? 7 : minutesPredicted;
             minutesPredicted = minutesPredicted > 40 ? 40 : minutesPredicted;
-            double[] minutesDistributionForPrediction = SimulateMinutesForPlayer.getMinutesDistributionForPrediction((int) Math.round(minutesPredicted));
+            double[] minutesDistributionForPrediction = getMinutesDistributionForPrediction((int) Math.round(minutesPredicted));
             double fgAttemptedPrediction = 0;
             for (int i = 0; i < minutesDistributionForPrediction.length; i++) {
                 fgAttemptedPrediction += fgAttemptedPerMin * i * minutesDistributionForPrediction[i];

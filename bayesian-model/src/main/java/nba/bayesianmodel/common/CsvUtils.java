@@ -58,7 +58,7 @@ public class CsvUtils {
         }
 
         if(shouldRemoveLastSeason){
-            playerData = playerData.stream().filter(p->p.getSeasonYear() < 2024).collect(Collectors.toList());
+            playerData = playerData.stream().filter(p->p.getSeasonYear() < 2025).collect(Collectors.toList());
         }
         return getPlayersData(playerData);
     }
@@ -91,7 +91,7 @@ public class CsvUtils {
                             values[colNamesIndex.get("Team")].replace("\"", ""),
                             values[colNamesIndex.get("Name")].replace("\"", ""),
                             getAsInteger(values, colNamesIndex, "PlayerId"),
-                            getAsInteger(values, colNamesIndex, "pmin"),
+                            getAsInteger(values, colNamesIndex, "Min"),
                             getAsDouble(values, colNamesIndex, "fgPlayerCoef"),
                             getAsDouble(values, colNamesIndex, "fgPrior"),
                             getAsDouble(values, colNamesIndex, "threePropPlayerCoef"),
@@ -126,6 +126,66 @@ public class CsvUtils {
                             getAsInteger(values, colNamesIndex, "Starter")
 
                             ));//getAsDouble(values, colNamesIndex, "oppExp")));
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return playerData;
+    }
+
+    public static List<BacktestPlayerWithCoefs> loadPredictionsDataWithProjMinutesOnly(String csvDir) {
+        List<BacktestPlayerWithCoefs> playerData = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(csvDir))) {
+            String line;
+            String[] colNames = br.readLine().split(",");
+            Map<String, Integer> colNamesIndex = createColNamesMap(colNames);
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                int minPlayed = getAsInteger(values, colNamesIndex, "Min");
+                if(minPlayed >= 0) {
+                    playerData.add(new BacktestPlayerWithCoefs(
+                            getAsInteger(values, colNamesIndex, "GameId"),
+                            getAsInteger(values, colNamesIndex, "seasonYear"),
+                            values[colNamesIndex.get("Team")].replace("\"", ""),
+                            values[colNamesIndex.get("Name")].replace("\"", ""),
+                            getAsInteger(values, colNamesIndex, "PlayerId"),
+                            getAsInteger(values, colNamesIndex, "Min"),
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            0d,
+                            getAsInteger(values, colNamesIndex, "pmin"),
+                            getAsDouble(values, colNamesIndex, "ownExp"),
+                            getAsDouble(values, colNamesIndex, "oppExp"),
+                            values[colNamesIndex.get("HomeTeam")].replace("\"", ""),
+                            getAsInteger(values, colNamesIndex, "Starter")
+
+                    ));//getAsDouble(values, colNamesIndex, "oppExp")));
                 }
             }
         } catch (IOException e) {
@@ -190,16 +250,16 @@ public class CsvUtils {
         return playerData;
     }
 
-    private static int getAsInteger(String[] values, Map<String, Integer> colNamesIndex, String colName) {
+    public static int getAsInteger(String[] values, Map<String, Integer> colNamesIndex, String colName) {
         return Integer.parseInt(values[colNamesIndex.get(colName)].replace("\"", ""));
     }
 
-    private static double getAsDouble(String[] values, Map<String, Integer> colNamesIndex, String colName) {
+    public static double getAsDouble(String[] values, Map<String, Integer> colNamesIndex, String colName) {
         return Double.parseDouble(values[colNamesIndex.get(colName)].replace("\"", ""));
     }
 
 
-    private static Map<String, Integer> createColNamesMap(String[] colNames) {
+    public static Map<String, Integer> createColNamesMap(String[] colNames) {
         Map<String, Integer> map = new HashMap<>();
         for (int i = 0; i < colNames.length; i++) {
             map.put(colNames[i].replace("\"",""), i);
@@ -239,7 +299,7 @@ public class CsvUtils {
     public static void saveRotowirePreds(List<String[]> csvData, String date) {
 
 
-        try (CSVWriter writer = new CSVWriter(new FileWriter("C:\\Users\\Antonio\\Documents\\NBA\\data\\rotowire\\2024\\rotowire-nba-projections-" + date + "-test.csv"))) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter("C:\\Users\\Antonio\\Documents\\NBA\\data\\rotowire\\2025\\rotowire-nba-projections-" + date + ".csv"))) {
             writer.writeAll(csvData);
         } catch (IOException e) {
             throw new RuntimeException(e);

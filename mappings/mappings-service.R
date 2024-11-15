@@ -136,4 +136,15 @@ mapMinutesForSeason <- function(boxscores,
 }
 
 
+#Mapped not mapped players
 
+#boxscores$isNaPlayerName <- 1 * is.na(boxscores$playerName)
+
+# agg <- aggregate(isNaPlayerName ~ PlayerId, boxscores, mean)
+# agg <- merge(agg, aggregate(seasonYear ~ PlayerId, boxscores, max))
+# agg <- merge(agg, aggregate(GameId ~ PlayerId, boxscores, length))
+# agg <- subset(agg, agg$isNaPlayerName==1 & agg$seasonYear>=2019)
+# agg <- subset(agg, agg$seasonYear>=2024)
+# 
+# notMapped <- unique(subset(boxscores[c("PlayerId", "Name", "Team")], boxscores$PlayerId %in% agg$PlayerId))
+# write.csv(notMapped,"C:\\models\\nba-player-props\\mappings\\notMapped.csv")

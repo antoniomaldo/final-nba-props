@@ -1,8 +1,8 @@
 library(zoo)
 library(dplyr)
 
-source("C:\\czrs-ds-models\\nba-player-props\\mappings\\mappings-service.R")
-BASE_DIR <- "C:\\czrs-ds-models\\nba-player-props\\"
+source("C:\\models\\nba-player-props\\mappings\\mappings-service.R")
+BASE_DIR <- "C:\\models\\nba-player-props\\"
 
 
 allPreds <- read.csv("C:\\czrs-ds-models\\nba-player-props\\testing\\allPreds.csv")

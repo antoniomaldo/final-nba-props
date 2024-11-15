@@ -1,12 +1,12 @@
 library(arm)
 
-allPlayers <- read.csv("C:\\czrs-ds-models\\nba-player-props\\data\\allPlayers.csv")
+allPlayers <- read.csv("C:\\models\\nba-player-props\\data\\allPlayers.csv")
 
-BASE_DIR <- "C:\\czrs-ds-models\\nba-player-props\\testing\\"
+BASE_DIR <- "C:\\models\\nba-player-props\\testing\\"
 
-javaPreds <- read.csv("C:\\czrs-ds-models\\nba-player-props\\testing\\fgAttemptedPerMin.csv")
+javaPreds <- read.csv("C:\\models\\nba-player-props\\testing\\fgAttemptedPerMin.csv")
 javaPreds <- subset(javaPreds, javaPreds$seasonYear > 2017 & javaPreds$target >= 0)
-javaPreds <- merge(javaPreds, allPlayers[c("GameId", "PlayerId", "Team", "HomeTeam", "AwayTeam",  "matchSpread", "totalPoints")])
+javaPreds <- merge(javaPreds, allPlayers[c("GameId","Name",  "PlayerId", "Team", "HomeTeam", "AwayTeam",  "matchSpread", "totalPoints")])
 
 doncic <- subset(javaPreds, javaPreds$PlayerId == 3945274)
 
@@ -24,14 +24,16 @@ javaPreds <- subset(javaPreds, !is.na(javaPreds$totalPoints))
 javaPreds$fgExp <- javaPreds$targetPredicted * javaPreds$minPlayed
 javaPreds$fgResid <- javaPreds$fgAttempted - javaPreds$fgExp
 
-plot.ts(javaPreds$target[javaPreds$PlayerId == 3992])
-lines(javaPreds$targetPredicted[javaPreds$PlayerId == 3992], col = "red")
+plot.ts(javaPreds$fgAttempted[javaPreds$Name == "Z. Risacher"])
+lines(javaPreds$fgExp[javaPreds$Name == "Z. Risacher"], col = "red")
 
 
 javaPreds$resid <- javaPreds$target - javaPreds$targetPredicted
 
 binnedplot(javaPreds$targetPredicted[javaPreds$PlayerId == 3992], 
            javaPreds$resid[javaPreds$PlayerId == 3992])
+binnedplot(javaPreds$targetPredicted[javaPreds$Name == "Z. Risacher"], 
+           javaPreds$resid[javaPreds$Name== "Z. Risacher"])
 
 binnedplot(javaPreds$targetPredicted, javaPreds$resid)
 binnedplot(javaPreds$ownExp, javaPreds$resid)

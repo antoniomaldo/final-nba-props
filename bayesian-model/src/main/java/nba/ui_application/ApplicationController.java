@@ -3,6 +3,7 @@ package nba.ui_application;
 
 import nba.dto.NbaGameEventDto;
 import nba.dto.PlayerRequest;
+import nba.minutedistribution.MinutesExpectedModel;
 import nba.minutedistribution.NormalizedGivenPlayedPredictions;
 import nba.simulator.ModelOutput;
 import nba.simulator.NbaPlayerModel;
@@ -29,8 +30,8 @@ public class ApplicationController {
     @PostMapping(value = "/getMatchPredictions", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getGamePred(@RequestBody NbaGameEventDto gameRequest) {
 
-        Pair<Map<String, Double>, Map<Integer, Double>> mapMapPair = buildMinutesExpectedMap(gameRequest);
-        Map<String, Double> minutesExpected =  mapMapPair.getLeft();
+        Pair<Map<Integer, Double>, Map<Integer, Double>> mapMapPair = MinutesExpectedModel.buildMinutesExpectedMap(gameRequest);
+        Map<Integer, Double> minutesExpected =  mapMapPair.getLeft();
         Map<Integer, Double> zeroMinProb = mapMapPair.getRight();
 
         List<PlayerWithCoefs> homePlayers = toPlayerList(gameRequest.getHomePlayers(), "home");

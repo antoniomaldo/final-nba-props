@@ -1,10 +1,7 @@
 package nba.ui_application;
 
 import nba.bayesianmodel.common.CsvUtils;
-import nba.dto.NbaGameEventDto;
-import nba.dto.PlayerRequest;
-import nba.dto.RotowireDataLoader;
-import nba.dto.RotowirePlayer;
+import nba.dto.*;
 import nba.mappings.SbrToRotowireTeamNameMapping;
 import nba.minutedistribution.NormalizedGivenPlayedPredictions;
 import nba.sbr.domain.MatchWithOdds;
@@ -30,7 +27,7 @@ import static nba.mappings.RotowireNameToEspnPlayerIdMapping.getPlayerId;
 public class DataServiceController {
     public static String dataLastUpdated = null;
 
-    public static Map<String, List<RotowirePlayer>> ROTOWIRE_PREDICTIONS = RotowireDataLoader.loadTodaysPredictions();
+    public static Map<String, List<FullRotowireObject>> ROTOWIRE_PREDICTIONS = RotowireDataLoader.loadTodaysPredictions();
     public static List<PlayerWithCoefs> LATEST_PLAYER_COEFICIENTS = CsvUtils.loadLatestPredictionsData();
     private static List<MatchWithOdds> TODAYS_EVENTS_WITH_ODDS = scrapeSbrOdds();
     public static final Map<String, NbaGameEventDto> EVENTS_CACHE = new HashMap<>();
@@ -80,30 +77,31 @@ public class DataServiceController {
 
     private List<PlayerRequest> buildPlayers(String sbrTeamName, boolean isHomePlayer) {
         String rotowireTeam = SbrToRotowireTeamNameMapping.mapToRotowire(sbrTeamName);
-        List<RotowirePlayer> rotowirePlayers;
+        List<FullRotowireObject> rotowirePlayers;
         if(rotowireTeam == null){
             System.out.println("Mapping needed for team: " + sbrTeamName);
             rotowirePlayers = new ArrayList<>();
 
         }else {
             rotowirePlayers = ROTOWIRE_PREDICTIONS.get(rotowireTeam);
+            rotowirePlayers = rotowirePlayers == null ? new ArrayList<>() : rotowirePlayers;
 
         }
 
-        rotowirePlayers = rotowirePlayers.stream().filter(r-> Double.parseDouble(r.getPmin()) > 0).collect(Collectors.toList());
-
+        double sumMin = rotowirePlayers.stream().mapToDouble(p->Double.parseDouble(p.getMin())).sum();
+        System.out.println(rotowireTeam + " -> " + sumMin);
         List<PlayerRequest> playerRequests = new ArrayList<>();
-        for(RotowirePlayer rotowirePlayer : rotowirePlayers) {
-            PlayerWithCoefs playerWithCoefs = getPlayerFromRotoName(rotowirePlayer.getName());
+        for(FullRotowireObject rotowirePlayer : rotowirePlayers) {
+            PlayerWithCoefs playerWithCoefs = getPlayerFromRotoName(rotowirePlayer.getPlayer());
             if(playerWithCoefs != null) {
                 PlayerRequest playerRequest = PlayerRequest.builder()
                         .team(rotowireTeam)
-                        .name(rotowirePlayer.getName())
+                        .name(rotowirePlayer.getPlayer())
                         .playerId(playerWithCoefs.getPlayerId())
-                        .pmin(Double.parseDouble(rotowirePlayer.getPmin()))
+                        .pmin(Double.parseDouble(rotowirePlayer.getMin()))
                         .position(rotowirePlayer.getPos())
                         .isHomePlayer(isHomePlayer)
-                        .averageMinutes(Double.parseDouble(rotowirePlayer.getPmin()))
+                        .averageMinutes(Double.parseDouble(rotowirePlayer.getMin()))
                         .fgAttemptedCoef(round(playerWithCoefs.getFgAttemptedPlayerCoef()))
                         .fgAttemptedPrior(round(playerWithCoefs.getFgAttemptedPrior()))
                         .threePropCoef(round(playerWithCoefs.getThreePropCoef()))
@@ -133,7 +131,7 @@ public class DataServiceController {
                         .build();
                 playerRequests.add(playerRequest);
             }else{
-                System.out.println("No mappings found for " + rotowirePlayer.getName());
+                System.out.println("No mappings found for " + rotowirePlayer.getPlayer());
             }
         }
 

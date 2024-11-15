@@ -1,20 +1,22 @@
 package nba.simulator;
 
 import nba.bayesianmodel.optimizers.targets.TargetPredicted;
-import nba.minutedistribution.SimulateMinutesForPlayer;
+import nba.minutedistribution.MinutesExpectedModel;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static nba.minutedistribution.MinutesExpectedModel.getMinutesDistributionForPlayer;
+import static nba.minutedistribution.MinutesExpectedModel.getMinutesDistributionForPrediction;
 import static nba.simulator.PlayerSimulator.simulateFgAttemped;
 
 public class TeamSimulator {
     private static final Random RANDOM = new Random();
     private static final PlayerSimulator PLAYER_SIMULATOR = new PlayerSimulator();
 
-    public static ModelOutput runTeamBasedModel(List<PlayerWithCoefs> team, Map<String, Double> minutesExpected, double homeExp, double awayExp) {
+    public static ModelOutput runTeamBasedModel(List<PlayerWithCoefs> team, Map<Integer, Double> minutesExpected, double homeExp, double awayExp) {
 
         Map<Integer, Map<Integer, Double>> playerPointsMap = initializePlayerMap(team);
         Map<Integer, Map<Integer, Double>> playerThreePointsMap = initializePlayerMap(team);
@@ -27,10 +29,10 @@ public class TeamSimulator {
             double ownExp = player.isHomePlayer() ? homeExp : awayExp;
             double fgAttemptedPerMin = TargetPredicted.forFgAttempted(player.getFgAttemptedPlayerCoef(), player.getFgAttemptedPrior()) * player.getFgCoefMultiplier();
 
-            double minutesPredicted = minutesExpected.get(player.getPlayerName());
-            minutesPredicted = minutesPredicted < 7 ? 7 : minutesPredicted;
-            minutesPredicted = minutesPredicted > 40 ? 40 : minutesPredicted;
-            double[] minutesDistributionForPrediction = SimulateMinutesForPlayer.getMinutesDistributionForPrediction((int) Math.round(minutesPredicted));
+            double minutesPredicted = minutesExpected.get(player.getPlayerId());
+//            minutesPredicted = minutesPredicted < 4 ? 4 : minutesPredicted;
+//            minutesPredicted = minutesPredicted > 36 ? 36 : minutesPredicted;
+            double[] minutesDistributionForPrediction = getMinutesDistributionForPlayer((int) Math.round(minutesPredicted));
 
 
             for (int i = 0; i < 40000; i++) {

@@ -42,7 +42,8 @@ public abstract class MatchesScraper<T extends MatchWithoutOdds> {
             List<GameRow> fhSpreadGameRows = firstHalfSpreadMap.getProps().getPageProps().getOddsTables().get(0).getOddsTableModel().getGameRows();
             List<GameRow> totalsGameRows = matchTotalMap.getProps().getPageProps().getOddsTables().get(0).getOddsTableModel().getGameRows();
             List<GameRow> fhTotalsGameRows = firstHalfTotalMap.getProps().getPageProps().getOddsTables().get(0).getOddsTableModel().getGameRows();
-            List<GameRow> moneyLineGameRows = moneyLineMap.getProps().getPageProps().getOddsTables().get(0).getOddsTableModel().getGameRows();
+//            List<GameRow> moneyLineGameRows = moneyLineMap.getProps().getPageProps().getOddsTables().get(0).getOddsTableModel().getGameRows();
+            List<GameRow> moneyLineGameRows = new ArrayList<>();
 
             List<Map<String, MatchWithOdds>> list = new ArrayList<>();
             for (int i = 0; i < spreadGameRows.size(); i++) {
@@ -50,7 +51,7 @@ public abstract class MatchesScraper<T extends MatchWithoutOdds> {
                 GameRow fhSpreadGameRow = fhSpreadGameRows.get(i);
                 GameRow totalGameRow = totalsGameRows.get(i);
                 GameRow fhTotalGameRow = fhTotalsGameRows.get(i);
-                GameRow moneyLineGameRow = moneyLineGameRows.get(i);
+//                GameRow moneyLineGameRow = moneyLineGameRows.get(i);
 
                 List<String> bookmakers = spreadGameRow.getOddsViews().stream().filter(Objects::nonNull).map(BookmakerOdds::getSportsbook).collect(Collectors.toList());
 
@@ -60,7 +61,7 @@ public abstract class MatchesScraper<T extends MatchWithoutOdds> {
                     Optional<BookmakerOdds> fhSpreadOdds = fhSpreadGameRow.getOddsViews().stream().filter(j -> j != null && j.getSportsbook().equalsIgnoreCase(bookmaker)).findFirst();
                     Optional<BookmakerOdds> totalOdds = totalGameRow.getOddsViews().stream().filter(j -> j != null && j.getSportsbook().equalsIgnoreCase(bookmaker)).findFirst();
                     Optional<BookmakerOdds> fhTotalOdds = fhTotalGameRow.getOddsViews().stream().filter(j -> j != null && j.getSportsbook().equalsIgnoreCase(bookmaker)).findFirst();
-                    Optional<BookmakerOdds> moneyLineOdds = moneyLineGameRow.getOddsViews().stream().filter(j -> j != null && j.getSportsbook().equalsIgnoreCase(bookmaker)).findFirst();
+//                    Optional<BookmakerOdds> moneyLineOdds = moneyLineGameRow.getOddsViews().stream().filter(j -> j != null && j.getSportsbook().equalsIgnoreCase(bookmaker)).findFirst();
 
                     Double matchSpread = null;
                     Double homeOdds = null;
@@ -107,7 +108,7 @@ public abstract class MatchesScraper<T extends MatchWithoutOdds> {
                     Optional<BookmakerOdds> fhSpreadOdds = fhSpreadGameRow.getOddsViews().stream().filter(j -> j != null && j.getSportsbook().equalsIgnoreCase(bookmaker)).findFirst();
                     Optional<BookmakerOdds> totalOdds = totalGameRow.getOddsViews().stream().filter(j -> j != null && j.getSportsbook().equalsIgnoreCase(bookmaker)).findFirst();
                     Optional<BookmakerOdds> fhTotalOdds = fhTotalGameRow.getOddsViews().stream().filter(j -> j != null && j.getSportsbook().equalsIgnoreCase(bookmaker)).findFirst();
-                    Optional<BookmakerOdds> moneyLineOdds = moneyLineGameRow.getOddsViews().stream().filter(j -> j != null && j.getSportsbook().equalsIgnoreCase(bookmaker)).findFirst();
+//                    Optional<BookmakerOdds> moneyLineOdds = moneyLineGameRow.getOddsViews().stream().filter(j -> j != null && j.getSportsbook().equalsIgnoreCase(bookmaker)).findFirst();
 
                     Double matchSpread = null;
                     Double homeOdds = null;
