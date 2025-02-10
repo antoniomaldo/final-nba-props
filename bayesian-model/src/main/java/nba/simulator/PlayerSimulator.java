@@ -1,8 +1,6 @@
 package nba.simulator;
 
-import nba.bayesianmodel.models.ThreePercModelGivenOwnExp;
-import nba.bayesianmodel.models.ThreeProportionModelGivenFgAttempted;
-import nba.bayesianmodel.models.TwoPercModelGivenOwnExp;
+import nba.bayesianmodel.models.*;
 import nba.bayesianmodel.optimizers.targets.TargetPredicted;
 
 import java.util.Random;
@@ -27,10 +25,10 @@ public class PlayerSimulator {
         double twoPerc = TargetPredicted.forTwoPerc(playerWithCoefs.getTwoPercCoef(), playerWithCoefs.getTwoPercPrior());
         double twoPercAdjusted = TwoPercModelGivenOwnExp.adjustRate(twoPerc, fgAttemptedPrediction,fgAttempted, ownExp, minutesPlayed, threeAttempted);
 
-        double ftsAttemptedPred = minutesPlayed * TargetPredicted.forFtsAttempted(playerWithCoefs.getFtsAttemptedCoef(), playerWithCoefs.getFtsAttemptedPrior());
-        double ftsPercPred = TargetPredicted.forFtPerc(playerWithCoefs.getFtPercCoef(), playerWithCoefs.getFtPercPrior());
 
-        int ftsAttempted = simulateFtsAttempted(ftsAttemptedPred);
+
+
+
 
         int threePointers = 0;
         for (int i = 0; i < threeAttempted; i++) {
@@ -45,6 +43,16 @@ public class PlayerSimulator {
                 twoPointers ++;
             }
         }
+
+        double ftsPercPred = TargetPredicted.forFtPerc(playerWithCoefs.getFtPercCoef(), playerWithCoefs.getFtPercPrior());
+
+        double ftsAttemptedPred = minutesPlayed * TargetPredicted.forFtsAttempted(playerWithCoefs.getFtsAttemptedCoef(), playerWithCoefs.getFtsAttemptedPrior());
+
+        double zeroProb = ZeroSetsOfFreeThrowsModel.getZeroFtsProb(ftsAttemptedPred, fgAttempted, threeAttempted, twoPointers + threePointers, threePointers);
+        double oddProb = FreeThrowOddModel.getOddProb(minutesPlayed, ftsAttemptedPred, playerWithCoefs.getThreePropCoef(), playerWithCoefs.getTwoPercCoef(), twoPerc);
+        double setOfFtPred = ftsAttemptedPred / 2 - oddProb;
+
+        int ftsAttempted = simulateFtsAttempted(ftsAttemptedPred);
 
         int fts=0;
         for (int i = 0; i < ftsAttempted; i++) {

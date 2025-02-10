@@ -1,11 +1,8 @@
-#library(DBI)
-#library(bigrquery)
 library(stringr)
 library(zoo)
 
 BASE_DIR <- "C:\\models\\nba-player-props\\"
 
-source(paste0(BASE_DIR, "mappings\\mappings-service.R"))
 source(paste0(BASE_DIR, "data\\Add player position.R"))
 
 # 
@@ -27,6 +24,7 @@ BASE_DATA_DIR = "C:/Users/Antonio/Documents/NBA/data/"
 
 loadDataInDirectory <- function(dir){
   folders <- list.files(dir, full.names = T)  
+  #folders <- folders[grepl("2024|2025", folders)]
   df <- data.frame()
   for(folder in folders){
     season <- str_remove(folder, dir)
@@ -60,26 +58,10 @@ loadDataInDirectory <- function(dir){
   return(df)
 }
 
-sbrOdds <- loadDataInDirectory(paste0(BASE_DATA_DIR, "sbr-odds/"))
 players <- loadDataInDirectory(paste0(BASE_DATA_DIR, "espn/Players/"))
 events <- loadDataInDirectory(paste0(BASE_DATA_DIR, "espn/Boxscores/"))
 
-#fix sbrodds df columsn
-before22 <- subset(sbrOdds, sbrOdds$seasonYear <= 2021)
-after22 <- subset(sbrOdds, sbrOdds$seasonYear > 2021)
-
-before22 <- before22[c("bookmaker", "seasonYear", "seasonPeriod", "date", "awayTeam", "homeTeam",
-                       "matchSpread", "homeOdds", "awayOdds", "totalPoints", "overOdds","underOdds")]
-after22 <- after22[c("bookmaker", "seasonYear", "seasonPeriod", "date", "awayTeam", "homeTeam",
-                     "home1QScore", "home2QScore", "home3QScore", "home4QScore", "home1OTScore", "home2OTScore")]
-
-colnames(after22) <- colnames(before22)
-
-sbrOdds <- rbind(before22, after22)
-
-#Clean espn data
-players <- players[,-which(colnames(players) == "seasonYear")]
-players <- merge(players, events[c("GameId", "seasonYear")], by = "GameId")
+players <- merge(players, events[c("GameId", "Date")])
 players <- unique(players)
 
 players$id <- paste0(players$GameId, "_", players$PlayerId)
@@ -97,7 +79,6 @@ players <- rbind(cleanDups, subset(players, players$id %in% noDups$Var1))
 rm(cleanDups, noDups, dups, dupsRows)
 
 #Add cum data
-players <- merge(players, events[c("GameId", "Date")])
 
 playedData <- subset(players, players$Min > 0)
 
@@ -126,37 +107,15 @@ players <- merge(players, firstDate)
 
 players$firstGame <- 1 * (players$FirstDate == players$Date)
 
-players$averageMinutesInSeason[players$firstGame == 1] <- -1
 players$lastGameMin[players$firstGame == 1] <- -1
+players$averageMinutesInSeason[is.na(players$averageMinutesInSeason) & players$firstGame == 1] <- -1
 
-players$averageMinutesInSeason[!is.na(players$cumGamesPlayedInSeason) & players$cumGamesPlayedInSeason == 0] <- -1
-players$lastGameMin[!is.na(players$cumGamesPlayedInSeason) & players$cumGamesPlayedInSeason == 0] <- -1
 
 players$averageMinutesInSeason <- na.locf(players$averageMinutesInSeason)
 players$lastGameMin <- na.locf(players$lastGameMin)
 
-
-
-#Map to odds
-mappedOdds <- mapSbrDataToEspn(eventsData = events, sbrData = sbrOdds, baseDir = BASE_DIR)
-dups <- data.frame(table(mappedOdds$GameId))
-
-dupsRows <- subset(dups, dups$Freq > 1)
-noDups <- subset(dups, dups$Freq == 1)
-
-cleanDups <- data.frame()
-for(i in unique(dupsRows$Var1)){
-  cleanDups <- rbind(cleanDups, subset(mappedOdds, mappedOdds$GameId %in% i)[1,])
-}
-
-mappedOdds <- rbind(cleanDups, subset(mappedOdds, mappedOdds$GameId %in% noDups$Var1))
-
-#Clean odds data
-players <- merge(players, events[c("GameId", "AwayTeam", "HomeTeam")], by = "GameId", all.x = T)
-players <- merge(players, mappedOdds[c("GameId", "matchSpread", "totalPoints")], by = "GameId", all.x = T)
-
-players$id <- paste0(players$GameId, "_", players$PlayerId)
-
 players <- fillOutPositions(players)
 
-write.csv(players, paste0(BASE_DIR, "data/allPlayers.csv"))
+print(mean(is.na(players$Position)))
+
+write.csv(players, paste0(BASE_DIR, "data/allPlayersTodayPreds.csv"))

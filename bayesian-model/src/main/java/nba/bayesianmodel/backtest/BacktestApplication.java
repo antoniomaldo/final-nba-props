@@ -24,9 +24,9 @@ public class BacktestApplication {
     public static final ApplicationController APPLICATION_CONTROLLER = new ApplicationController();
 
     public static void main(String[] args)  {
-        List<BacktestPlayerWithCoefs> playerWithCoefs = CsvUtils.loadPredictionsDataWithProjMinutes(BaseDirectory.baseDirectoryToUse().getBaseDir() + "backtest_analysis\\backtestInputs.csv");
+        List<BacktestPlayerWithCoefs> playerWithCoefs = CsvUtils.loadPredictionsDataWithProjMinutes(BaseDirectory.baseDirectoryToUse().getBaseDir() + "backtest_analysis\\thisSeasonBacktestInputs.csv");
 
-        //playerWithCoefs = playerWithCoefs.stream().filter(p -> p.getSeasonYear() == 2024).collect(Collectors.toList());
+        playerWithCoefs = playerWithCoefs.stream().filter(p -> p.getSeasonYear() == 2024).collect(Collectors.toList());
 
         List<Integer> gameIds = playerWithCoefs.stream().map(p -> p.getGameId()).distinct().collect(Collectors.toList());
 

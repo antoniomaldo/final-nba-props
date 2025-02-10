@@ -81,7 +81,7 @@ public class RotowireDataLoader {
             Map<String, List<FullRotowireObject>> teamsMap = new HashMap<>();
 
             for (String team : teams) {
-                List<FullRotowireObject> playersForTeam = Arrays.stream(rotowireObject).filter(r -> r.getTeam().equalsIgnoreCase(team)).
+                List<FullRotowireObject> playersForTeam = Arrays.stream(rotowireObject).filter(r -> r.getTeam().equalsIgnoreCase(team) && Double.parseDouble(r.getMin()) > 0).
                         collect(Collectors.toList());
                 teamsMap.put(team, playersForTeam);
             }

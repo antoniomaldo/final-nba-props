@@ -1,10 +1,10 @@
 library(arm)
 
-BASE_DIR <- "C:\\czrs-ds-models\\nba-player-props\\"
+BASE_DIR <- "C:\\models\\nba-player-props\\"
 
 allPlayers <- read.csv(paste0(BASE_DIR, "data\\allPlayers.csv"))
 
-javaPreds <- read.csv(paste0(BASE_DIR, "backtest_analysis\\backtestAdjusted.csv"))
+javaPreds <- read.csv(paste0(BASE_DIR, "backtest_analysis\\backtestRaw.csv"))
 javaPreds$pointsAvg <- 3 * javaPreds$threesAvg + 2 * javaPreds$twosAvg + javaPreds$ftsAvg
 
 merged <- merge(javaPreds, allPlayers[c("GameId", "Min", "PlayerId", "Name", "Team", "Points", "Fg.Attempted","Fg.Made", "Three.Attempted", "Three.Made", "Total.Rebounds", "Blocks", "Steals", "HomeTeam", "AwayTeam",  "matchSpread", "totalPoints")], by = c("GameId", "PlayerId"))
@@ -38,6 +38,7 @@ givenPlayed <- subset(merged, merged$Min > 0)
 
 binnedplot(givenPlayed$fgAttemptedPred, givenPlayed$residFg)
 binnedplot(givenPlayed$pointsAvg, givenPlayed$residFg)
+binnedplot(givenPlayed$pointsAvg, givenPlayed$resid)
 
 binnedplot(givenPlayed$pointsAvg[givenPlayed$ownExp > 120], givenPlayed$resid[givenPlayed$ownExp > 120])
 binnedplot(givenPlayed$pointsAvg[givenPlayed$ownExp - givenPlayed$oppExp > 10], givenPlayed$resid[givenPlayed$ownExp - givenPlayed$oppExp > 10])

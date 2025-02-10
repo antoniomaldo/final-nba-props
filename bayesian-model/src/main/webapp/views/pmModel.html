@@ -37,10 +37,10 @@
                 <tbody>
                 <tr>
                     <th>
-                        <input type="number" ng-model="selectedEvent.matchSpread" step="0.1">
+                        <input type="number" ng-model="(selectedEvent.totalPoints - selectedEvent.matchSpread) / 2 " step="0.1">
                     </th>
                     <th>
-                        <input type="number" ng-model="selectedEvent.totalPoints" step="0.1">
+                        <input type="number" ng-model="(selectedEvent.totalPoints + selectedEvent.matchSpread) / 2" step="0.1">
                     </th>
                 </tr>
                 </tbody>

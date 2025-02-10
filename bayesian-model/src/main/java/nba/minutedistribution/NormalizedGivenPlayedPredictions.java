@@ -24,7 +24,9 @@ public class NormalizedGivenPlayedPredictions {
     }
     public static List<PlayerRequest> addNormalizedPredictions(List<PlayerRequest> team, double ownExp, double oppExp){
 
-        double teamSumAvgMinutes = team.stream().mapToDouble(PlayerRequest::getAverageMinutesInSeasonOrPmin).sum();
+        double teamSumAvgMinutes = team.stream().
+                filter(p-> p.getPmin() > 0).
+                mapToDouble(PlayerRequest::getAverageMinutesInSeasonOrPmin).sum();
 
         List<PlayerRequest> teamWithPreds = new ArrayList<>();
         for(PlayerRequest playerRequest : team){
