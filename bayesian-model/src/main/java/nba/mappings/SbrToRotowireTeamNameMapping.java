@@ -18,7 +18,7 @@ public class SbrToRotowireTeamNameMapping {
         map.put("Dallas", "DAL");
         map.put("Atlanta", "ATL");
         map.put("Boston", "BOS");
-        map.put("Toronto", "TOR");
+        map.put("Toronto", "toR");
         map.put("Washington", "WAS");
         map.put("Philadelphia", "PHI");
         map.put("New York", "NYK");

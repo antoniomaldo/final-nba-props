@@ -21,7 +21,7 @@ public class NbaPlayerModel {
 
         homePlayers.forEach(p -> p.setHomePlayer(true));
         awayPlayers.forEach(p -> p.setHomePlayer(false));
-        if(shouldAdjust) {
+        if(false) {
             List<PlayerWithCoefs> allPlayers = Stream.concat(homePlayers.stream(), awayPlayers.stream()).collect(Collectors.toList());
             ModelOutput rawModelOutput = TeamSimulator.runTeamBasedModel(allPlayers, minutesExpected, homeExp, awayExp, zeroMinProb);
 
@@ -39,8 +39,8 @@ public class NbaPlayerModel {
             //we need teamPointsResid -> agg$pointsAvgNorm - agg$ownExp
             //agg$pointsAvgNorm -> merged$pointsAvg * (1 - merged$zeroProb)
 
-            double homeTeamExpPoints = calculateTeamPointsExp(homePlayers, rawModelOutput.getPlayerOverProb(), zeroMinProb);
-            double awayTeamExpPoints = calculateTeamPointsExp(awayPlayers, rawModelOutput.getPlayerOverProb(), zeroMinProb);
+            double homeTeamExpPoints = calculateTeamPointsExp(homePlayers, rawModelOutput.getPlayerOverProb());
+            double awayTeamExpPoints = calculateTeamPointsExp(awayPlayers, rawModelOutput.getPlayerOverProb());
 
             double homeTeamResid = homeTeamExpPoints - homeExp;
             double awayTeamResid = awayTeamExpPoints - awayExp;
@@ -81,8 +81,10 @@ public class NbaPlayerModel {
         for(PlayerWithCoefs player : players){
             double fgAttemptedPerMin = TargetPredicted.forFgAttempted(player.getFgAttemptedPlayerCoef(), player.getFgAttemptedPrior()) * player.getFgCoefMultiplier();
             double minutesPredicted = minutesExpected.get(player.getPlayerId());
-            minutesPredicted = minutesPredicted < 7 ? 7 : minutesPredicted;
-            minutesPredicted = minutesPredicted > 40 ? 40 : minutesPredicted;
+
+            minutesPredicted = minutesPredicted < 4 ? 4 : minutesPredicted;
+            minutesPredicted = minutesPredicted > 36 ? 36 : minutesPredicted;
+
             double[] minutesDistributionForPrediction = getMinutesDistributionForPrediction((int) Math.round(minutesPredicted));
             double fgAttemptedPrediction = 0;
             for (int i = 0; i < minutesDistributionForPrediction.length; i++) {
@@ -93,11 +95,11 @@ public class NbaPlayerModel {
         return fgAttemptedMap;
     }
 
-    private static double calculateTeamPointsExp(List<PlayerWithCoefs> players, Map<Integer, Map<Integer, Double>> playerOverProb, Map<Integer, Double> zeroMinProb) {
+    private static double calculateTeamPointsExp(List<PlayerWithCoefs> players, Map<Integer, Map<Integer, Double>> playerOverProb) {
         double  points=0;
         for(PlayerWithCoefs player : players){
             Double playerPointsExp = playerOverProb.get(player.getPlayerId()).get(-1);
-            points+=playerPointsExp * (1 - zeroMinProb.get(player.getPlayerId()));
+            points+=playerPointsExp ;
         }
         return points;
     }
