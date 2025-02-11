@@ -20,7 +20,7 @@ public class LoadHistoricalPredictions {
 //        for (LocalDate localDate = start; localDate.isBefore(end) && !localDate.isAfter(LocalDate.now()); localDate = localDate.plusDays(1)) {
             String date = LocalDate.now().toString();
             System.out.println(date);
-            Map<String, List<FullRotowireObject>> stringListMap = RotowireDataLoader.loadPredictionsForDay(date);
+            Map<String, List<FullRotowireObject>> stringListMap = new RotowireDataLoader().loadPredictionsForDay(date);
 
             List<String[]> csv = new ArrayList<>();
 

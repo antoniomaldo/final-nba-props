@@ -16,7 +16,7 @@ public class TeamSimulator {
     private static final Random RANDOM = new Random();
     private static final PlayerSimulator PLAYER_SIMULATOR = new PlayerSimulator();
 
-    public static ModelOutput runTeamBasedModel(List<PlayerWithCoefs> team, Map<Integer, Double> minutesExpected, double homeExp, double awayExp) {
+    public static ModelOutput runTeamBasedModel(List<PlayerWithCoefs> team, Map<Integer, Double> minutesExpected, double homeExp, double awayExp, Map<Integer, Double> zeroMinsProb) {
 
         Map<Integer, Map<Integer, Double>> playerPointsMap = initializePlayerMap(team);
         Map<Integer, Map<Integer, Double>> playerThreePointsMap = initializePlayerMap(team);
@@ -86,7 +86,7 @@ public class TeamSimulator {
                 }
             }
         }
-        return new ModelOutput(playerPointsMap, playerThreePointsMap, playerFgAttemptedMap, playerTwoPointsMap, playerFtsPointsMap, playerMinMap);
+        return new ModelOutput(playerPointsMap, playerThreePointsMap, playerFgAttemptedMap, playerTwoPointsMap, playerFtsPointsMap, playerMinMap, zeroMinsProb);
     }
 
     private static int simulateMinutesPlayed(double[] minutesDistributionForPrediction) {

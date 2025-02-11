@@ -12,7 +12,7 @@ public class RotowireDataLoaderTest {
     @Test
     @Ignore
     public void name() throws IOException {
-        Map<String, List<FullRotowireObject>> stringListMap = RotowireDataLoader.loadTodaysPredictions();
+        Map<String, List<FullRotowireObject>> stringListMap = new RotowireDataLoader().loadTodaysPredictions();
 
         for(String team : stringListMap.keySet()){
             double sum = 0;

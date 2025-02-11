@@ -27,7 +27,7 @@ import static nba.mappings.RotowireNameToEspnPlayerIdMapping.getPlayerId;
 public class DataServiceController {
     public static String dataLastUpdated = null;
 
-    public static Map<String, List<FullRotowireObject>> ROTOWIRE_PREDICTIONS = RotowireDataLoader.loadTodaysPredictions();
+    public static Map<String, List<FullRotowireObject>> ROTOWIRE_PREDICTIONS = new RotowireDataLoader().loadTodaysPredictions();
     public static List<PlayerWithCoefs> LATEST_PLAYER_COEFICIENTS = CsvUtils.loadLatestPredictionsData();
     private static List<MatchWithOdds> TODAYS_EVENTS_WITH_ODDS = scrapeSbrOdds();
     public static final Map<String, NbaGameEventDto> EVENTS_CACHE = new HashMap<>();

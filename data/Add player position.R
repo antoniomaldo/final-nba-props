@@ -34,7 +34,7 @@ fillOutPositions <- function(players){
 
 
 manuallyInputPosition <- function(naData){
-  map <- read.csv("C:\\models\\nba-player-props\\data\\manualPosition.csv")
+  map <- read.csv("C:\\nba-player-props\\model\\final-nba-props\\data\\manualPosition.csv")
   naData <- naData[-which(colnames(naData) == "Position")]  
   
   naData <- merge(naData, map[c("PlayerId", "Position")], all.x = T)

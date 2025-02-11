@@ -1,7 +1,7 @@
 package nba;
 
 public enum BaseDirectory {
-    BASE_DIR_ANTONIO("C:\\models\\nba-player-props\\");
+    BASE_DIR_ANTONIO("C:\\nba-player-props\\model\\final-nba-props\\");
 
     private final String baseDir;
     private BaseDirectory(String dir){

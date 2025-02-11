@@ -12,13 +12,17 @@ public class ModelOutput {
     private final Map<Integer, Map<Integer, Double>> playerTwoPointsMap;
     private final Map<Integer, Map<Integer, Double>> playerFtsPointsMap;
     private final Map<Integer, Map<Integer, Double>> playerMinsMap;
-    public ModelOutput(Map<Integer, Map<Integer, Double>> playerOutput, Map<Integer, Map<Integer, Double>> playerThreePointsMap, Map<Integer, Map<Integer, Double>> playerFgAttemptedMap, Map<Integer, Map<Integer, Double>> playerTwoPointsMap, Map<Integer, Map<Integer, Double>> playerFtsPointsMap, Map<Integer, Map<Integer, Double>> playerMinMap) {
+    private final Map<Integer, Double> zeroMinsProb;
+
+    public ModelOutput(Map<Integer, Map<Integer, Double>> playerOutput, Map<Integer, Map<Integer, Double>> playerThreePointsMap, Map<Integer, Map<Integer, Double>> playerFgAttemptedMap, Map<Integer, Map<Integer, Double>> playerTwoPointsMap, Map<Integer, Map<Integer, Double>> playerFtsPointsMap, Map<Integer, Map<Integer, Double>> playerMinMap, Map<Integer, Double> zeroMinsProb
+    ) {
         this.playerOutput = playerOutput;
         this.playerThreePointsMap = playerThreePointsMap;
         this.fgAttemptedMap = playerFgAttemptedMap;
         this.playerTwoPointsMap = playerTwoPointsMap;
         this.playerFtsPointsMap = playerFtsPointsMap;
         this.playerMinsMap = playerMinMap;
+        this.zeroMinsProb = zeroMinsProb;
     }
 
     public Map<Integer, Map<Integer, Double>> getPlayerOverProb() {
@@ -59,7 +63,8 @@ public class ModelOutput {
 
     public double getAverageForPlayer(Integer player, Map<Integer, Map<Integer, Double>> playersMap) {
         Map<Integer, Double> playerMap = playersMap.get(player);
-        return playerMap.keySet().stream().mapToDouble(k -> k * playerMap.get(k)).sum();
+        double noPlayProb = this.zeroMinsProb.get(player);
+        return  (1 - noPlayProb) * playerMap.keySet().stream().mapToDouble(k -> k * playerMap.get(k)).sum();
     }
 
     public Map<Integer, Map<Integer, Double>> getPlayerMinsMap() {

@@ -4,38 +4,37 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.joda.time.DateTime;
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
-import java.io.IOException;
+import java.io.*;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static java.time.LocalTime.now;
 
 public class RotowireDataLoader {
+
     private static final String ROTOWIRE_URL = "https://www.rotowire.com/basketball/tables/projections.php?type=today&pos=ALL&date=";
 
-    private static final Map<String, String> COOKIES = getCookies();
-
-    public static Map<String, List<FullRotowireObject>> loadTodaysPredictions()  {
+    public Map<String, List<FullRotowireObject>> loadTodaysPredictions()  {
         String today = new DateTime().toLocalDate().toString();
         Map<String, List<FullRotowireObject>> stringListMap = loadPredictionsForDay(today);
-        Map<String, List<RotowirePlayer>> map = new HashMap<>(); //FIXME
 
         return stringListMap;
     }
 
-    public static Map<String, List<FullRotowireObject>> loadPredictionsForDay(String today) {
+    public Map<String, List<FullRotowireObject>> loadPredictionsForDay(String today) {
         String url = ROTOWIRE_URL + today;
 
         try {
-//            Map<String, String> cookies = getCookies();
+
+            Map<String, String> cookies = loadCookiesFromJson("C:\\nba-player-props\\model\\final-nba-props\\bayesian-model\\src\\main\\resources\\roto-cookies.json");
 
             String doc = Jsoup.connect(url)
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36")
@@ -44,7 +43,7 @@ public class RotowireDataLoader {
                     .header("Connection", "keep-alive")
                     .header("Content-Type", "application/x-www-form-urlencoded").
                     ignoreContentType(true).
-                            cookies(COOKIES).
+                            cookies(cookies).
                             get().text();
 
             doc = doc.replace("MIN", "min");
@@ -94,26 +93,26 @@ public class RotowireDataLoader {
         }
     }
 
-    private static Map<String, String> getCookies() {
-        Connection.Response res;
-        try {
-            res = Jsoup.connect("https://www.rotowire.com/users/login.php")
-                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36")
-                    .header("Accept-Language", "en-US,en;q=0.9")
-                    .header("Accept-Encoding", "gzip, deflate, br")
-                    .header("Connection", "keep-alive")
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .data("username", "antonomaldo", "password", "Roto174114!")
-                    .method(Connection.Method.POST)
-                    .execute();
-        } catch (IOException e) {
+    private static Map<String, String> loadCookiesFromJson(String filePath) {
+        try (FileReader reader = new FileReader(filePath)) {
+            // Parse the JSON file into a list of cookies
+            TypeToken<Map<String, Object>[]> token = new TypeToken<Map<String, Object>[]>() {};
+            Map<String, Object>[] cookieArray = new Gson().fromJson(reader, token.getType());
+
+            // Convert the array into a simple Map<String, String>
+            return cookieArrayToMap(cookieArray);
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-
-
-        //This will get you cookies
-        Map<String, String> cookies = res.cookies();
-        return cookies;
+    }
+    private static Map<String, String> cookieArrayToMap(Map<String, Object>[] cookieArray) {
+        Map<String, String> cookieMap = new java.util.HashMap<>();
+        for (Map<String, Object> cookie : cookieArray) {
+            String name = (String) cookie.get("name");
+            String value = (String) cookie.get("value");
+            cookieMap.put(name, value);
+        }
+        return cookieMap;
     }
 }

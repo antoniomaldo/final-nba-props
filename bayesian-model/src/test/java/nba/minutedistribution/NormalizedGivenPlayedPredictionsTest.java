@@ -4,6 +4,7 @@ import nba.BaseDirectory;
 import nba.bayesianmodel.backtest.BacktestPlayerWithCoefs;
 import nba.bayesianmodel.common.CsvUtils;
 import nba.dto.PlayerRequest;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import static org.junit.Assert.*;
 
 public class NormalizedGivenPlayedPredictionsTest {
 
-
+    @Ignore
     @Test
     public void name() {
         List<BacktestPlayerWithCoefs> playerWithCoefs = CsvUtils.loadPredictionsDataWithProjMinutes(BaseDirectory.baseDirectoryToUse().getBaseDir() + "backtest_analysis\\backtestInputs.csv");

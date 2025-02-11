@@ -23,7 +23,7 @@ public class NbaPlayerModel {
         awayPlayers.forEach(p -> p.setHomePlayer(false));
         if(shouldAdjust) {
             List<PlayerWithCoefs> allPlayers = Stream.concat(homePlayers.stream(), awayPlayers.stream()).collect(Collectors.toList());
-            ModelOutput rawModelOutput = TeamSimulator.runTeamBasedModel(allPlayers, minutesExpected, homeExp, awayExp);
+            ModelOutput rawModelOutput = TeamSimulator.runTeamBasedModel(allPlayers, minutesExpected, homeExp, awayExp, zeroMinProb);
 
             //we need "fgAttemptedPredAvg" = merged$fgAttemptedPred * (1 - merged$zeroProb)
 
@@ -66,11 +66,11 @@ public class NbaPlayerModel {
             }
 
             allPlayers = Stream.concat(homePlayers.stream(), awayPlayers.stream()).collect(Collectors.toList());
-            return TeamSimulator.runTeamBasedModel(allPlayers, minutesExpected, homeExp, awayExp);
+            return TeamSimulator.runTeamBasedModel(allPlayers, minutesExpected, homeExp, awayExp, zeroMinProb);
 
         }else{
             List<PlayerWithCoefs> allPlayers = Stream.concat(homePlayers.stream(), awayPlayers.stream()).collect(Collectors.toList());
-            return TeamSimulator.runTeamBasedModel(allPlayers, minutesExpected, homeExp, awayExp);
+            return TeamSimulator.runTeamBasedModel(allPlayers, minutesExpected, homeExp, awayExp, zeroMinProb);
 
         }
 
