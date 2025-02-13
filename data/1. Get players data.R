@@ -5,6 +5,7 @@ BASE_DIR <- "C:/nba-player-props/model/final-nba-props/"
 
 source(paste0(BASE_DIR, "mappings/mappings-service.R"))
 source(paste0(BASE_DIR, "data/Add player position.R"))
+source(paste0(BASE_DIR, "data/Clean sbr odds.R"))
 
 BASE_DATA_DIR = "C:/nba-player-props/data/"
 

@@ -1,14 +1,14 @@
 library(zoo)
 library(dplyr)
 
-source("C:\\models\\nba-player-props\\mappings\\mappings-service.R")
-BASE_DIR <- "C:\\models\\nba-player-props\\"
+source("C:\\nba-player-props\\model\\final-nba-props\\mappings\\mappings-service.R")
+BASE_DIR <- "C:\\nba-player-props\\model\\final-nba-props\\"
 
 
-allPreds <- read.csv("C:\\models\\nba-player-props\\testing\\allPreds.csv")
+allPreds <- read.csv("C:\\nba-player-props\\model\\final-nba-props\\testing\\allPreds.csv")
 #allPreds <- subset(allPreds, !is.na(allPreds$matchSpread))
 
-allPlayers <- read.csv("C:\\models\\nba-player-props\\data/allPlayers.csv")
+allPlayers <- read.csv("C:\\nba-player-props\\model\\final-nba-props\\data/allPlayers.csv")
 
 allPreds <- allPreds[,-which(colnames(allPreds) %in% c("gamesPlayedInSeason", "Name", "totalPoints", "matchSpread", "Team", "seasonYear", "averageMinutesInSeason", "lastGameMin", "HomeTeam", "homeExp", "awayExp", "ownExp", "oppExp", "Date"))]
 allPlayers <- merge(allPlayers[c("GameId", "PlayerId", "Name", "Position", "Team", "Min", "Starter", "Date", "totalPoints", "matchSpread", "seasonYear", "averageMinutesInSeason", "lastGameMin", "cumGamesPlayedInSeason", "HomeTeam")], allPreds,  all.x = T, by = c("GameId", "PlayerId"))
@@ -44,7 +44,7 @@ for(pid in unique(allPlayers$PlayerId)){
     }
     
     playerData$minPlayed[is.na(playerData$minPlayed)] <- 0
-  
+    
     for(i in start:end){
       col <- as.numeric(playerData[,i])
       playerData[,i] <- na.locf(col)
@@ -60,7 +60,7 @@ agg <- aggregate(isNaCoef ~ GameId + Date, df, mean)
 allPlayers <- df
 #Load rotowire data 
 
-csvs <- list.files("C:/Users/antonio/Documents/NBA/data/rotowire/", full.names = T)
+csvs <- list.files("C:/nba-player-props/data/rotowire/", full.names = T)
 csvs <- csvs[!grepl("\\.R", csvs)]
 
 
@@ -70,7 +70,7 @@ loadCsvForDay <- function(fileDir, season){
     colNames = as.character(dayCsv[1,])
     dayCsv = dayCsv[-1,]
     colnames(dayCsv) = colNames
-    date = str_remove_all(fileDir, pattern = paste0("C:/Users/antonio/Documents/NBA/data/rotowire/rotowire/",season, "/rotowire-nba-projections-"))
+    date = str_remove_all(fileDir, pattern = paste0("C:/nba-player-props/data/rotowire/",season, "/rotowire-nba-projections-"))
     dayCsv$date = str_remove_all(date, pattern = ".csv")
     
     dayCsv$name = dayCsv$NAME
@@ -86,9 +86,12 @@ rotowirePreds <- data.frame()
 for(csvPath in csvs){
   csvFiles <- list.files(csvPath, full.names = T)
   for(csvFilePath in csvFiles){
-    year = str_remove_all(pattern = "C:/Users/antonio/Documents/NBA/data/rotowire/", string = csvPath)
-    dayData <- loadCsvForDay(csvFilePath, year)
-    rotowirePreds <- rbind(rotowirePreds, dayData)
+    if(!grepl("\\.json", csvFilePath)){
+      
+      year = str_remove_all(pattern = "C:/nba-player-props/data/rotowire/", string = csvPath)
+      dayData <- loadCsvForDay(csvFilePath, year)
+      rotowirePreds <- rbind(rotowirePreds, dayData)
+    }
   }
   rotowirePreds <- rotowirePreds[c("date", colnames(rotowirePreds)[colnames(rotowirePreds) != "date"])]
 }
@@ -99,7 +102,7 @@ mappedData = mapMinutesForSeason(boxscores = allPlayers,
 
 
 
-mappedData <- read.csv(file = "C:\\models\\nba-player-props\\minutes distribution\\mappedData.csv" )
+#mappedData <- read.csv(file = "C:\\nba-player-props\\model\\final-nba-props\\minutes distribution\\mappedData.csv" )
 
 
 mappedData$pmin <- as.numeric(mappedData$pmin)
@@ -140,7 +143,7 @@ mergedPreds$oppExp <- ifelse(mergedPreds$HomeTeam != mergedPreds$Team, mergedPre
 
 thisSeason <- subset(mergedPreds, mergedPreds$seasonYear==2025)
 
-write.csv(mergedPreds, file = "C:\\models\\nba-player-props\\backtest_analysis\\thisSeasonBacktestInputs.csv")
+write.csv(mergedPreds, file = "C:\\nba-player-props\\model\\final-nba-props\\backtest_analysis\\thisSeasonBacktestInputs.csv")
 #Sometimes the player is not in the coef preds, but it in the roto preds
 
 

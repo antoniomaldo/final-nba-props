@@ -1,0 +1,115 @@
+package nba.simulator;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+public class FgAttemptedModelTest {
+
+    private static final double DELTA = 0.001d;
+
+    @Test
+    public void name() {
+        Assert.assertEquals(7.78662534247293d, FgAttemptedModel.getFgAttemptedPrediction(0.285375668819333, 27), DELTA);
+        Assert.assertEquals(6.95659423004709d, FgAttemptedModel.getFgAttemptedPrediction(0.317342163674189, 22), DELTA);
+        Assert.assertEquals(17.5929372473258d, FgAttemptedModel.getFgAttemptedPrediction(0.457381352128721, 38), DELTA);
+        Assert.assertEquals(1.00077811151598d, FgAttemptedModel.getFgAttemptedPrediction(0.350311136105739, 3), DELTA);
+        Assert.assertEquals(0.339226901855893d, FgAttemptedModel.getFgAttemptedPrediction(0.359430018669169, 1), DELTA);
+        Assert.assertEquals(6.07187285410783d, FgAttemptedModel.getFgAttemptedPrediction(0.387982950303355, 16), DELTA);
+        Assert.assertEquals(1.52780874504777d, FgAttemptedModel.getFgAttemptedPrediction(0.317402102767319, 5), DELTA);
+        Assert.assertEquals(9.02545413018052d, FgAttemptedModel.getFgAttemptedPrediction(0.210082342325386, 41), DELTA);
+        Assert.assertEquals(11.4964102484971d, FgAttemptedModel.getFgAttemptedPrediction(0.445286009403846, 26), DELTA);
+        Assert.assertEquals(15.2178067215979d, FgAttemptedModel.getFgAttemptedPrediction(0.372244166985714, 40), DELTA);
+        Assert.assertEquals(18.1025602772614d, FgAttemptedModel.getFgAttemptedPrediction(0.583739181960691, 32), DELTA);
+        Assert.assertEquals(7.66811120684814d, FgAttemptedModel.getFgAttemptedPrediction(0.369455828357664, 21), DELTA);
+        Assert.assertEquals(1.11316501746052d, FgAttemptedModel.getFgAttemptedPrediction(0.22804373429972, 5), DELTA);
+        Assert.assertEquals(18.1136482446152d, FgAttemptedModel.getFgAttemptedPrediction(0.521602896295954, 35), DELTA);
+        Assert.assertEquals(22.4756968524664d, FgAttemptedModel.getFgAttemptedPrediction(0.534408060903585, 42), DELTA);
+        Assert.assertEquals(1.31708536619197d, FgAttemptedModel.getFgAttemptedPrediction(0.224159334520363, 6), DELTA);
+        Assert.assertEquals(0.876232126983472d, FgAttemptedModel.getFgAttemptedPrediction(0.304487861574577, 3), DELTA);
+        Assert.assertEquals(8.32971546095828d, FgAttemptedModel.getFgAttemptedPrediction(0.42348506272416, 20), DELTA);
+        Assert.assertEquals(2.61994851902872d, FgAttemptedModel.getFgAttemptedPrediction(0.202065266145626, 13), DELTA);
+        Assert.assertEquals(9.77364190435237d, FgAttemptedModel.getFgAttemptedPrediction(0.450850405215348, 22), DELTA);
+        Assert.assertEquals(10.2832767479943d, FgAttemptedModel.getFgAttemptedPrediction(0.353320760104219, 29), DELTA);
+        Assert.assertEquals(11.1423459762523d, FgAttemptedModel.getFgAttemptedPrediction(0.383489024863301, 29), DELTA);
+        Assert.assertEquals(8.58326744582915d, FgAttemptedModel.getFgAttemptedPrediction(0.262119530285582, 32), DELTA);
+        Assert.assertEquals(10.5040026759852d, FgAttemptedModel.getFgAttemptedPrediction(0.442264029922921, 24), DELTA);
+        Assert.assertEquals(13.9283194144137d, FgAttemptedModel.getFgAttemptedPrediction(0.330362187330792, 41), DELTA);
+        Assert.assertEquals(6.8220305232445d, FgAttemptedModel.getFgAttemptedPrediction(0.327131443380258, 21), DELTA);
+        Assert.assertEquals(11.2544503952875d, FgAttemptedModel.getFgAttemptedPrediction(0.336642399006785, 33), DELTA);
+        Assert.assertEquals(9.66318541491649d, FgAttemptedModel.getFgAttemptedPrediction(0.497424432735611, 20), DELTA);
+        Assert.assertEquals(1.04991251491852d, FgAttemptedModel.getFgAttemptedPrediction(0.271396635725714, 4), DELTA);
+        Assert.assertEquals(5.31022531701199d, FgAttemptedModel.getFgAttemptedPrediction(0.171205524131499, 30), DELTA);
+        Assert.assertEquals(7.33279949095818d, FgAttemptedModel.getFgAttemptedPrediction(0.238840365325897, 30), DELTA);
+        Assert.assertEquals(4.50575439091701d, FgAttemptedModel.getFgAttemptedPrediction(0.28430402857906, 16), DELTA);
+        Assert.assertEquals(4.14402080433322d, FgAttemptedModel.getFgAttemptedPrediction(0.279223323779433, 15), DELTA);
+        Assert.assertEquals(1.67257945476921d, FgAttemptedModel.getFgAttemptedPrediction(0.349254017857551, 5), DELTA);
+        Assert.assertEquals(14.7389669417955d, FgAttemptedModel.getFgAttemptedPrediction(0.430030403679332, 34), DELTA);
+        Assert.assertEquals(11.0189116041775d, FgAttemptedModel.getFgAttemptedPrediction(0.444644832183783, 25), DELTA);
+        Assert.assertEquals(10.1103715731388d, FgAttemptedModel.getFgAttemptedPrediction(0.374897866719843, 27), DELTA);
+        Assert.assertEquals(9.42132236759056d, FgAttemptedModel.getFgAttemptedPrediction(0.279252891757789, 33), DELTA);
+        Assert.assertEquals(0.714827569836365d, FgAttemptedModel.getFgAttemptedPrediction(0.246135239869645, 3), DELTA);
+        Assert.assertEquals(2.40633932283867d, FgAttemptedModel.getFgAttemptedPrediction(0.220845713178728, 11), DELTA);
+        Assert.assertEquals(4.51871044421535d, FgAttemptedModel.getFgAttemptedPrediction(0.305748972348424, 15), DELTA);
+        Assert.assertEquals(7.59946217865556d, FgAttemptedModel.getFgAttemptedPrediction(0.267331564892521, 28), DELTA);
+        Assert.assertEquals(5.36330575595739d, FgAttemptedModel.getFgAttemptedPrediction(0.319691432324018, 17), DELTA);
+        Assert.assertEquals(15.8693289600097d, FgAttemptedModel.getFgAttemptedPrediction(0.540149100990151, 30), DELTA);
+        Assert.assertEquals(9.83262141426094d, FgAttemptedModel.getFgAttemptedPrediction(0.395649446794361, 25), DELTA);
+        Assert.assertEquals(1.97988457333722d, FgAttemptedModel.getFgAttemptedPrediction(0.29117327676126, 7), DELTA);
+        Assert.assertEquals(12.4793524070508d, FgAttemptedModel.getFgAttemptedPrediction(0.387264051664876, 32), DELTA);
+        Assert.assertEquals(0.628405894185664d, FgAttemptedModel.getFgAttemptedPrediction(0.330055861125782, 2), DELTA);
+        Assert.assertEquals(4.74795672405156d, FgAttemptedModel.getFgAttemptedPrediction(0.322097487904571, 15), DELTA);
+        Assert.assertEquals(4.633068095003d, FgAttemptedModel.getFgAttemptedPrediction(0.257801061475429, 18), DELTA);
+        Assert.assertEquals(15.0269820589201d, FgAttemptedModel.getFgAttemptedPrediction(0.425039254291498, 35), DELTA);
+        Assert.assertEquals(5.35557501657056d, FgAttemptedModel.getFgAttemptedPrediction(0.241408959539595, 22), DELTA);
+        Assert.assertEquals(0.761941873035444d, FgAttemptedModel.getFgAttemptedPrediction(0.263049590885883, 3), DELTA);
+        Assert.assertEquals(3.56692136447955d, FgAttemptedModel.getFgAttemptedPrediction(0.303353243657787, 12), DELTA);
+        Assert.assertEquals(1.72381704062861d, FgAttemptedModel.getFgAttemptedPrediction(0.29672105790728, 6), DELTA);
+        Assert.assertEquals(8.10088406144034d, FgAttemptedModel.getFgAttemptedPrediction(0.264930176860205, 30), DELTA);
+        Assert.assertEquals(8.15034326920185d, FgAttemptedModel.getFgAttemptedPrediction(0.34085671036582, 24), DELTA);
+        Assert.assertEquals(6.41649581057036d, FgAttemptedModel.getFgAttemptedPrediction(0.253622284366266, 25), DELTA);
+        Assert.assertEquals(11.1304294125422d, FgAttemptedModel.getFgAttemptedPrediction(0.397791211874721, 28), DELTA);
+        Assert.assertEquals(12.1240998564569d, FgAttemptedModel.getFgAttemptedPrediction(0.352168913703591, 34), DELTA);
+        Assert.assertEquals(5.94915163008925d, FgAttemptedModel.getFgAttemptedPrediction(0.40669852541636, 15), DELTA);
+        Assert.assertEquals(11.7470544008652d, FgAttemptedModel.getFgAttemptedPrediction(0.390283746586854, 30), DELTA);
+        Assert.assertEquals(12.9882957615895d, FgAttemptedModel.getFgAttemptedPrediction(0.34452648856877, 37), DELTA);
+        Assert.assertEquals(12.7612618392555d, FgAttemptedModel.getFgAttemptedPrediction(0.478349478874539, 27), DELTA);
+        Assert.assertEquals(3.66688040989237d, FgAttemptedModel.getFgAttemptedPrediction(0.286529268811261, 13), DELTA);
+        Assert.assertEquals(5.3816546370933d, FgAttemptedModel.getFgAttemptedPrediction(0.21133956257079, 25), DELTA);
+        Assert.assertEquals(3.7423021977591d, FgAttemptedModel.getFgAttemptedPrediction(0.319064979701937, 12), DELTA);
+        Assert.assertEquals(10.982631996203d, FgAttemptedModel.getFgAttemptedPrediction(0.377871516172269, 29), DELTA);
+        Assert.assertEquals(7.52637406869073d, FgAttemptedModel.getFgAttemptedPrediction(0.4030538153827, 19), DELTA);
+        Assert.assertEquals(6.66613261194119d, FgAttemptedModel.getFgAttemptedPrediction(0.540312925761103, 13), DELTA);
+        Assert.assertEquals(5.44774990887248d, FgAttemptedModel.getFgAttemptedPrediction(0.205144795944737, 26), DELTA);
+        Assert.assertEquals(10.7778309412559d, FgAttemptedModel.getFgAttemptedPrediction(0.454463579250956, 24), DELTA);
+        Assert.assertEquals(9.87552651623885d, FgAttemptedModel.getFgAttemptedPrediction(0.326108213746898, 30), DELTA);
+        Assert.assertEquals(1.44236864058909d, FgAttemptedModel.getFgAttemptedPrediction(0.246321505725383, 6), DELTA);
+        Assert.assertEquals(6.29769927993943d, FgAttemptedModel.getFgAttemptedPrediction(0.178078147178323, 34), DELTA);
+        Assert.assertEquals(16.5658482641961d, FgAttemptedModel.getFgAttemptedPrediction(0.456051338371552, 36), DELTA);
+        Assert.assertEquals(15.8586008088914d, FgAttemptedModel.getFgAttemptedPrediction(0.518901153450243, 31), DELTA);
+        Assert.assertEquals(20.3191434697224d, FgAttemptedModel.getFgAttemptedPrediction(0.599110105293103, 35), DELTA);
+        Assert.assertEquals(10.9042205180699d, FgAttemptedModel.getFgAttemptedPrediction(0.361695314993489, 30), DELTA);
+        Assert.assertEquals(16.6988259845111d, FgAttemptedModel.getFgAttemptedPrediction(0.49256865870231, 34), DELTA);
+        Assert.assertEquals(2.95354575264534d, FgAttemptedModel.getFgAttemptedPrediction(0.33891735313854, 9), DELTA);
+        Assert.assertEquals(3.98688834942832d, FgAttemptedModel.getFgAttemptedPrediction(0.312835818611855, 13), DELTA);
+        Assert.assertEquals(8.61551471796584d, FgAttemptedModel.getFgAttemptedPrediction(0.396108717019426, 22), DELTA);
+        Assert.assertEquals(9.61642118755785d, FgAttemptedModel.getFgAttemptedPrediction(0.370875944449254, 26), DELTA);
+        Assert.assertEquals(4.82887483230732d, FgAttemptedModel.getFgAttemptedPrediction(0.415287201692288, 12), DELTA);
+        Assert.assertEquals(8.37729534963161d, FgAttemptedModel.getFgAttemptedPrediction(0.335436030476635, 25), DELTA);
+        Assert.assertEquals(6.96718650187794d, FgAttemptedModel.getFgAttemptedPrediction(0.334485171935365, 21), DELTA);
+        Assert.assertEquals(7.21108495775697d, FgAttemptedModel.getFgAttemptedPrediction(0.263371089216834, 27), DELTA);
+        Assert.assertEquals(5.17856077895854d, FgAttemptedModel.getFgAttemptedPrediction(0.329088659135364, 16), DELTA);
+        Assert.assertEquals(1.58169231470105d, FgAttemptedModel.getFgAttemptedPrediction(0.230418514411999, 7), DELTA);
+        Assert.assertEquals(21.1516982973174d, FgAttemptedModel.getFgAttemptedPrediction(0.606927793038722, 36), DELTA);
+        Assert.assertEquals(8.22231507378843d, FgAttemptedModel.getFgAttemptedPrediction(0.360202143499969, 23), DELTA);
+        Assert.assertEquals(0.611755689128928d, FgAttemptedModel.getFgAttemptedPrediction(0.209462987234314, 3), DELTA);
+        Assert.assertEquals(16.0741835072917d, FgAttemptedModel.getFgAttemptedPrediction(0.416373677259635, 38), DELTA);
+        Assert.assertEquals(5.73899193009561d, FgAttemptedModel.getFgAttemptedPrediction(0.366261175251285, 16), DELTA);
+        Assert.assertEquals(19.8116183679415d, FgAttemptedModel.getFgAttemptedPrediction(0.506691536993184, 39), DELTA);
+        Assert.assertEquals(14.4258734772178d, FgAttemptedModel.getFgAttemptedPrediction(0.466354592098973, 31), DELTA);
+        Assert.assertEquals(9.59871040299775d, FgAttemptedModel.getFgAttemptedPrediction(0.355537667543011, 27), DELTA);
+        Assert.assertEquals(0.402643637720605d, FgAttemptedModel.getFgAttemptedPrediction(0.207465532354297, 2), DELTA);
+        Assert.assertEquals(17.8428980931868d, FgAttemptedModel.getFgAttemptedPrediction(0.46465372659796, 38), DELTA);
+    }
+}

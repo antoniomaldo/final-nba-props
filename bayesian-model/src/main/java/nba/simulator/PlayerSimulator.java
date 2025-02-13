@@ -20,10 +20,10 @@ public class PlayerSimulator {
 
         double threePerc = TargetPredicted.forThreePerc(playerWithCoefs.getThreePercCoef(), threeAttempted, playerWithCoefs.getThreePercPrior(), THREE_PERC_WEIGHT);
 
-        double threePercAdjusted = threeAttempted == 0 ? 0 : ThreePercModelGivenOwnExp.adjustRate(threePerc, fgAttemptedPrediction, fgAttempted, ownExp, minutesPlayed, threeAttempted);
+        double threePercAdjusted = threeAttempted == 0 ? 0 : ThreePercModelGivenOwnExp.adjustRate(threePerc, fgAttemptedPrediction, fgAttempted, ownExp, minutesPlayed, threeAttempted, threePropAdjusted);
 
         double twoPerc = TargetPredicted.forTwoPerc(playerWithCoefs.getTwoPercCoef(), playerWithCoefs.getTwoPercPrior());
-        double twoPercAdjusted = TwoPercModelGivenOwnExp.adjustRate(twoPerc, fgAttemptedPrediction,fgAttempted, ownExp, minutesPlayed, threeAttempted);
+        double twoPercAdjusted = TwoPercModelGivenOwnExp.adjustRate(twoPerc, fgAttemptedPrediction,fgAttempted, ownExp, minutesPlayed, threeAttempted, threePropAdjusted, playerWithCoefs.getSeasonYear());
 
 
 

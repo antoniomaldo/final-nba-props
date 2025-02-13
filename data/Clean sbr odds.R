@@ -60,3 +60,5 @@ for (folder in folders[8]){
     write.csv(dayData2, str_replace(csv, "sbr-odds", "sbr-odds-cleaned"))
   }
 }
+
+rm(dayData, dayData2)

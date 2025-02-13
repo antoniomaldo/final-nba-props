@@ -30,8 +30,6 @@ public class TeamSimulator {
             double fgAttemptedPerMin = TargetPredicted.forFgAttempted(player.getFgAttemptedPlayerCoef(), player.getFgAttemptedPrior()) * player.getFgCoefMultiplier();
 
             double minutesPredicted = minutesExpected.get(player.getPlayerId());
-//            minutesPredicted = minutesPredicted < 4 ? 4 : minutesPredicted;
-//            minutesPredicted = minutesPredicted > 36 ? 36 : minutesPredicted;
             double[] minutesDistributionForPrediction = getMinutesDistributionForPlayer((int) Math.round(minutesPredicted));
 
 
