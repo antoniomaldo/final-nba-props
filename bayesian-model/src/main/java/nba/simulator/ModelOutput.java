@@ -12,9 +12,17 @@ public class ModelOutput {
     private final Map<Integer, Map<Integer, Double>> playerTwoPointsMap;
     private final Map<Integer, Map<Integer, Double>> playerFtsPointsMap;
     private final Map<Integer, Map<Integer, Double>> playerMinsMap;
+    private final Map<Integer, Map<Integer, Double>> playerAssistsMap;
     private final Map<Integer, Double> zeroMinsProb;
 
-    public ModelOutput(Map<Integer, Map<Integer, Double>> playerOutput, Map<Integer, Map<Integer, Double>> playerThreePointsMap, Map<Integer, Map<Integer, Double>> playerFgAttemptedMap, Map<Integer, Map<Integer, Double>> playerTwoPointsMap, Map<Integer, Map<Integer, Double>> playerFtsPointsMap, Map<Integer, Map<Integer, Double>> playerMinMap, Map<Integer, Double> zeroMinsProb
+    public ModelOutput(Map<Integer, Map<Integer, Double>> playerOutput,
+                       Map<Integer, Map<Integer, Double>> playerThreePointsMap,
+                       Map<Integer, Map<Integer, Double>> playerFgAttemptedMap,
+                       Map<Integer, Map<Integer, Double>> playerTwoPointsMap,
+                       Map<Integer, Map<Integer, Double>> playerFtsPointsMap,
+                       Map<Integer, Map<Integer, Double>> playerMinMap,
+                       Map<Integer, Map<Integer, Double>> playerAssistsMap,
+                       Map<Integer, Double> zeroMinsProb
     ) {
         this.playerOutput = playerOutput;
         this.playerThreePointsMap = playerThreePointsMap;
@@ -22,6 +30,7 @@ public class ModelOutput {
         this.playerTwoPointsMap = playerTwoPointsMap;
         this.playerFtsPointsMap = playerFtsPointsMap;
         this.playerMinsMap = playerMinMap;
+        this.playerAssistsMap = playerAssistsMap;
         this.zeroMinsProb = zeroMinsProb;
     }
 
@@ -47,6 +56,11 @@ public class ModelOutput {
 
     public Map<Integer, Map<Integer, Double>> getPlayerFtsOverProb() {
         Map<Integer, Map<Integer, Double>> map = getPlayerThreePointsOverProb(this.playerFtsPointsMap);
+        return map;
+    }
+
+    public Map<Integer, Map<Integer, Double>> getPlayerAssistsOverProb() {
+        Map<Integer, Map<Integer, Double>> map = getPlayerThreePointsOverProb(this.playerAssistsMap);
         return map;
     }
 

@@ -26,9 +26,8 @@ public class PlayerSimulator {
         double twoPercAdjusted = TwoPercModelGivenOwnExp.adjustRate(twoPerc, fgAttemptedPrediction,fgAttempted, ownExp, minutesPlayed, threeAttempted, threePropAdjusted, playerWithCoefs.getSeasonYear());
 
 
-
-
-
+        double assistExp = minutesPlayed * TargetPredicted.forAssists(playerWithCoefs.getAssistsCoef(), playerWithCoefs.getAssistsPrior());
+        int assistsAttempted = simulateAssistsAttempted(assistExp);
 
         int threePointers = 0;
         for (int i = 0; i < threeAttempted; i++) {
@@ -61,11 +60,14 @@ public class PlayerSimulator {
             }
         }
 
-        return new SimulatedPlayerScoring(twoPointers, threePointers, fts);
+        return new SimulatedPlayerScoring(twoPointers, threePointers, fts, assistsAttempted);
     }
 
     private int simulateFtsAttempted(double ftsAttemptedPred) {
         return simulateFgAttemped(ftsAttemptedPred);
+    }
+    private int simulateAssistsAttempted(double assistsPred) {
+        return simulateFgAttemped(assistsPred);
     }
     private int simulateThreeAttempted(int fgAttempted, double threeProp) {
         int threes = 0;

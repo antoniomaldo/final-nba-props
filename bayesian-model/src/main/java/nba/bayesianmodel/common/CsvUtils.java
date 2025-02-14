@@ -239,6 +239,10 @@ public class CsvUtils {
 
                             getAsDouble(values, colNamesIndex, "personalFoulsPlayerCoef"),
                             getAsDouble(values, colNamesIndex, "personalFoulsPrior"),
+
+                            getAsDouble(values, colNamesIndex, "assistsPlayerCoef"),
+                            getAsDouble(values, colNamesIndex, "assistsPrior"),
+
                             getAsDouble(values, colNamesIndex, "averageMinutesInSeason"),
                             getAsDouble(values, colNamesIndex, "lastGameMin")));//getAsDouble(values, colNamesIndex, "oppExp")));
                 }

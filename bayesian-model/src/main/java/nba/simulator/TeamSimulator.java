@@ -24,6 +24,7 @@ public class TeamSimulator {
         Map<Integer, Map<Integer, Double>> playerFtsPointsMap = initializePlayerMap(team);
         Map<Integer, Map<Integer, Double>> playerFgAttemptedMap = initializePlayerMap(team);
         Map<Integer, Map<Integer, Double>> playerMinMap = initializePlayerMap(team);
+        Map<Integer, Map<Integer, Double>> playerAssistsMap = initializePlayerMap(team);
 
         for (PlayerWithCoefs player : team) {
             double ownExp = player.isHomePlayer() ? homeExp : awayExp;
@@ -46,6 +47,7 @@ public class TeamSimulator {
                 int threePoints = simulatedPlayerScoring.getThreePoints();
                 int fts = simulatedPlayerScoring.getFts();
                 int points = 3 * threePoints + 2 * twoPoints + fts;
+                int assists = simulatedPlayerScoring.getAssistsAttempted();
 
                 if(playerPointsMap.get(player.getPlayerId()).get(points) == null){
                     playerPointsMap.get(player.getPlayerId()).put(points, 1d / 40000d);
@@ -82,9 +84,15 @@ public class TeamSimulator {
                 }else {
                     playerMinMap.get(player.getPlayerId()).put(simulateMinutesPlayed, playerMinMap.get(player.getPlayerId()).get(simulateMinutesPlayed) + 1d / 40000d);
                 }
+
+                if(playerAssistsMap.get(player.getPlayerId()).get(assists) == null){
+                    playerAssistsMap.get(player.getPlayerId()).put(assists, 1d / 40000d);
+                }else {
+                    playerAssistsMap.get(player.getPlayerId()).put(assists, playerAssistsMap.get(player.getPlayerId()).get(assists) + 1d / 40000d);
+                }
             }
         }
-        return new ModelOutput(playerPointsMap, playerThreePointsMap, playerFgAttemptedMap, playerTwoPointsMap, playerFtsPointsMap, playerMinMap, zeroMinsProb);
+        return new ModelOutput(playerPointsMap, playerThreePointsMap, playerFgAttemptedMap, playerTwoPointsMap, playerFtsPointsMap, playerMinMap, playerAssistsMap, zeroMinsProb);
     }
 
     private static int simulateMinutesPlayed(double[] minutesDistributionForPrediction) {

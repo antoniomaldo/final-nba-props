@@ -99,6 +99,10 @@
                     <th>Over Prob</th>
                     <th>Over Price</th>
                     <th>Under Price</th>
+                    <th>Assist Line</th>
+                    <th>Over Prob</th>
+                    <th>Over Price</th>
+                    <th>Under Price</th>
                 </tr>
                 </thead>
                 <tbody ng-repeat="player in homePlayers">
@@ -177,6 +181,18 @@
                     <td>
                         {{roundPrice(1 / (1 - getThreePointersOverProbForPlayer(player)))}}
                     </td>
+                    <td>
+                        <input type="number" ng-model="player.assistLine" step="0.5" max="50.5" , min="0.5">
+                    </td>
+                    <td>
+                        {{getAssistsOverProbForPlayer(player)}}
+                    </td>
+                    <td>
+                        {{roundPrice(1 / getAssistsOverProbForPlayer(player))}}
+                    </td>
+                    <td>
+                        {{roundPrice(1 / (1 - getAssistsOverProbForPlayer(player)))}}
+                    </td>
                 </tr>
 
                 </tbody>
@@ -246,6 +262,10 @@
                     <th width="5%">Over Prob</th>
                     <th width="5%">Over Price</th>
                     <th width="5%">Under Price</th>
+                    <th>Assist Line</th>
+                    <th>Over Prob</th>
+                    <th>Over Price</th>
+                    <th>Under Price</th>
                 </tr>
                 </thead>
                 <tbody ng-repeat="player in awayPlayers">
@@ -323,6 +343,19 @@
                     <td>
                         {{roundPrice(1 / (1 - getThreePointersOverProbForPlayer(player)))}}
                     </td>
+                    <td>
+                        <input type="number" ng-model="player.assistLine" step="0.5" max="50.5" , min="0.5">
+                    </td>
+                    <td>
+                        {{getAssistsOverProbForPlayer(player)}}
+                    </td>
+                    <td>
+                        {{roundPrice(1 / getAssistsOverProbForPlayer(player))}}
+                    </td>
+                    <td>
+                        {{roundPrice(1 / (1 - getAssistsOverProbForPlayer(player)))}}
+                    </td>
+                </tr>
                 </tr>
 
                 </tbody>

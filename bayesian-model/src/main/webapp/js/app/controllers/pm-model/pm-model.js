@@ -33,6 +33,7 @@ pmModelApp.controller('pmModelController', function ($scope, $http , pmModelServ
         $scope.totalPoints = eventName.totalPoints
         $scope.modelOutput = null
         $scope.playerThreePointsOutput = null
+        $scope.playerAssistsPointsOutput = null
     }
 
     $scope.eventNameDisplay = function(evt){
@@ -50,6 +51,7 @@ pmModelApp.controller('pmModelController', function ($scope, $http , pmModelServ
          pmModelService.getTestPlayers($scope);
          $scope.modelOutput = null;
          $scope.playerThreePointsOutput = null;
+         $scope.playerAssistsPointsOutput = null;
          $scope.percShots = null;
     }
 
@@ -151,6 +153,22 @@ pmModelApp.controller('pmModelController', function ($scope, $http , pmModelServ
         return 1;
     }
 
+    $scope.getAssistsOverProbForPlayer = function(player){
+        if($scope.playerAssistsPointsOutput != null){
+            var playerPreds = $scope.playerAssistsPointsOutput[player.playerId]
+
+            var prob = 0;
+            for(var item in playerPreds){
+                if(item > player.assistLine){
+                    prob += playerPreds[item]
+                }
+            }
+            return Math.round(10000 * prob) / 10000;
+        }
+        return 1;
+    }
+
+
     $scope.populatePred = function(){
         for(player in $scope.homePlayers){
 
@@ -216,6 +234,7 @@ pmModelApp.controller('pmModelController', function ($scope, $http , pmModelServ
              function (result) {
                 $scope.modelOutput = result.data['modelOutput']
                 $scope.playerThreePointsOutput = result.data['playerThreePoints']
+                $scope.playerAssistsPointsOutput = result.data['playerAssists']
                 $scope.percShots = result.data['percShots']
                 $scope.populatePlayersLine()
              }

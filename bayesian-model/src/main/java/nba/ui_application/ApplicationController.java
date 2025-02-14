@@ -46,6 +46,7 @@ public class ApplicationController {
         modelOutputMap.put("fgAttempted", modelOutput.getPlayerFgAttemptedOverProb());
         modelOutputMap.put("playerTwoPoints", modelOutput.getPlayerTwoPointsOverProb());
         modelOutputMap.put("playerFts", modelOutput.getPlayerFtsOverProb());
+        modelOutputMap.put("playerAssists", modelOutput.getPlayerAssistsOverProb());
         modelOutputMap.put("mins", modelOutput.getPlayerMinsMap());
 
         return new ResponseEntity<>(modelOutputMap, HttpStatus.OK);
@@ -117,6 +118,8 @@ public class ApplicationController {
                 playerRequest.getTurnoversPrior(),
                 playerRequest.getFoulsCoef(),
                 playerRequest.getFoulsPrior(),
+                playerRequest.getAssistsCoef(),
+                playerRequest.getAssistsPrior(),
                 playerRequest.getAverageMinutesInSeason(),
                 playerRequest.getLastGameMin()
                 );

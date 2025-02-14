@@ -78,6 +78,9 @@ public abstract class PlayerRequest {
 
     public abstract Double getStealsPrior();
 
+    public abstract Double getAssistsCoef();
+
+    public abstract Double getAssistsPrior();
 
     public abstract Double getTurnoversCoef();
 
@@ -177,6 +180,8 @@ public abstract class PlayerRequest {
         public abstract Builder stealsCoef(Double stealsCoef);
 
         public abstract Builder stealsPrior(Double stealsPrior);
+        public abstract Builder assistsCoef(Double assistsCoef);
+        public abstract Builder assistsPrior(Double assistsPrior);
 
         public abstract Builder turnoversCoef(Double turnoversCoef);
 

@@ -1,14 +1,18 @@
 library(arm)
 
-allPlayers <- read.csv("C:\\czrs-ds-models\\nba-player-props\\data\\allPlayers.csv")
+allPlayers <- read.csv("C:\\nba-player-props\\model\\final-nba-props\\data\\allPlayers.csv")
 
-BASE_DIR <- "C:\\czrs-ds-models\\nba-player-props\\testing\\"
-backtest <- read.csv(paste0("C:\\czrs-ds-models\\nba-player-props\\", "backtest_analysis\\backtest.csv"))
+BASE_DIR <- "C:\\nba-player-props\\model\\final-nba-props\\testing\\"
 
-javaPreds <- read.csv("C:\\czrs-ds-models\\nba-player-props\\testing\\twoPerc.csv")
+threePredAdj <- read.csv(file = "C:\\nba-player-props\\model\\final-nba-props\\testing\\threePropAdj.csv")
+fgPredAdj <- read.csv(file = "C:\\nba-player-props\\model\\final-nba-props\\testing\\fgPredAdj.csv")
+
+
+javaPreds <- read.csv("C:\\nba-player-props\\model\\final-nba-props\\testing\\twoPerc.csv")
 javaPreds <- subset(javaPreds, javaPreds$seasonYear > 2017 & javaPreds$target >= 0)
 javaPreds <- merge(javaPreds, allPlayers[c("GameId", "Name", "PlayerId", "Team", "HomeTeam", "AwayTeam",  "matchSpread", "totalPoints")])
-javaPreds <- merge(javaPreds, backtest[c("GameId", "PlayerId", "fgAttemptedPred")])
+javaPreds <- merge(javaPreds, fgPredAdj[c("GameId", "PlayerId", "fgAttemptedPred")], all.x = T)
+javaPreds <- merge(javaPreds, threePredAdj[c("GameId", "PlayerId", "threePropPred")], all.x = T)
 
 javaPreds$homeExp <- (javaPreds$totalPoints - javaPreds$matchSpread) / 2
 javaPreds$awayExp <- javaPreds$totalPoints - javaPreds$homeExp
@@ -104,32 +108,50 @@ binnedplot(javaPreds$playerCoef[javaPreds$numbOfGames > 5], javaPreds$resid[java
 
 #
 library(splines)
+javaPreds$targetPredictedLogit <- log(javaPreds$targetPredicted / (1 - javaPreds$targetPredicted))
+
+modelData <- subset(javaPreds, javaPreds$numbOfGames > 5)
+modelData$rowWeight <- (-2018 / 7 + modelData$seasonYear / 7)
+
+trainData <- subset(modelData, modelData$seasonYear < 2025 & modelData$seasonYear >= 2020)
+testData <- subset(modelData, modelData$seasonYear == 2025)
 
 model <- glm(target ~ 1 +
-               log(targetPredicted / (1 - targetPredicted)) + 
+               targetPredictedLogit + 
+               pmin(0, (1 - threePropPred) * fgAttempted - twoAttempted) +
+              # twoAttempted + 
                I(fgAttemptedPred - fgAttempted) + 
+               pmax(twoAttempted - 10, 0) + 
+
                fgAttempted+
                ownExp +
-               I(minPlayed < 20) +
                I(minPlayed < 15)  + 
-               pmin(8 - fgAttemptedPred, 0)
-             
-             , data = javaPreds, family = "quasibinomial") 
+               pmin(8 - fgAttemptedPred, 0) + 
+               I(seasonYear == 2025) + 
+               pmax(30 - minPlayed, 0) + 
+               
+               pmax(threeAttempted - 8, 0) + 
+               minPlayed : twoAttempted
+               
+             , data = modelData, family = "quasibinomial", weights = modelData$rowWeight) 
 
 summary(model)
 
 
-javaPreds$pred <- predict(model, javaPreds, type = "response")
-javaPreds$resid <- javaPreds$pred - javaPreds$target
+testData$pred <- predict(model, testData, type = "response")
+testData$resid <- testData$pred - testData$target
 
 
-binnedplot(javaPreds$pred, javaPreds$resid)
-binnedplot(javaPreds$targetPredicted, javaPreds$resid)
-binnedplot(javaPreds$ownExp, javaPreds$resid)
-binnedplot(javaPreds$ownExp, javaPreds$twoPerc - javaPreds$target)
+binnedplot(testData$pred, testData$resid)
+binnedplot(testData$targetPredicted, testData$resid)
+binnedplot(testData$ownExp, testData$resid)
+binnedplot(testData$minPlayed, testData$resid)
+binnedplot(testData$minPlayed[testData$fgAttempted > 15], testData$resid[testData$fgAttempted > 15])
+binnedplot(testData$minPlayed[testData$fgAttempted > 20], testData$resid[testData$fgAttempted > 20])
 
-binnedplot(javaPreds$threeAttempted, javaPreds$resid)
-binnedplot(javaPreds$twoAttempted, javaPreds$resid)
+binnedplot(testData$threeAttempted, testData$resid)
+binnedplot(testData$twoAttempted, testData$resid)
+binnedplot(testData$twoAttempted - (1 - testData$threePropPred) * testData$fgAttempted, testData$resid)
 
 binnedplot(javaPreds$threeExp, javaPreds$threeResid)
 binnedplot(javaPreds$pred[javaPreds$threeExp > 4], javaPreds$resid[javaPreds$threeExp > 4])
@@ -167,7 +189,7 @@ set.seed(100)
 javaData <- javaPreds[sample(1:nrow(javaPreds), 100),]
 predictions <- predict(model, javaData, type = "response")
 
-Covariates <- with(javaData, paste(targetPredicted, fgAttemptedPred, fgAttempted, ownExp, minPlayed, threeAttempted, sep = ","))
+Covariates <- with(javaData, paste(targetPredicted, fgAttemptedPred, fgAttempted, ownExp, minPlayed, threeAttempted, threePropPred, seasonYear, sep = ","))
 
 
 test <- paste("Assert.assertEquals(", predictions, "d, TwoPercModelGivenOwnExp.adjustRate(", Covariates, ") , DELTA);", sep = "")

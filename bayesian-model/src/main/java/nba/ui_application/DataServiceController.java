@@ -126,6 +126,8 @@ public class DataServiceController {
                         .turnoversPrior(playerWithCoefs.getTurnoversPrior())
                         .foulsCoef(round(playerWithCoefs.getFoulsCoef()))
                         .foulsPrior(playerWithCoefs.getFoulsPrior())
+                        .assistsPrior(playerWithCoefs.getAssistsPrior())
+                        .assistsCoef(playerWithCoefs.getAssistsCoef())
                         .averageMinutesInSeason(playerWithCoefs.getAverageMinutesInSeason())
                         .lastGameMin(playerWithCoefs.getLastGameMin())
                         .build();
@@ -135,7 +137,16 @@ public class DataServiceController {
             }
         }
 
-        return playerRequests.stream().sorted((o1, o2) -> Double.compare(o2.getPmin(), o1.getPmin())).collect(Collectors.toList());
+        List<PlayerRequest> orderedPlayers = playerRequests.stream().sorted((o1, o2) -> Double.compare(o2.getPmin(), o1.getPmin())).collect(Collectors.toList());
+        List<PlayerRequest> list = new ArrayList<>();
+        for (int i = 0; i < orderedPlayers.size(); i++) {
+            if(i < 5){
+                list.add(orderedPlayers.get(i).toBuilder().starter(1).build());
+            }else{
+                list.add(orderedPlayers.get(i));
+            }
+        }
+        return list;
     }
 
     private PlayerWithCoefs getPlayerFromRotoName(String rotowireName) {
